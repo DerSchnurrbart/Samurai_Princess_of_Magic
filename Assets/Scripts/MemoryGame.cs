@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class MemoryGame : MonoBehaviour {
 
-	enum Direction {Up, Down, Left, Right};
+	public enum Direction {Up, Down, Left, Right};
 
 	public List<Direction> sequence;
 	int numFramesSinceChange;
