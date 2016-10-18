@@ -3,9 +3,13 @@ using System.Collections.Generic;
 
 public class MemoryGame : MonoBehaviour {
 
-	enum Direction {Up, Down, Left, Right};
+	public enum Direction {Up, Down, Left, Right};
+    public GameObject up_arrow = GameObject.Find("up_arrow");
+    public GameObject down_arrow = GameObject.Find("down_arrow");
+    public GameObject left_arrow = GameObject.Find("left_arrow");
+    public GameObject right_arrow = GameObject.Find("right_arrow");
 
-	public List<Direction> sequence;
+    public List<Direction> sequence;
 	int numFramesSinceChange;
 	const int numFramesBufferBetweenInput = 10;
 	const int framesToRespond = 100;
@@ -48,12 +52,15 @@ public class MemoryGame : MonoBehaviour {
 	}
 
 	private Direction translateArrowKeyToDirection() {
-		return null;
+        //PH return value
+		return Direction.Up;
 	}
 
 	private void handleUsersTurn() {
 		if (isInputBufferInterval) {
-			return inputBuffer ();
+            //PH code
+		    inputBuffer ();
+            return;
 		}
 		if (numFramesSinceChange == framesToRespond) {
 			gameInProgress = false; //player took too long to respond
@@ -62,7 +69,9 @@ public class MemoryGame : MonoBehaviour {
 		Direction input = translateArrowKeyToDirection ();
 		if (input != null) {
 			if (correctDirection(input)) {
-				return advanceUserInSequence ();
+                //PH code
+				advanceUserInSequence ();
+                return;
 			} else {
 				gameInProgress = false; //incorrect input.
 				return;
