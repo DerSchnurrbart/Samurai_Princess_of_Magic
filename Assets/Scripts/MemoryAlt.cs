@@ -12,9 +12,10 @@ public class MemoryAlt : MonoBehaviour
     public GameObject right_arrow;
 
     public List<Direction> sequence;
+    public List<Direction> user_guess;
     bool isUsersTurn;
     bool promptingUser;
-    const float inputDelay = 0.3f;
+    const float inputDelay = 0.5f;
 
     // Use this for initialization
     void Start()
@@ -25,6 +26,7 @@ public class MemoryAlt : MonoBehaviour
         sequence.Add(getRandomDirection());
         sequence.Add(getRandomDirection());
         sequence.Add(getRandomDirection());
+        disable_arrows();
     }
 
     // Update is called once per frame
@@ -34,39 +36,57 @@ public class MemoryAlt : MonoBehaviour
         {
             if (Input.GetKey("up"))
             {
-                print("up arrow key is held down");
+                //print("up arrow key is held down");
                 enable_arrow(Direction.Up);
                 StartCoroutine(inputBuffer());
+                user_guess.Add(Direction.Up);
             }
 
             if (Input.GetKey("down"))
             {
-                print("down arrow key is held down");
+                //print("down arrow key is held down");
                 enable_arrow(Direction.Down);
                 StartCoroutine(inputBuffer());
+                user_guess.Add(Direction.Down);
             }
 
             if (Input.GetKey("left"))
             {
-                print("left arrow key is held down");
+                //print("left arrow key is held down");
                 enable_arrow(Direction.Left);
                 StartCoroutine(inputBuffer());
+                user_guess.Add(Direction.Left);
             }
 
             if (Input.GetKey("right"))
             {
-                print("right arrow key is held down");
+                //print("right arrow key is held down");
                 enable_arrow(Direction.Right);
                 StartCoroutine(inputBuffer());
+                user_guess.Add(Direction.Right);
             }
         }
         else if (Input.GetKey("return"))
         {
-                print("return key entered");
+                //print("return key entered");
                 isUsersTurn = false;
                 promptingUser = true;
                 //IMPORTANT: this function, "show_sequence()", is broken
-                //show_sequence();
+                StartCoroutine(show_sequence());
+        }
+
+        if (user_guess.Count == sequence.Count)
+        {
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                if (user_guess[i] != sequence[i])
+                {
+                    print("Incorrect sequence!");
+                    return;
+                }
+            }
+            print("Correct sequence!");
+
         }
     }
 
@@ -119,7 +139,7 @@ public class MemoryAlt : MonoBehaviour
     {
         isUsersTurn = false;
         yield return new WaitForSeconds(inputDelay);
-        //disable_arrows();
+        disable_arrows();
         isUsersTurn = true;
     }
 
@@ -130,22 +150,26 @@ public class MemoryAlt : MonoBehaviour
         yield return new WaitForSeconds(inputDelay);
         //disable_arrows();
         promptingUser = true;
-        print("promptingUser: " + promptingUser);
+        //print("promptingUser: " + promptingUser);
     }
 
-    public void show_sequence() {
-        print("sequence count: " + sequence.Count);
+    public IEnumerator show_sequence() {
+        //print("sequence count: " + sequence.Count);
         int i = 0;
         while (i < sequence.Count)
         {
             if (promptingUser)
             {
+                //print ("enum:" + sequence[i]);
                 enable_arrow(sequence[i]);
-                print("before: " + promptingUser);
-                StartCoroutine(outputBuffer());
+                //print("before: " + promptingUser);
+                //StartCoroutine(outputBuffer());
+                yield return new WaitForSeconds(inputDelay);
+                disable_arrows();
+                yield return new WaitForSeconds(0.2f);
                 //promptingUser should not be false here
                 promptingUser = true;
-                print("after: " + promptingUser);
+                //print("after: " + promptingUser);
                 i++;
             }
         }
