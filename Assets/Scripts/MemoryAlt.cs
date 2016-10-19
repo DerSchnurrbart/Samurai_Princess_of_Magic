@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -75,7 +76,25 @@ public class MemoryAlt : MonoBehaviour
                 StartCoroutine(show_sequence());
         }
 
-        if (user_guess.Count == sequence.Count)
+        //if user hits escape, go back to main menu
+        if (Input.GetKey("escape"))
+        {
+            print("ESCAPE");
+            SceneManager.LoadScene("TitleScreen");
+        }
+        //user should be able to reload scene
+        if (Input.GetKey(KeyCode.R))
+        {
+            //print("control pressed");
+            //if (Input.GetKey(KeyCode.R)) {
+            print("attempting scene reload");
+            Scene scene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(scene.name);
+            //comment
+            //}
+        }
+
+            if (user_guess.Count == sequence.Count)
         {
             for (int i = 0; i < sequence.Count; i++)
             {
