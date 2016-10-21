@@ -11,22 +11,23 @@ public class MemoryAlt : MonoBehaviour
     public GameObject down_arrow;
     public GameObject left_arrow;
     public GameObject right_arrow;
+    public int current_difficulty;
 
     public List<Direction> sequence;
     public List<Direction> user_guess;
     bool isUsersTurn;
-    bool promptingUser;
+    bool inputDelayActive;
     const float inputDelay = 0.5f;
 
     // Use this for initialization
     void Start()
     {
-        promptingUser = false;
         isUsersTurn = false;
-        sequence.Add(getRandomDirection());
-        sequence.Add(getRandomDirection());
-        sequence.Add(getRandomDirection());
-        sequence.Add(getRandomDirection());
+        inputDelayActive = false;
+        
+        //Arcade Mode:
+        current_difficulty = 1;
+        populateSequence(current_difficulty);
         disable_arrows();
     }
 
@@ -35,45 +36,37 @@ public class MemoryAlt : MonoBehaviour
     {
         if (isUsersTurn)
         {
-            if (Input.GetKey("up"))
+            if (!inputDelayActive)
             {
-                //print("up arrow key is held down");
-                enable_arrow(Direction.Up);
-                StartCoroutine(inputBuffer());
-                user_guess.Add(Direction.Up);
-            }
-
-            if (Input.GetKey("down"))
-            {
-                //print("down arrow key is held down");
-                enable_arrow(Direction.Down);
-                StartCoroutine(inputBuffer());
-                user_guess.Add(Direction.Down);
-            }
-
-            if (Input.GetKey("left"))
-            {
-                //print("left arrow key is held down");
-                enable_arrow(Direction.Left);
-                StartCoroutine(inputBuffer());
-                user_guess.Add(Direction.Left);
-            }
-
-            if (Input.GetKey("right"))
-            {
-                //print("right arrow key is held down");
-                enable_arrow(Direction.Right);
-                StartCoroutine(inputBuffer());
-                user_guess.Add(Direction.Right);
+                if (Input.GetKey("up"))
+                {
+                    enable_arrow(Direction.Up);
+                    user_guess.Add(Direction.Up);
+                    StartCoroutine(inputController());
+                }
+                else if (Input.GetKey("down"))
+                {
+                    enable_arrow(Direction.Down);
+                    user_guess.Add(Direction.Down);
+                    StartCoroutine(inputController());
+                }
+                else if (Input.GetKey("left"))
+                {
+                    enable_arrow(Direction.Left);
+                    user_guess.Add(Direction.Left);
+                    StartCoroutine(inputController());
+                }
+                else if (Input.GetKey("right"))
+                {
+                    enable_arrow(Direction.Right);
+                    user_guess.Add(Direction.Right);
+                    StartCoroutine(inputController());
+                }
             }
         }
         else if (Input.GetKey("return"))
         {
-                //print("return key entered");
-                isUsersTurn = false;
-                promptingUser = true;
-                //IMPORTANT: this function, "show_sequence()", is broken
-                StartCoroutine(show_sequence());
+            StartCoroutine(show_sequence());
         }
 
         //if user hits escape, go back to main menu
@@ -85,27 +78,27 @@ public class MemoryAlt : MonoBehaviour
         //user should be able to reload scene
         if (Input.GetKey(KeyCode.R))
         {
-            //print("control pressed");
-            //if (Input.GetKey(KeyCode.R)) {
             print("attempting scene reload");
             Scene scene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(scene.name);
-            //comment
-            //}
         }
 
-            if (user_guess.Count == sequence.Count)
+        if (user_guess.Count == sequence.Count)
         {
+            //TODO: Add splash screen for loss
+            isUsersTurn = false;
             for (int i = 0; i < sequence.Count; i++)
             {
                 if (user_guess[i] != sequence[i])
                 {
                     print("Incorrect sequence!");
+                    //Game over, try again? 
                     return;
                 }
             }
             print("Correct sequence!");
-
+            populateSequence(++current_difficulty);
+            user_guess.Clear();
         }
     }
 
@@ -113,10 +106,18 @@ public class MemoryAlt : MonoBehaviour
     //generate a random direction
     private Direction getRandomDirection()
     {
-        int result = Random.Range(1, 4);
+        int result = Random.Range(0, 4);
         return (Direction)result;
     }
 
+    private void populateSequence(int level_num)
+    {
+        sequence.Clear();
+        for(int i = 0; i < level_num; i++)
+        {
+            sequence.Add(getRandomDirection());
+        }
+    }
 
     //function to disable other arrows
     public void disable_arrows() {
@@ -154,46 +155,26 @@ public class MemoryAlt : MonoBehaviour
 
 
     //user input buffer
-    public IEnumerator inputBuffer()
+    public IEnumerator inputController()
     {
-        isUsersTurn = false;
+        inputDelayActive = true;
+        if (user_guess.Count >= sequence.Count) isUsersTurn = false;
         yield return new WaitForSeconds(inputDelay);
         disable_arrows();
-        isUsersTurn = true;
-    }
-
-    //prompt buffer
-    public IEnumerator outputBuffer()
-    {
-        promptingUser = false;
-        yield return new WaitForSeconds(inputDelay);
-        //disable_arrows();
-        promptingUser = true;
-        //print("promptingUser: " + promptingUser);
+        inputDelayActive = false;
     }
 
     public IEnumerator show_sequence() {
-        //print("sequence count: " + sequence.Count);
         int i = 0;
         while (i < sequence.Count)
         {
-            if (promptingUser)
-            {
-                //print ("enum:" + sequence[i]);
-                enable_arrow(sequence[i]);
-                //print("before: " + promptingUser);
-                //StartCoroutine(outputBuffer());
-                yield return new WaitForSeconds(inputDelay);
-                disable_arrows();
-                yield return new WaitForSeconds(0.2f);
-                //promptingUser should not be false here
-                promptingUser = true;
-                //print("after: " + promptingUser);
-                i++;
-            }
+            enable_arrow(sequence[i]);
+            yield return new WaitForSeconds(inputDelay);
+            disable_arrows();
+            yield return new WaitForSeconds(0.2f);
+            i++;
         }
         disable_arrows();
-        promptingUser = false;
         isUsersTurn = true;
     }
 
