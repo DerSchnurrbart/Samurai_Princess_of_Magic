@@ -17,7 +17,6 @@ public class SwordCombat : MonoBehaviour {
     /*********************************Assets**********************************************/
 
     public static AudioClip[] enemyNoises;
-    public static AudioClip[] enemyDeaths;
     public static AudioClip[] weaponSoundEffects;
     public static GameObject enemyPrefab;
 
@@ -32,7 +31,6 @@ public class SwordCombat : MonoBehaviour {
     class enemySpawner
     {
         List<enemy> enemies;
-        int killedCount = 0;
         Vector3 StartingPosition;
         Vector3 AttackVector;
         Vector3 IncrementVector; 
@@ -61,32 +59,9 @@ public class SwordCombat : MonoBehaviour {
         
         public void playerSwing(PlayerWeapons weapon)
         {
-
-            //Kills closest enemy if player used the right type, in one direction
-            //Closest enemy will be at front of the List at index 0
-            //Killed enemy is removed from list and list auto-updates its indexes and such
-            //Keeps track of # of killed enemies
-            if (enemies[0].weakness == weapon)
-            {
-                int enemyDeathSoundType = (int)enemies[0].type;
-
-                //change default audio clip of enemy being killed to the death sound, then play death sound
-                Debug.Log("Enemy type: " + enemyDeathSoundType + " killed: Play SFX");
-                enemies[0].au_source.clip = enemyDeaths[enemyDeathSoundType];
-                enemies[0].au_source.Play();
-
-                killedCount++;
-                enemies[0].kill();
-                enemies.RemoveAt(0);
-            }
-
-
-
-
-            /*
-            Old Code: "Sloppy implementation, kills all enemies of a type in a direction"
+            //Sloppy implementation, kills all enemies of a type in a direction
+            //May want to change to only kill closest enemy
             List<enemy> toRemove = new List<enemy>();
-
             foreach(enemy x in enemies)
             {
                 if (x.weakness == weapon)
@@ -100,7 +75,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
             }
-*/
+
         }
 
     };
@@ -108,7 +83,7 @@ public class SwordCombat : MonoBehaviour {
     class enemy
     {
         GameObject source;
-        public AudioSource au_source; //Houses positional information, audio clip
+        AudioSource au_source; //Houses positional information, audio clip
         int turnsActive;
         public EnemyType type;
         public PlayerWeapons weakness;
@@ -120,9 +95,6 @@ public class SwordCombat : MonoBehaviour {
             au_source = source.GetComponent<AudioSource>();
             au_source.clip = enemyNoises[(int)type_in];
             au_source.Play();
-
-                
-
             source.GetComponent<Rigidbody>().velocity = approachSpeed;
             type = type_in;
             weakness = (PlayerWeapons) type_in;
@@ -158,14 +130,9 @@ public class SwordCombat : MonoBehaviour {
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
         enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolfhowl") as AudioClip;
-            enemyNoises[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghost") as AudioClip;
+        enemyNoises[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghost") as AudioClip;
 
-            enemyDeaths = new AudioClip[3];
-            enemyDeaths[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/insectdeath") as AudioClip;
-            enemyDeaths[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolfdeath") as AudioClip;
-            enemyDeaths[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghostdeath") as AudioClip;
-
-            weaponSoundEffects = new AudioClip[3];
+        weaponSoundEffects = new AudioClip[3];
         weaponSoundEffects[(int)PlayerWeapons.sword] = Resources.Load("Sounds/PlayerWeapons/unsheath") as AudioClip;
         weaponSoundEffects[(int)PlayerWeapons.hammer] = Resources.Load("Sounds/PlayerWeapons/hammer") as AudioClip;
         weaponSoundEffects[(int)PlayerWeapons.magic_staff] = Resources.Load("Sounds/PlayerWeapons/Spell_01") as AudioClip;
