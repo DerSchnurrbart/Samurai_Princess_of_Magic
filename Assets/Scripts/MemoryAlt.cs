@@ -80,6 +80,8 @@ public class MemoryAlt : MonoBehaviour
         }
         else if (Input.GetKeyDown("return"))
         {
+            //TODO: BUG, if user presses return more than once before the sequence has been completely shown
+            //undesired behavior occurs
             StartCoroutine(show_sequence());
             results_text.text = "";
         }
