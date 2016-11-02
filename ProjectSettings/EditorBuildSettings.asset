@@ -11,3 +11,5 @@ EditorBuildSettings:
     path: Assets/Scenes/MemoryGame.unity
   - enabled: 1
     path: Assets/Scenes/SwordCombat.unity
+  - enabled: 1
+    path: Assets/Scenes/RhythmMagic.unity
