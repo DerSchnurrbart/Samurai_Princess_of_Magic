@@ -89,9 +89,16 @@ public class Rhythm : MonoBehaviour {
         if(sequence[prompt_index] != act)
         {
             correct = false;
+            //prompt_index = 0;
         }
         if (correct && prompt_index == sequence.Count - 1)
         {
+            if(mutation_index > sequence.Count - 1)
+            {
+                //user has successfully completed the sequence
+                victory();
+                return;
+            }
             print("it should mutate");
             mutate_sequence();
         }
@@ -111,11 +118,6 @@ public class Rhythm : MonoBehaviour {
         looping = true;
         correct = true;
 
-        //print("entered coroutine");
-        if(sequence == null)
-        {
-            //print("null sequence");
-        }
         print(sequence.Count);
         int i = 0;
         while (i < sequence.Count)
@@ -165,4 +167,9 @@ public class Rhythm : MonoBehaviour {
                 break;
         }
     }
+
+    public void victory() {
+        SceneManager.LoadScene("TitleScreen");
+    }
+
 }
