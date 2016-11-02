@@ -10,10 +10,11 @@ public class Rhythm : MonoBehaviour {
     public List<Action> sequence;
     public List<Action> target;
 
+	public const int CYCLES_NEEDED_CORRECT_TO_PROCEED = 3;
     public int difficulty;
     public int mutation_index;
     public int prompt_index;
-    public bool correct;
+    public int correct = 0;
     public bool valid_input;
     public bool activated;
     public bool triggered;
@@ -33,16 +34,10 @@ public class Rhythm : MonoBehaviour {
         mutation_index = 0;
         prompt_index = 0;
         //difficulty = 3;
-        correct = true;
         looping = false;
         activated = false;
         triggered = false;
-	    for (int i = 0; i < difficulty; i++)
-        {
-            int val = Random.Range(1, 4);
-            target.Add((Action)val);
-            sequence.Add(Action.tap);
-        }
+		reset_sequences ();
 
 	}
 	
@@ -86,25 +81,34 @@ public class Rhythm : MonoBehaviour {
 
     public void compare_user_input(Action act) {
         valid_input = false;
-        if(sequence[prompt_index] != act)
-        {
-            correct = false;
-            //prompt_index = 0;
-        }
-        if (correct && prompt_index == sequence.Count - 1)
-        {
-            if(mutation_index > sequence.Count - 1)
-            {
-                //user has successfully completed the sequence
-                victory();
-                return;
-            }
-            print("it should mutate");
-            mutate_sequence();
-        }
+		if (sequence [prompt_index] != act) {
+			correct = 0;
+		} else {
+			correct++;
+		}
+		if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count && sequence.Contains (Action.tap)) {
+			print ("it should mutate");
+			mutate_sequence ();
+			correct = 0;
+		} else if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count) {
+			difficulty++;
+			reset_sequences ();
+			correct = 0;
+		}
         print("correct: " + correct);
         return;
     }
+
+	void reset_sequences() {
+		sequence.Clear ();
+		target.Clear ();
+		for (int i = 0; i < difficulty; i++)
+		{
+			int val = Random.Range(1, 4);
+			target.Add((Action)val);
+			sequence.Add(Action.tap);
+		}
+	}
 
     public void mutate_sequence() {
         print("mutation");
@@ -116,8 +120,12 @@ public class Rhythm : MonoBehaviour {
     public IEnumerator show_sequence()
     {
         looping = true;
-        correct = true;
 
+        //print("entered coroutine");
+        if(sequence == null)
+        {
+            //print("null sequence");
+        }
         print(sequence.Count);
         int i = 0;
         while (i < sequence.Count)
@@ -167,9 +175,4 @@ public class Rhythm : MonoBehaviour {
                 break;
         }
     }
-
-    public void victory() {
-        SceneManager.LoadScene("TitleScreen");
-    }
-
 }
