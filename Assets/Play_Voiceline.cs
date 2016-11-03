@@ -9,7 +9,20 @@ public class Play_Voiceline : MonoBehaviour {
     public void playClip()
     {
         //not working yet
-        audioSource.clip = Resources.Load("Sounds/Voicelines/Main Menu Instructions/SPoM - Main Menu.wav") as AudioClip; ;
+        audioClip = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
+        //audioSource.PlayOneShot(audioClip);
+        audioSource.clip = audioClip;
+       
+    }
+
+    // Use this for initialization
+    /*void Start()
+    {
+        myclip = Resources.Load("Sounds/Voicelines/Main Menu Instructions/SPoM - Main Menu.") as AudioClip;
+        //audioSource = this.GetComponent<AudioSource>();
+        //audioSource.clip = myclip;
+        audioSource.GetComponent<AudioSource>().clip = myclip;
         audioSource.Play();
     }
+    */
 }
