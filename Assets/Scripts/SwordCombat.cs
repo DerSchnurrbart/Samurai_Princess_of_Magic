@@ -17,16 +17,20 @@ public class SwordCombat : MonoBehaviour {
     /*********************************Assets**********************************************/
 
     public static AudioClip[] enemyNoises;
+    public static AudioClip[] enemyDeaths;
+    public static AudioClip[] weaponMiss;
     public static AudioClip[] weaponSoundEffects;
     public static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
 
-    PlayerWeapons currentWeapon;
-    static float spawnRate = 25.0f;
-    static float approachRate = 2.0f;
-    List<enemySpawner> spawners;
-    AudioSource playerBasic;
+    static PlayerWeapons currentWeapon;
+    static bool inputDelayActive = false;
+    static float inputDelay = 0.25f;
+    static float spawnRate = 7.0f;
+    static float approachRate = 7.0f;
+    static List<enemySpawner> spawners;
+    static AudioSource playerBasic;
 
     class enemySpawner
     {
@@ -71,6 +75,7 @@ public class SwordCombat : MonoBehaviour {
                     //Todo Add death sound
                 }
             }
+            if (toRemove.Count > 0) playerBasic.PlayOneShot(enemyDeaths[(int)weapon]);
             foreach(enemy x in toRemove)
             {
                 enemies.Remove(x);
@@ -129,8 +134,12 @@ public class SwordCombat : MonoBehaviour {
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
-        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolfhowl") as AudioClip;
+        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolf") as AudioClip;
         enemyNoises[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghost") as AudioClip;
+        enemyDeaths = new AudioClip[3];
+        enemyDeaths[(int)EnemyType.wolf] = Resources.Load("Sounds/Death/wolfdeath") as AudioClip;
+        enemyDeaths[(int)EnemyType.insect] = Resources.Load("Sounds/Death/bugsmash") as AudioClip;
+        enemyDeaths[(int)EnemyType.ghost] = Resources.Load("Sounds/Death/Wilhelm") as AudioClip;
 
         weaponSoundEffects = new AudioClip[3];
         weaponSoundEffects[(int)PlayerWeapons.sword] = Resources.Load("Sounds/PlayerWeapons/unsheath") as AudioClip;
@@ -153,19 +162,41 @@ public class SwordCombat : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown("right")) spawners[0].playerSwing(currentWeapon);
-        else if (Input.GetKeyDown("left")) spawners[1].playerSwing(currentWeapon);
-        else if (Input.GetKeyDown("up")) spawners[2].playerSwing(currentWeapon);
-        else if (Input.GetKeyDown("down"))
+        if (!inputDelayActive)
+        {
+            if (Input.GetKeyDown("right"))
+            {
+                spawners[0].playerSwing(currentWeapon);
+                StartCoroutine(inputController());
+            }
+            else if (Input.GetKeyDown("left"))
+            {
+                spawners[1].playerSwing(currentWeapon);
+                StartCoroutine(inputController());
+            }
+            else if (Input.GetKeyDown("up"))
+            {
+                spawners[2].playerSwing(currentWeapon);
+                StartCoroutine(inputController());
+            }
+        }
+        if (Input.GetKeyDown("down"))
         {
             currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
-            playerBasic.PlayOneShot(weaponSoundEffects[(int)currentWeapon], 0.5f);
+            playerBasic.PlayOneShot(weaponSoundEffects[(int)currentWeapon], 0.3f);
+            inputDelayActive = false;
         }
 
 	
 	}
 
 
+    public IEnumerator inputController()
+    {
+        inputDelayActive = true;
+        yield return new WaitForSeconds(inputDelay);
+        inputDelayActive = false;
+    }
 
 /*    public IEnumerator enemyLeader()
     {
