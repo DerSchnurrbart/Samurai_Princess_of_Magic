@@ -12,53 +12,57 @@ public class SwordCombat : MonoBehaviour {
     enum EnemyType { insect, wolf, ghost };
     enum PlayerWeapons { hammer, sword, magic_staff }; 
     //Important note: items in EnemyType map to PlayerWeapons, i.e. hammer kills insect, sword kills wolf
-    enum StartingPositions { left, right, forward };
+    enum Directions { north, east, south, west };
+    
 
     /*********************************Assets**********************************************/
 
     public static AudioClip[] enemyNoises;
     public static AudioClip[] enemyDeaths;
     public static AudioClip[] weaponMiss;
-    public static AudioClip[] weaponSoundEffects;
+    public static AudioClip[] weaponEquipSound;
+    public static AudioClip spideysense;
     public static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
 
     static PlayerWeapons currentWeapon;
-    static bool inputDelayActive = false;
+    static Directions playerFacing;
+    static bool weaponDelayActive = false;
+    static bool isRotating = false;
+    static float rotationDuration = 0.5f;
     static float inputDelay = 0.25f;
-    static float spawnRate = 7.0f;
-    static float approachRate = 7.0f;
+    static float spawnRate = 10.0f;
+    static float approachRate = 5.0f;
     static List<enemySpawner> spawners;
-    static AudioSource playerBasic;
+    static AudioSource playerAudioSource;
+    static GameObject player;
 
     class enemySpawner
     {
         List<enemy> enemies;
+        Directions initialDirection;
         Vector3 StartingPosition;
         Vector3 AttackVector;
         Vector3 IncrementVector; 
 
-        public enemySpawner(Vector3 pos)
+        public enemySpawner(Vector3 pos, Directions directionFromPlayer)
         {
             enemies = new List<enemy>();
             StartingPosition = pos;
+            initialDirection = directionFromPlayer;
             AttackVector = -1*pos.normalized;
             IncrementVector = (Vector3.zero - pos) / (float)turnsBeforeHittingPlayer;
         }
 
-        public bool incrementEnemies()
-        {
-            foreach(enemy x in enemies) {
-                if (x.approachPlayer(IncrementVector))
-                    return true;
-            }
-            return false;
-        }
-
         public void spawnEnemy()
         {
+            if (((int) playerFacing + 2) % 4 == (int) initialDirection)
+            {
+                playerAudioSource.PlayOneShot(spideysense, 0.2f);
+            }
             enemies.Add(new enemy(StartingPosition, AttackVector * approachRate));
+            
         }
         
         public void playerSwing(PlayerWeapons weapon)
@@ -75,7 +79,7 @@ public class SwordCombat : MonoBehaviour {
                     //Todo Add death sound
                 }
             }
-            if (toRemove.Count > 0) playerBasic.PlayOneShot(enemyDeaths[(int)weapon]);
+            if (toRemove.Count > 0) playerAudioSource.PlayOneShot(enemyDeaths[(int)weapon]);
             foreach(enemy x in toRemove)
             {
                 enemies.Remove(x);
@@ -111,14 +115,6 @@ public class SwordCombat : MonoBehaviour {
         {
         }
 
-        public bool approachPlayer(Vector3 IncrementVector)
-        {
-            au_source.transform.position += IncrementVector;
-            au_source.Play();
-            if (turnsActive++ == turnsBeforeHittingPlayer) return true;
-            else return false;
-        }
-
         public void kill()
         {
             DestroyImmediate(au_source);
@@ -130,7 +126,11 @@ public class SwordCombat : MonoBehaviour {
 
 
 	void Start () {
-        playerBasic = GameObject.Find("Player").GetComponent<AudioSource>();
+
+        player = GameObject.Find("Player");
+        playerAudioSource = player.GetComponent<AudioSource>();
+
+        spideysense = Resources.Load("Sounds/Enemies/spideysense") as AudioClip;
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
@@ -141,76 +141,88 @@ public class SwordCombat : MonoBehaviour {
         enemyDeaths[(int)EnemyType.insect] = Resources.Load("Sounds/Death/bugsmash") as AudioClip;
         enemyDeaths[(int)EnemyType.ghost] = Resources.Load("Sounds/Death/Wilhelm") as AudioClip;
 
-        weaponSoundEffects = new AudioClip[3];
-        weaponSoundEffects[(int)PlayerWeapons.sword] = Resources.Load("Sounds/PlayerWeapons/unsheath") as AudioClip;
-        weaponSoundEffects[(int)PlayerWeapons.hammer] = Resources.Load("Sounds/PlayerWeapons/hammer") as AudioClip;
-        weaponSoundEffects[(int)PlayerWeapons.magic_staff] = Resources.Load("Sounds/PlayerWeapons/Spell_01") as AudioClip;
+        weaponEquipSound = new AudioClip[3];
+        weaponEquipSound[(int)PlayerWeapons.sword] = Resources.Load("Sounds/PlayerWeapons/unsheath") as AudioClip;
+        weaponEquipSound[(int)PlayerWeapons.hammer] = Resources.Load("Sounds/PlayerWeapons/hammer") as AudioClip;
+        weaponEquipSound[(int)PlayerWeapons.magic_staff] = Resources.Load("Sounds/PlayerWeapons/Spell_01") as AudioClip;
 
         currentWeapon = PlayerWeapons.hammer;
+        playerFacing = Directions.north;
+
+        
         spawners = new List<enemySpawner>();
-        spawners.Add(new enemySpawner(new Vector3(50, 0, 0))); //Right of player
-        spawners.Add(new enemySpawner(new Vector3(-50, 0, 0))); //Left of player
-        spawners.Add(new enemySpawner(new Vector3(0, 0, 50))); //Directly in front of player
+        //Spawning Locations are cardinal directions
+        spawners.Add(new enemySpawner(new Vector3(0, 0, -50), Directions.north)); //in front of player
+        spawners.Add(new enemySpawner(new Vector3(50, 0, 0), Directions.east)); //right of player at start 
+        spawners.Add(new enemySpawner(new Vector3(0, 0, 50), Directions.south)); //behind player
+        spawners.Add(new enemySpawner(new Vector3(-50, 0, 0), Directions.west)); //left of player 
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
         StartCoroutine(spawnMaster());
- //       StartCoroutine(enemyLeader());
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
 
-        if (!inputDelayActive)
-        {
+    // Update is called once per frame
+    void Update() {
+
+        if (!isRotating) {
             if (Input.GetKeyDown("right"))
             {
-                spawners[0].playerSwing(currentWeapon);
-                StartCoroutine(inputController());
+                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
+                StartCoroutine(rotatePlayer(player.transform.rotation, player.transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
             }
             else if (Input.GetKeyDown("left"))
             {
-                spawners[1].playerSwing(currentWeapon);
-                StartCoroutine(inputController());
+                StartCoroutine(rotatePlayer(player.transform.rotation, player.transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
+                playerFacing = (Directions)(((int)playerFacing - 1) % 4);
             }
-            else if (Input.GetKeyDown("up"))
+        }
+
+        if (!weaponDelayActive)
+        {
+            if (Input.GetKeyDown("up"))
             {
-                spawners[2].playerSwing(currentWeapon);
+                spawners[(int)playerFacing].playerSwing(currentWeapon);
                 StartCoroutine(inputController());
             }
         }
+    
         if (Input.GetKeyDown("down"))
         {
             currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
-            playerBasic.PlayOneShot(weaponSoundEffects[(int)currentWeapon], 0.3f);
-            inputDelayActive = false;
+            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
+            weaponDelayActive = false;
         }
 
 	
 	}
 
+    //credit to http://gamedev.stackexchange.com/questions/97074/how-to-stop-rotation-every-90-degrees
+    //for the core idea of this implementation
+    public IEnumerator rotatePlayer(Quaternion startingRotation, Quaternion endingRotation, float duration)
+    {
+        float endTime = Time.time + duration;
+        isRotating = true;
+        while(Time.time <= endTime)
+        {
+            float percentElapsed = 1 - ((endTime - Time.time) / duration);
+            player.transform.rotation = Quaternion.Lerp(startingRotation, endingRotation, percentElapsed);
+            yield return 0; 
+        }
+        player.transform.rotation = endingRotation;
+        isRotating = false;
+    }
 
+
+    //Exists to prevent players from spamming attacks, making the game trivial
     public IEnumerator inputController()
     {
-        inputDelayActive = true;
+        weaponDelayActive = true;
         yield return new WaitForSeconds(inputDelay);
-        inputDelayActive = false;
+        weaponDelayActive = false;
     }
 
-/*    public IEnumerator enemyLeader()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(approachRate);
-            for (int i = 0; i < spawners.Count; i++)
-                if (spawners[i].incrementEnemies())
-                {
-                    //player dead
-                }
-        }
-    }
-*/
     public IEnumerator spawnMaster()
     {
         while (true)
