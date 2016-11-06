@@ -9,12 +9,15 @@ public class Rhythm : MonoBehaviour {
     public enum Action { tap, swipe_up, swipe_down, swipe_left, swipe_right };
     public List<Action> sequence;
     public List<Action> target;
+	public List<int> unmutatedPositions;
 
 	public const int CYCLES_NEEDED_CORRECT_TO_PROCEED = 3;
+	public const int NUM_MOVES_INCORRECT_TO_FAIL = 5;
+	public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.95f;
     public int difficulty;
-    public int mutation_index;
     public int prompt_index;
     public int correct = 0;
+	public int incorrect = 0;
     public bool valid_input;
     public bool activated;
     public bool triggered;
@@ -31,7 +34,6 @@ public class Rhythm : MonoBehaviour {
     // Use this for initialization
     void Start () {
         print("starting late start");
-        mutation_index = 0;
         prompt_index = 0;
         //difficulty = 3;
         looping = false;
@@ -70,6 +72,11 @@ public class Rhythm : MonoBehaviour {
             }
         }
 
+		if (incorrect >= NUM_MOVES_INCORRECT_TO_FAIL) {
+			print ("changing scenes");
+			SceneManager.LoadScene ("TitleScreen");
+		}
+
         //keep running prompt
         if (activated && !looping)
         {
@@ -83,15 +90,18 @@ public class Rhythm : MonoBehaviour {
         valid_input = false;
 		if (sequence [prompt_index] != act) {
 			correct = 0;
+			incorrect++;
 		} else {
+			incorrect = 0;
 			correct++;
 		}
-		if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count && sequence.Contains (Action.tap)) {
+		if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count && unmutatedPositions.Count != 0) {
 			print ("it should mutate");
 			mutate_sequence ();
 			correct = 0;
 		} else if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count) {
 			difficulty++;
+			inputDelay *= MULTIPLIER_FOR_BEAT_PERIOD;
 			reset_sequences ();
 			correct = 0;
 		}
@@ -107,14 +117,16 @@ public class Rhythm : MonoBehaviour {
 			int val = Random.Range(1, 4);
 			target.Add((Action)val);
 			sequence.Add(Action.tap);
+			unmutatedPositions.Add (i);
 		}
 	}
 
     public void mutate_sequence() {
         print("mutation");
-        sequence[mutation_index] = target[mutation_index];
-        mutation_index++;
-        //change to random index
+		int position = Random.Range (0, unmutatedPositions.Count);
+		int positionToMutate = unmutatedPositions [position];
+		unmutatedPositions.Remove (unmutatedPositions[position]);
+		sequence [positionToMutate] = target [positionToMutate];
     }
 
     public IEnumerator show_sequence()
@@ -136,7 +148,12 @@ public class Rhythm : MonoBehaviour {
             valid_input = true;
             yield return new WaitForSeconds(inputDelay);
             disable_prompts();
-            valid_input = false;
+			if (valid_input) {
+				print ("no response " + incorrect);
+				correct = 0;
+				incorrect++;
+				valid_input = false;
+			}
             yield return new WaitForSeconds(0.2f);
             i++;
         }
