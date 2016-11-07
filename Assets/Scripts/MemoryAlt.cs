@@ -23,6 +23,7 @@ public class MemoryAlt : MonoBehaviour
     bool isUsersTurn;
     bool inputDelayActive;
     const float inputDelay = 0.5f;
+    bool firstTimePressingEnter = true;
 
     // Use this for initialization
     void Start()
@@ -49,7 +50,7 @@ public class MemoryAlt : MonoBehaviour
         {
             if (!inputDelayActive)
             {
-                
+
                 if (Input.GetKeyDown("up"))
                 {
                     enable_arrow(Direction.Up);
@@ -78,10 +79,11 @@ public class MemoryAlt : MonoBehaviour
                 if (user_guess.Count == sequence.Count) isUsersTurn = false;
             }
         }
-        else if (Input.GetKeyDown("return"))
+        else if (Input.GetKeyDown("return") && firstTimePressingEnter == true) 
         {
-            //TODO: BUG, if user presses return more than once before the sequence has been completely shown
-            //undesired behavior occurs
+            
+            //prompt has begun now, user cannot spam enter anymore
+            firstTimePressingEnter = false;
             StartCoroutine(show_sequence());
             results_text.text = "";
         }

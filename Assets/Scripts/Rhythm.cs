@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class Rhythm : MonoBehaviour {
 
+    //Voiceline
+    
+    private AudioSource rhythmDefeatVoice;
+    AudioClip rhythmDefeat;
+    bool rhythmDefeatVoiceIsPlaying = false;
+    
+
     public enum Action { tap, swipe_up, swipe_down, swipe_left, swipe_right };
     public List<Action> sequence;
     public List<Action> target;
@@ -22,6 +29,8 @@ public class Rhythm : MonoBehaviour {
     public bool activated;
     public bool triggered;
     public bool looping;
+    public bool gameIsOver = false;
+    public bool gameOverScreenLoaded = false;
     public float inputDelay = 2.0f;
 
     public GameObject swipe_up;
@@ -41,10 +50,14 @@ public class Rhythm : MonoBehaviour {
         triggered = false;
 		reset_sequences ();
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        rhythmDefeatVoice = GetComponent<AudioSource>();
+        
+        rhythmDefeat = Resources.Load("Sounds/Voicelines/GameOvers/RhythmDefeat") as AudioClip;
+        
+        }
+
+    // Update is called once per frame
+    void Update () {
         //start prompt
         if (Input.GetKeyDown("return") && !triggered)
         {
@@ -73,8 +86,8 @@ public class Rhythm : MonoBehaviour {
         }
 
 		if (incorrect >= NUM_MOVES_INCORRECT_TO_FAIL) {
-			print ("changing scenes");
-			SceneManager.LoadScene ("TitleScreen");
+            gameIsOver = true;
+            StartCoroutine(endGame());
 		}
 
         //keep running prompt
@@ -85,6 +98,27 @@ public class Rhythm : MonoBehaviour {
 
 	}
 
+    IEnumerator endGame()
+    {
+        
+        //play first voiceline
+        if (rhythmDefeatVoiceIsPlaying == false)
+        {
+            rhythmDefeatVoiceIsPlaying = true;
+            rhythmDefeatVoice.PlayOneShot(rhythmDefeat);
+            
+        }
+        //go to game over screen after 3 seconds
+        yield return new WaitForSeconds(3);
+
+        //show gameover screen
+        if (gameOverScreenLoaded == false) {
+            gameOverScreenLoaded = true;
+            SceneManager.LoadScene("GameOver");
+        }
+        
+        
+    }
 
     public void compare_user_input(Action act) {
         valid_input = false;
@@ -131,33 +165,39 @@ public class Rhythm : MonoBehaviour {
 
     public IEnumerator show_sequence()
     {
-        looping = true;
+        //if game is over, stop showing sequence, and show game over screen instead
+        if (gameIsOver == false)
+        {
+            looping = true;
 
-        //print("entered coroutine");
-        if(sequence == null)
-        {
-            //print("null sequence");
+            //print("entered coroutine");
+            if (sequence == null)
+            {
+                //print("null sequence");
+            }
+            print(sequence.Count);
+            int i = 0;
+            while (i < sequence.Count)
+            {
+                prompt_index = i;
+                print("sequence: " + i);
+                prompt_user(sequence[i]);
+                valid_input = true;
+                yield return new WaitForSeconds(inputDelay);
+                disable_prompts();
+                if (valid_input)
+                {
+                    print("no response " + incorrect);
+                    correct = 0;
+                    incorrect++;
+                    valid_input = false;
+                }
+                yield return new WaitForSeconds(0.2f);
+                i++;
+            }
+            looping = false;
         }
-        print(sequence.Count);
-        int i = 0;
-        while (i < sequence.Count)
-        {
-            prompt_index = i;
-            print("sequence: " + i);
-            prompt_user(sequence[i]);
-            valid_input = true;
-            yield return new WaitForSeconds(inputDelay);
-            disable_prompts();
-			if (valid_input) {
-				print ("no response " + incorrect);
-				correct = 0;
-				incorrect++;
-				valid_input = false;
-			}
-            yield return new WaitForSeconds(0.2f);
-            i++;
-        }
-        looping = false;
+
     }
 
 
