@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class Rhythm : MonoBehaviour {
 
+    //save the final score here, 
+    //   which will be accessed and displayed on game over screen
+    public static int score;
+
     //Voiceline
     
     private AudioSource rhythmDefeatVoice;
@@ -114,6 +118,9 @@ public class Rhythm : MonoBehaviour {
         //show gameover screen
         if (gameOverScreenLoaded == false) {
             gameOverScreenLoaded = true;
+
+            //update before leaving scene
+            Load.updateLastPlayedGame(3);
             SceneManager.LoadScene("GameOver");
         }
         

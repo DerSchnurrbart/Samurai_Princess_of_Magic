@@ -28,11 +28,11 @@ public class GameOver : MonoBehaviour
             gameOverVoice.PlayOneShot(gameOverClip);
         }
 
-        StartCoroutine(gameOverScreen());
-
-
+        //This function returns the game to main menu after 3 seconds
+        //StartCoroutine(gameOverScreen());
     }
 
+    /*
     IEnumerator gameOverScreen()
     {
         //once voiceline is finished, return to main menu
@@ -41,4 +41,5 @@ public class GameOver : MonoBehaviour
         print("changing scenes");
         SceneManager.LoadScene("TitleScreen");
     }
-}
+    */
+    }

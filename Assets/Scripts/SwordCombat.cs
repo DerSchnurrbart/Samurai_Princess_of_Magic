@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 public class SwordCombat : MonoBehaviour {
 
+    //save the final score here, 
+    //   which will be accessed and displayed on game over screen
+    public static int score;
+
+
     /*********************************Enum Definitions************************************/
 
     const int numberOfEnemies = 3;

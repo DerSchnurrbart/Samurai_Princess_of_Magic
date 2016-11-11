@@ -7,6 +7,12 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AudioSource))]
 public class MemoryAlt : MonoBehaviour
 {
+
+    //save the final score here, 
+    //   which will be accessed and displayed on game over screen
+    public static int score;
+
+
     public Text results_text;
 
     public enum Direction { Up, Down, Left, Right };
@@ -114,7 +120,8 @@ public class MemoryAlt : MonoBehaviour
                     current_difficulty = 1;
                     populateSequence(current_difficulty);
                     //Game over, try again? 
-                    return;
+                    Load.updateLastPlayedGame(1);
+                    SceneManager.LoadScene("GameOver");
                 }
             }
             results_text.text = "Correct sequence!";
