@@ -21,7 +21,6 @@ public class SwordCombat : MonoBehaviour {
     public static AudioClip[] enemyDeaths;
     public static AudioClip[] weaponMiss;
     public static AudioClip[] weaponEquipSound;
-    public static AudioClip spideysense;
     public static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
@@ -32,16 +31,17 @@ public class SwordCombat : MonoBehaviour {
     static bool isRotating = false;
     static float rotationDuration = 0.5f;
     static float inputDelay = 0.25f;
-    static float spawnRate = 10.0f;
-    static float approachRate = 5.0f;
+    static float spawnRate = 15.0f;
+    static float approachRate = 3.0f;
     static List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
     static GameObject player;
+    static int PlayerHealth = 5;
 
     class enemySpawner
     {
         List<enemy> enemies;
-        Directions initialDirection;
+        public Directions initialDirection;
         Vector3 StartingPosition;
         Vector3 AttackVector;
         Vector3 IncrementVector; 
@@ -52,17 +52,11 @@ public class SwordCombat : MonoBehaviour {
             StartingPosition = pos;
             initialDirection = directionFromPlayer;
             AttackVector = -1*pos.normalized;
-            IncrementVector = (Vector3.zero - pos) / (float)turnsBeforeHittingPlayer;
         }
 
         public void spawnEnemy()
         {
-            if (((int) playerFacing + 2) % 4 == (int) initialDirection)
-            {
-                playerAudioSource.PlayOneShot(spideysense, 0.2f);
-            }
             enemies.Add(new enemy(StartingPosition, AttackVector * approachRate));
-            
         }
         
         public void playerSwing(PlayerWeapons weapon)
@@ -93,7 +87,6 @@ public class SwordCombat : MonoBehaviour {
     {
         GameObject source;
         AudioSource au_source; //Houses positional information, audio clip
-        int turnsActive;
         public EnemyType type;
         public PlayerWeapons weakness;
 
@@ -107,7 +100,6 @@ public class SwordCombat : MonoBehaviour {
             source.GetComponent<Rigidbody>().velocity = approachSpeed;
             type = type_in;
             weakness = (PlayerWeapons) type_in;
-            turnsActive = 0;
         }
 
         public enemy(Vector3 pos, Vector3 approachSpeed) : this(pos, approachSpeed, 
@@ -129,8 +121,6 @@ public class SwordCombat : MonoBehaviour {
 
         player = GameObject.Find("Player");
         playerAudioSource = player.GetComponent<AudioSource>();
-
-        spideysense = Resources.Load("Sounds/Enemies/spideysense") as AudioClip;
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
@@ -227,9 +217,15 @@ public class SwordCombat : MonoBehaviour {
     {
         while (true)
         {
-            spawners[Random.Range(0, 3)].spawnEnemy();
+            int randomNumber = Random.Range(0, 3);
+            if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
+            spawners[randomNumber].spawnEnemy();
             yield return new WaitForSeconds(spawnRate);
         }
     }
 
+	void OnTriggerEnter()
+    {
+        PlayerHealth--;
+    }
 }

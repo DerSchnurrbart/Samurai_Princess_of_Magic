@@ -118,6 +118,7 @@ public class MemoryAlt : MonoBehaviour
                 }
             }
             results_text.text = "Correct sequence!";
+            firstTimePressingEnter = true;
             populateSequence(++current_difficulty);
             user_guess.Clear();
         }
