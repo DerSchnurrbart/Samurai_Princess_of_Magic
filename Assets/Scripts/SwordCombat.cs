@@ -13,11 +13,11 @@ public class SwordCombat : MonoBehaviour {
 
     const int numberOfEnemies = 3;
     const int numberOfWeapons = 3;
-    const int turnsBeforeHittingPlayer = 3;
     enum EnemyType { insect, wolf, ghost };
     enum PlayerWeapons { hammer, sword, magic_staff }; 
     //Important note: items in EnemyType map to PlayerWeapons, i.e. hammer kills insect, sword kills wolf
     enum Directions { north, east, south, west };
+    public enum GameMode { tutorial, scaling, levels };
     
 
     /*********************************Assets**********************************************/
@@ -31,17 +31,38 @@ public class SwordCombat : MonoBehaviour {
     /********************************Global State*****************************************/
 
     static PlayerWeapons currentWeapon;
+    static GameMode mode;
     static Directions playerFacing;
     static bool weaponDelayActive = false;
     static bool isRotating = false;
-    static float rotationDuration = 0.5f;
+    static float rotationDuration = 0.25f;
     static float inputDelay = 0.25f;
-    static float spawnRate = 15.0f;
-    static float approachRate = 3.0f;
+    static float spawnRate = 0.0f;
+    static float approachRate = 0.0f;
     static List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
-    static GameObject player;
     static int PlayerHealth = 5;
+    
+    /*******************************Public Functions********************************/
+
+    public void SetDifficulty(float spawn, float approach)
+    {
+        spawnRate = spawn;
+        approachRate = approach;
+    }
+
+    public void SetGameMode(GameMode m)
+    {
+        mode = m;
+    }
+
+    //Spawn Rate and Approach Rate should be set first or undefined behavior 
+    public void StartSpawning()
+    {
+        StartCoroutine(spawnMaster());
+    }
+
+    /*************************************Class Definitions********************************************/
 
     class enemySpawner
     {
@@ -49,7 +70,6 @@ public class SwordCombat : MonoBehaviour {
         public Directions initialDirection;
         Vector3 StartingPosition;
         Vector3 AttackVector;
-        Vector3 IncrementVector; 
 
         public enemySpawner(Vector3 pos, Directions directionFromPlayer)
         {
@@ -82,6 +102,7 @@ public class SwordCombat : MonoBehaviour {
             foreach(enemy x in toRemove)
             {
                 enemies.Remove(x);
+                score++;
             }
 
         }
@@ -121,11 +142,84 @@ public class SwordCombat : MonoBehaviour {
     }
 
 
+    /******************************************Helper Functions*****************************************/
+
+    void HandlePlayerInput()
+    {
+        if (!isRotating)
+        {
+            if (Input.GetKeyDown("right"))
+            {
+                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
+                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
+            }
+            else if (Input.GetKeyDown("left"))
+            {
+                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
+                playerFacing = (Directions)(((int)playerFacing - 1) % 4);
+            }
+        }
+
+        if (!weaponDelayActive)
+        {
+            if (Input.GetKeyDown("up"))
+            {
+                spawners[(int)playerFacing].playerSwing(currentWeapon);
+                StartCoroutine(inputController());
+            }
+        }
+
+        if (Input.GetKeyDown("down"))
+        {
+            currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
+            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
+            weaponDelayActive = false;
+        }
+    }
+
+
+    //credit to http://gamedev.stackexchange.com/questions/97074/how-to-stop-rotation-every-90-degrees
+    //for the core idea of this implementation
+    public IEnumerator rotatePlayer(Quaternion startingRotation, Quaternion endingRotation, float duration)
+    {
+        float endTime = Time.time + duration;
+        isRotating = true;
+        while(Time.time <= endTime)
+        {
+            float percentElapsed = 1 - ((endTime - Time.time) / duration);
+            transform.rotation = Quaternion.Lerp(startingRotation, endingRotation, percentElapsed);
+            yield return 0; 
+        }
+        transform.rotation = endingRotation;
+        isRotating = false;
+    }
+
+
+    //Exists to prevent players from spamming attacks, making the game trivial
+    public IEnumerator inputController()
+    {
+        weaponDelayActive = true;
+        yield return new WaitForSeconds(inputDelay);
+        weaponDelayActive = false;
+    }
+
+    public IEnumerator spawnMaster()
+    {
+        while (true)
+        {
+            int randomNumber = Random.Range(0, 3);
+            if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
+            spawners[randomNumber].spawnEnemy();
+            yield return new WaitForSeconds(spawnRate);
+        }
+    }
+
+
+    /*********************************Begin Unity Automatic Calls***************************************/
 
 	void Start () {
 
-        player = GameObject.Find("Player");
-        playerAudioSource = player.GetComponent<AudioSource>();
+        playerAudioSource = GetComponent<AudioSource>();
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
@@ -155,82 +249,16 @@ public class SwordCombat : MonoBehaviour {
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
         StartCoroutine(spawnMaster());
-
 	}
 
     // Update is called once per frame
     void Update() {
-
-        if (!isRotating) {
-            if (Input.GetKeyDown("right"))
-            {
-                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
-                StartCoroutine(rotatePlayer(player.transform.rotation, player.transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
-            }
-            else if (Input.GetKeyDown("left"))
-            {
-                StartCoroutine(rotatePlayer(player.transform.rotation, player.transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
-                playerFacing = (Directions)(((int)playerFacing - 1) % 4);
-            }
-        }
-
-        if (!weaponDelayActive)
-        {
-            if (Input.GetKeyDown("up"))
-            {
-                spawners[(int)playerFacing].playerSwing(currentWeapon);
-                StartCoroutine(inputController());
-            }
-        }
-    
-        if (Input.GetKeyDown("down"))
-        {
-            currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
-            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
-            weaponDelayActive = false;
-        }
-
-	
+        HandlePlayerInput();
 	}
-
-    //credit to http://gamedev.stackexchange.com/questions/97074/how-to-stop-rotation-every-90-degrees
-    //for the core idea of this implementation
-    public IEnumerator rotatePlayer(Quaternion startingRotation, Quaternion endingRotation, float duration)
-    {
-        float endTime = Time.time + duration;
-        isRotating = true;
-        while(Time.time <= endTime)
-        {
-            float percentElapsed = 1 - ((endTime - Time.time) / duration);
-            player.transform.rotation = Quaternion.Lerp(startingRotation, endingRotation, percentElapsed);
-            yield return 0; 
-        }
-        player.transform.rotation = endingRotation;
-        isRotating = false;
-    }
-
-
-    //Exists to prevent players from spamming attacks, making the game trivial
-    public IEnumerator inputController()
-    {
-        weaponDelayActive = true;
-        yield return new WaitForSeconds(inputDelay);
-        weaponDelayActive = false;
-    }
-
-    public IEnumerator spawnMaster()
-    {
-        while (true)
-        {
-            int randomNumber = Random.Range(0, 3);
-            if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
-            spawners[randomNumber].spawnEnemy();
-            yield return new WaitForSeconds(spawnRate);
-        }
-    }
 
 	void OnTriggerEnter()
     {
         PlayerHealth--;
+        print(PlayerHealth);
     }
 }
