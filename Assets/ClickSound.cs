@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class ClickSound : MonoBehaviour
 {
+    //length of the initial main menu voice clip
+    public static float audioLength;
 
     public AudioClip clicksound;
    //public AudioClip hoversound;
@@ -29,6 +31,7 @@ public class ClickSound : MonoBehaviour
     {
         source.clip = clicksound;
         source.PlayOneShot(clicksound);
+        audioLength = clicksound.length;
     }
 
 }

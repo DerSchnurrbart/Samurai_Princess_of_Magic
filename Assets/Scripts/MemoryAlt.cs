@@ -11,7 +11,14 @@ public class MemoryAlt : MonoBehaviour
     //save the final score here, 
     //   which will be accessed and displayed on game over screen
     public static int score;
+    bool playerMessedUp;
 
+    //game over variables
+    private AudioSource memoryDefeatVoice;
+    AudioClip memoryDefeat;
+    bool memoryDefeatVoiceIsPlaying = false;
+    public bool gameIsOver = false;
+    public bool gameOverScreenLoaded = false;
 
     public Text results_text;
 
@@ -34,6 +41,9 @@ public class MemoryAlt : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        score = 0;
+        playerMessedUp = false;
+
         isUsersTurn = false;
         inputDelayActive = false;
         direction_noise = GetComponent<AudioSource>();
@@ -47,6 +57,11 @@ public class MemoryAlt : MonoBehaviour
         current_difficulty = 1;
         populateSequence(current_difficulty);
         disable_arrows();
+
+        memoryDefeatVoice = GetComponent<AudioSource>();
+
+        memoryDefeat = Resources.Load("Sounds/Voicelines/GameOvers/MemoryDefeat") as AudioClip;
+
     }
 
     // Update is called once per frame
@@ -108,6 +123,7 @@ public class MemoryAlt : MonoBehaviour
             SceneManager.LoadScene(scene.name);
         }
 
+
         if ((user_guess.Count == sequence.Count) && !inputDelayActive)
         {
             //TODO: Add splash screen for loss
@@ -115,16 +131,22 @@ public class MemoryAlt : MonoBehaviour
             {
                 if (user_guess[i] != sequence[i])
                 {
+                    playerMessedUp = true;
                     results_text.text = "Incorrect sequence!";
                     user_guess.Clear();
                     current_difficulty = 1;
                     populateSequence(current_difficulty);
                     //Game over, try again? 
-                    Load.updateLastPlayedGame(1);
-                    SceneManager.LoadScene("GameOver");
+                    StartCoroutine(endGame());
                 }
             }
-            results_text.text = "Correct sequence!";
+            if (playerMessedUp == false) {
+                results_text.text = "Correct sequence!";
+
+                //player has won one more round
+                score++;
+            }
+
             firstTimePressingEnter = true;
             populateSequence(++current_difficulty);
             user_guess.Clear();
@@ -209,4 +231,30 @@ public class MemoryAlt : MonoBehaviour
         }
         isUsersTurn = true;
     }
+
+    IEnumerator endGame()
+    {
+
+        //play first voiceline
+        if (memoryDefeatVoiceIsPlaying == false)
+        {
+            memoryDefeatVoiceIsPlaying = true;
+            memoryDefeatVoice.PlayOneShot(memoryDefeat);
+
+        }
+        //go to game over screen after 3 seconds
+        yield return new WaitForSeconds(3);
+
+        //show gameover screen
+        if (gameOverScreenLoaded == false)
+        {
+            gameOverScreenLoaded = true;
+
+            //update before leaving scene
+            Load.updateLastPlayedGame(1);
+            SceneManager.LoadScene("GameOver");
+        }
+    }
 }
+
+

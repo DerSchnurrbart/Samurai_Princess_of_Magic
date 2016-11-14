@@ -46,6 +46,11 @@ public class Rhythm : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        //score starts at the maximum lives, 
+        //   because for example if a player survives 3 beats 
+        //   but then loses all 5 lives, they actually survived 5+3 beats
+        score = NUM_MOVES_INCORRECT_TO_FAIL;
+
         print("starting late start");
         prompt_index = 0;
         //difficulty = 3;
@@ -97,6 +102,8 @@ public class Rhythm : MonoBehaviour {
         //keep running prompt
         if (activated && !looping)
         {
+            
+
             StartCoroutine(show_sequence());
         }
 
@@ -147,6 +154,8 @@ public class Rhythm : MonoBehaviour {
 			correct = 0;
 		}
         print("correct: " + correct);
+        //user has lasted one more beat
+        score++;
         return;
     }
 
