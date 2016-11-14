@@ -16,7 +16,7 @@ public class ScoreDisplay : MonoBehaviour {
         //Uncommment the following block once score tracking is implemented in each game
             //Grabs the final game score, 
             //   stored in a static int variable in each game's script.
-            /*if (Load.lastPlayedGame == 1)
+            if (Load.lastPlayedGame == 1)
             {
                 gameScore = MemoryAlt.score;
                 gameScoreUnits = "rounds";
@@ -24,21 +24,28 @@ public class ScoreDisplay : MonoBehaviour {
             else if (Load.lastPlayedGame == 2)
             {
                 gameScore = SwordCombat.score;
-                gameScoreUnits = "seconds";
+                gameScoreUnits = "monsters";
             }
             else
             {
                 gameScore = Rhythm.score;
                 gameScoreUnits = "rounds";
             }
-            */
+            
                 
-                //This is for testing the display
+                //This is for testing the display only
                 //Comment this out when score tracking is implemented for each game
-                gameScore = 10;
-                gameScoreUnits = "rounds";
+                        //gameScore = 10;
+                        //gameScoreUnits = "rounds";
 
-        //Example text: You lasted over 5 rounds!
-        txt.text = "You lasted over " + gameScore + "+ " + gameScoreUnits + "!";
+        //Example text: You lasted 5 rounds!
+        txt.text = "You lasted " + gameScore + " " + gameScoreUnits + "!";
+
+        //If game played was survival game,
+        //Example text: You killed 5 monsters!
+        if (Load.lastPlayedGame == 2)
+        {
+            txt.text = "You killed " + gameScore + " " + gameScoreUnits + "!";
+        }
 	}
 }

@@ -9,6 +9,12 @@ public class SwordCombat : MonoBehaviour {
     //   which will be accessed and displayed on game over screen
     public static int score;
 
+    //game over variables
+    AudioClip swordDefeat;
+    bool audioIsPlaying = false;
+    public bool gameIsOver = false;
+    public bool gameOverScreenLoaded = false;
+
 
     /*********************************Enum Definitions************************************/
 
@@ -29,6 +35,8 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip playerHit;
     static AudioClip heartbeat;
     static AudioClip[] weaponEquipSound;
+    AudioClip twoLivesLeft;
+    AudioClip oneLifeLeft;
     static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
@@ -164,6 +172,9 @@ public class SwordCombat : MonoBehaviour {
 
         public void kill()
         {
+            //player has killed one more monster
+            score++;
+
             DestroyImmediate(au_source);
             DestroyImmediate(source);
         }
@@ -255,8 +266,14 @@ public class SwordCombat : MonoBehaviour {
     /*********************************Begin Unity Automatic Calls***************************************/
 
 	void Start () {
+        score = 0;
 
         playerAudioSource = GetComponent<AudioSource>();
+
+        //defeat sounds
+        swordDefeat = Resources.Load("Sounds/Voicelines/GameOvers/SwordDefeat") as AudioClip;
+        AudioClip twoLivesLeft = Resources.Load("Sounds/Voicelines/Lives/2LivesLeft") as AudioClip;
+        AudioClip oneLifeLeft = Resources.Load("Sounds/Voicelines/Lives/1LifeLeft") as AudioClip;
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
@@ -290,6 +307,8 @@ public class SwordCombat : MonoBehaviour {
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
+        
+
         StartSpawning();
 	}
     
@@ -304,6 +323,7 @@ public class SwordCombat : MonoBehaviour {
 
         if (PlayerHealth < 1)
         {
+            /*
             //TODO: Currently sends back to GameSetup stuff. Want a GameOver/Highscore screen that can
             //Redirect back to GameSetup
             spawning = false;
@@ -313,6 +333,11 @@ public class SwordCombat : MonoBehaviour {
             PlayerHealth = 3;
             //score = 0 ??? 
             Destroy(gameObject);
+            */
+
+            //commented out above because the following code
+            //   goes to game over / score screen, and player can Play Again
+            StartCoroutine(endGame());
         }
         else
         {
@@ -323,7 +348,11 @@ public class SwordCombat : MonoBehaviour {
 	void OnTriggerEnter()
     {
         PlayerHealth--;
-        if (PlayerHealth > 0)
+        if (PlayerHealth == 2)
+        {
+            playerAudioSource.PlayOneShot(playerHit);
+        }
+        else if (PlayerHealth == 1)
         {
             playerAudioSource.PlayOneShot(playerHit);
             if (PlayerHealth == 1)
@@ -333,9 +362,55 @@ public class SwordCombat : MonoBehaviour {
         }
         else
         {
-            //playerAudioSource.PlayOneShot(GameOver); //TODO Player Death
+            playerAudioSource.PlayOneShot(swordDefeat);
+
         }
 
         print(PlayerHealth);
+    }
+
+    IEnumerator endGame()
+    {
+
+        //go to game over screen after 2 seconds, 
+        //   to let the "you have been killed" voiceline finished
+        yield return new WaitForSeconds(2);
+        playerAudioSource.mute = true;
+
+        //show gameover screen
+        if (gameOverScreenLoaded == false)
+        {
+            gameOverScreenLoaded = true;
+
+            //update before leaving scene
+            Load.updateLastPlayedGame(2);
+            SceneManager.LoadScene("GameOver");
+        }
+    }
+
+    //helper function to play audio for lives remaining
+    IEnumerator livesLeft(int lives)
+    {
+        //wait 2 seconds after oof SFX
+        yield return new WaitForSeconds(2);
+
+        //if an audio is playing, do not play more than one thing at a time
+        if (audioIsPlaying == false)
+        {
+            audioIsPlaying = true;
+            if (lives == 2)
+            {
+                playerAudioSource.PlayOneShot(twoLivesLeft);
+            }
+            if (lives == 1)
+            {
+                playerAudioSource.PlayOneShot(oneLifeLeft);
+            }
+
+            
+        }
+        //after voiceline finishes, future audio can play
+        yield return new WaitForSeconds(2);
+        audioIsPlaying = false;
     }
 }

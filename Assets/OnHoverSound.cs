@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Button))]
 
@@ -14,6 +16,8 @@ public class OnHoverSound : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private Button button { get { return GetComponent<Button>(); } }
     private AudioSource source { get { return GetComponent<AudioSource>(); } }
 
+    int secondsWait;
+
 
     // Use this for initialization
     void Start()
@@ -21,7 +25,14 @@ public class OnHoverSound : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         gameObject.AddComponent<AudioSource>();
         //source.clip = clicksound2;
         source.playOnAwake = false;
+        source.mute = true;
+        
 
+    }
+
+    void Update()
+    {
+        StartCoroutine(delayHoverSound());
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -35,4 +46,10 @@ public class OnHoverSound : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         source.Stop();
     }
 
+    IEnumerator delayHoverSound()
+    {
+        //secondsWait = (int)ClickSound.audioLength;
+        yield return new WaitForSeconds(11);
+        source.mute = false;
+    }
 }

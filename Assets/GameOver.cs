@@ -28,6 +28,15 @@ public class GameOver : MonoBehaviour
             gameOverVoice.PlayOneShot(gameOverClip);
         }
 
+        if (Input.GetKeyDown("up"))
+        {
+            SceneManager.LoadScene(Load.lastPlayedGame);
+        } 
+        else if (Input.GetKeyDown("down"))
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+
         //This function returns the game to main menu after 3 seconds
         //StartCoroutine(gameOverScreen());
     }
