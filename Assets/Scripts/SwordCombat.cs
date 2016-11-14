@@ -26,7 +26,8 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip[] enemyNoises;
     static AudioClip[] enemyDeaths;
     static AudioClip weaponMiss;
-    static AudioClip playerHit; 
+    static AudioClip playerHit;
+    static AudioClip heartbeat;
     static AudioClip[] weaponEquipSound;
     static GameObject enemyPrefab;
 
@@ -199,7 +200,6 @@ public class SwordCombat : MonoBehaviour {
         {
             if (Input.GetKeyDown("up"))
             {
-                print(playerFacing);
                 spawners[(int)playerFacing].playerSwing(currentWeapon);
                 StartCoroutine(inputController());
             }
@@ -272,6 +272,8 @@ public class SwordCombat : MonoBehaviour {
         weaponEquipSound[(int)PlayerWeapons.hammer] = Resources.Load("Sounds/PlayerWeapons/hammer") as AudioClip;
         weaponEquipSound[(int)PlayerWeapons.magic_staff] = Resources.Load("Sounds/PlayerWeapons/Spell_01") as AudioClip;
 
+        heartbeat = Resources.Load("Sounds/Death/heartbeat") as AudioClip;
+
         weaponMiss = Resources.Load("Sounds/PlayerWeapons/SwingMiss") as AudioClip;
         playerHit = Resources.Load("Sounds/Death/PlayerHit") as AudioClip;
 
@@ -324,11 +326,16 @@ public class SwordCombat : MonoBehaviour {
         if (PlayerHealth > 0)
         {
             playerAudioSource.PlayOneShot(playerHit);
+            if (PlayerHealth == 1)
+            {
+                playerAudioSource.PlayOneShot(heartbeat);
+            }
         }
         else
         {
             //playerAudioSource.PlayOneShot(GameOver); //TODO Player Death
         }
+
         print(PlayerHealth);
     }
 }

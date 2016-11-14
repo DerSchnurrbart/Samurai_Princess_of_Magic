@@ -14,6 +14,7 @@ public class GameSetup : MonoBehaviour {
         playerPrefab = Resources.Load("Prefabs/Player") as GameObject;
         player = Instantiate(playerPrefab);
         script = player.GetComponent<SwordCombat>();
+        //Play Options ??? 
         
 	}
 	
