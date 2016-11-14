@@ -241,8 +241,8 @@ GameObject:
   - 4: {fileID: 1583573227}
   - 114: {fileID: 1583573226}
   m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
+  m_Name: SetupScriptHolder
+  m_TagString: ScriptHolder
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

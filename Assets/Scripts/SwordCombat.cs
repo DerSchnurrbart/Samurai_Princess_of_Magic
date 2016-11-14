@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class SwordCombat : MonoBehaviour {
 
@@ -17,16 +18,17 @@ public class SwordCombat : MonoBehaviour {
     enum PlayerWeapons { hammer, sword, magic_staff }; 
     //Important note: items in EnemyType map to PlayerWeapons, i.e. hammer kills insect, sword kills wolf
     enum Directions { north, east, south, west };
-    public enum GameMode { tutorial, scaling, levels };
+    public enum GameMode { tutorial, scaling, levels, random };
     
 
     /*********************************Assets**********************************************/
 
-    public static AudioClip[] enemyNoises;
-    public static AudioClip[] enemyDeaths;
-    public static AudioClip[] weaponMiss;
-    public static AudioClip[] weaponEquipSound;
-    public static GameObject enemyPrefab;
+    static AudioClip[] enemyNoises;
+    static AudioClip[] enemyDeaths;
+    static AudioClip weaponMiss;
+    static AudioClip playerHit; 
+    static AudioClip[] weaponEquipSound;
+    static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
 
@@ -37,11 +39,13 @@ public class SwordCombat : MonoBehaviour {
     static bool isRotating = false;
     static float rotationDuration = 0.25f;
     static float inputDelay = 0.25f;
-    static float spawnRate = 0.0f;
+    static float spawnRate = 1000.0f;
+    static bool scaling = false;
+    static bool spawning = false;
     static float approachRate = 0.0f;
     static List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
-    static int PlayerHealth = 5;
+    static int PlayerHealth = 3;
     
     /*******************************Public Functions********************************/
 
@@ -54,13 +58,9 @@ public class SwordCombat : MonoBehaviour {
     public void SetGameMode(GameMode m)
     {
         mode = m;
+        if (m == GameMode.scaling) scaling = true;
     }
 
-    //Spawn Rate and Approach Rate should be set first or undefined behavior 
-    public void StartSpawning()
-    {
-        StartCoroutine(spawnMaster());
-    }
 
     /*************************************Class Definitions********************************************/
 
@@ -99,12 +99,40 @@ public class SwordCombat : MonoBehaviour {
                 }
             }
             if (toRemove.Count > 0) playerAudioSource.PlayOneShot(enemyDeaths[(int)weapon]);
+            else playerAudioSource.PlayOneShot(weaponMiss);
             foreach(enemy x in toRemove)
             {
                 enemies.Remove(x);
                 score++;
+                if (scaling) HandleScaling();
             }
 
+        }
+
+        public void KillAll()
+        {
+            foreach(enemy x in enemies)
+            {
+                x.kill();
+            }
+            enemies.Clear();
+        }
+
+        void HandleScaling()
+        {
+            if (score % 4 == 0)
+            {
+                approachRate += 1;
+                if (approachRate > 50.0f) approachRate = 50.0f;
+                //This should never happen, if they're spawning this fast someone got way too good at this game
+            }
+
+            if (score % 6 == 0)
+            {
+                spawnRate -= 0.5f;
+                if (spawnRate < 0.5f) spawnRate = 0.5f; 
+                //This should never happen, if they're spawning this fast someone got way too good at this game
+            }
         }
 
     };
@@ -144,6 +172,13 @@ public class SwordCombat : MonoBehaviour {
 
     /******************************************Helper Functions*****************************************/
 
+    //Spawn Rate and Approach Rate should be set first or undefined behavior 
+    void StartSpawning()
+    {
+        spawning = true;
+        StartCoroutine(spawnMaster());
+    }
+
     void HandlePlayerInput()
     {
         if (!isRotating)
@@ -156,7 +191,7 @@ public class SwordCombat : MonoBehaviour {
             else if (Input.GetKeyDown("left"))
             {
                 StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
-                playerFacing = (Directions)(((int)playerFacing - 1) % 4);
+                playerFacing = (Directions)(((int)playerFacing + 3) % 4); //mod on negative doesn't work, this is equivalent to subtracting 1
             }
         }
 
@@ -164,6 +199,7 @@ public class SwordCombat : MonoBehaviour {
         {
             if (Input.GetKeyDown("up"))
             {
+                print(playerFacing);
                 spawners[(int)playerFacing].playerSwing(currentWeapon);
                 StartCoroutine(inputController());
             }
@@ -176,6 +212,7 @@ public class SwordCombat : MonoBehaviour {
             weaponDelayActive = false;
         }
     }
+
 
 
     //credit to http://gamedev.stackexchange.com/questions/97074/how-to-stop-rotation-every-90-degrees
@@ -205,7 +242,7 @@ public class SwordCombat : MonoBehaviour {
 
     public IEnumerator spawnMaster()
     {
-        while (true)
+        while (spawning)
         {
             int randomNumber = Random.Range(0, 3);
             if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
@@ -235,6 +272,9 @@ public class SwordCombat : MonoBehaviour {
         weaponEquipSound[(int)PlayerWeapons.hammer] = Resources.Load("Sounds/PlayerWeapons/hammer") as AudioClip;
         weaponEquipSound[(int)PlayerWeapons.magic_staff] = Resources.Load("Sounds/PlayerWeapons/Spell_01") as AudioClip;
 
+        weaponMiss = Resources.Load("Sounds/PlayerWeapons/SwingMiss") as AudioClip;
+        playerHit = Resources.Load("Sounds/Death/PlayerHit") as AudioClip;
+
         currentWeapon = PlayerWeapons.hammer;
         playerFacing = Directions.north;
 
@@ -248,17 +288,47 @@ public class SwordCombat : MonoBehaviour {
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
-        StartCoroutine(spawnMaster());
+        StartSpawning();
 	}
-
+    
     // Update is called once per frame
     void Update() {
-        HandlePlayerInput();
+
+        if (Input.GetKeyDown("escape"))
+        {
+            print("ESCAPE");
+            SceneManager.LoadScene("TitleScreen");
+        }
+
+        if (PlayerHealth < 1)
+        {
+            //TODO: Currently sends back to GameSetup stuff. Want a GameOver/Highscore screen that can
+            //Redirect back to GameSetup
+            spawning = false;
+            for (int i = 0; i < 4; i++) spawners[i].KillAll();
+            GameObject Setup = GameObject.FindWithTag("ScriptHolder");
+            Setup.AddComponent<GameSetup>();
+            PlayerHealth = 3;
+            //score = 0 ??? 
+            Destroy(gameObject);
+        }
+        else
+        {
+            HandlePlayerInput();
+        }
 	}
 
 	void OnTriggerEnter()
     {
         PlayerHealth--;
+        if (PlayerHealth > 0)
+        {
+            playerAudioSource.PlayOneShot(playerHit);
+        }
+        else
+        {
+            //playerAudioSource.PlayOneShot(GameOver); //TODO Player Death
+        }
         print(PlayerHealth);
     }
 }

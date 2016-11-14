@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameSetup : MonoBehaviour {
 
@@ -18,9 +19,16 @@ public class GameSetup : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (Input.GetKeyDown("escape"))
+        {
+            print("ESCAPE");
+            SceneManager.LoadScene("TitleScreen");
+        }
+
         if (Input.GetKeyDown("1")) //"Tutorial level", just for explaining gameplay
         {
-            script.SetDifficulty(15.0f, 0.0f);
+            script.SetDifficulty(200.0f, 0.0f);
             script.SetGameMode(SwordCombat.GameMode.tutorial);
             script.enabled = true;
             Destroy(this);
