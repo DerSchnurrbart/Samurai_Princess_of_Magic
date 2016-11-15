@@ -9,7 +9,14 @@ public class SwordCombat : MonoBehaviour {
     //   which will be accessed and displayed on game over screen
     public static int score;
 
-    //game over variables
+
+    /*********************************Mobile Touch Input************************************/
+    private Vector3 fp;   //First touch position
+    private Vector3 lp;   //Last touch position
+    private float dragDistance;  //minimum distance for a swipe to be registered
+   
+    
+    //*********************************GameOver Variables************************************/
     AudioClip swordDefeat;
     bool audioIsPlaying = false;
     public bool gameIsOver = false;
@@ -191,6 +198,86 @@ public class SwordCombat : MonoBehaviour {
         StartCoroutine(spawnMaster());
     }
 
+    void HandlePlayerInputMobile()
+    {
+        // user is touching the screen with one finger
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+            //get coordinates of the first touch
+            if (touch.phase == TouchPhase.Began)
+            {
+                fp = touch.position;
+                lp = touch.position;
+            }
+            //update the last position based on where they moved
+            else if (touch.phase == TouchPhase.Moved)
+            {
+                lp = touch.position;
+            }
+            //check if the finger is removed from the screen
+            else if (touch.phase == TouchPhase.Ended)
+            {
+                lp = touch.position;
+                //Check if drag distance is greater than 15% of the screen height
+                if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
+                {
+                    //check if the drag is horizontal
+                    if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
+                    {
+                        //the drag is horizontal, allow right/left swipe if not rotating
+                        if (!isRotating)
+                        {
+                            //last touch position was right of first touch position
+                            if ((lp.x > fp.x))
+                            {
+                                Debug.Log("Right Swipe");
+                                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
+                                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
+                            }
+                            else
+                            {
+                                Debug.Log("Left Swipe");
+                                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
+                                playerFacing = (Directions)(((int)playerFacing + 3) % 4); //mod on negative doesn't work, this is equivalent to subtracting 1
+                            }
+                        }
+                    }
+                    //movement was vertical
+                    else
+                    {
+                        //last touch position is more up of first touch position
+                        if (lp.y > fp.y)
+                        {
+                            //movement is an up swipe so check if weapon cooldown is off
+                            if (!weaponDelayActive)
+                            {
+                                Debug.Log("Up Swipe");
+                                print(playerFacing);
+                                spawners[(int)playerFacing].playerSwing(currentWeapon);
+                                StartCoroutine(inputController());
+                            }
+                        }
+                        //movement is a down swipe
+                        else
+                        {
+                            Debug.Log("Down Swipe");
+                            currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
+                            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
+                            weaponDelayActive = false;
+                        }
+                    }
+
+                }
+                //Is a tap, since distance was less than 15% of screen height
+                else
+                {
+                    Debug.Log("Tap");
+                }
+            }
+        }
+    }
+
     void HandlePlayerInput()
     {
         if (!isRotating)
@@ -266,7 +353,11 @@ public class SwordCombat : MonoBehaviour {
     /*********************************Begin Unity Automatic Calls***************************************/
 
 	void Start () {
+        //score set to 0
         score = 0;
+
+        //define what % of the screen is needed to be touched for a swipe to register
+        dragDistance = Screen.height * 15 / 100;
 
         playerAudioSource = GetComponent<AudioSource>();
 
@@ -314,6 +405,25 @@ public class SwordCombat : MonoBehaviour {
     
     // Update is called once per frame
     void Update() {
+
+        //If running on Unity Android, run this block to use mobile input controls
+        #if UNITY_ANDROID
+            //TODO: Implement a way to escape the game
+            //   Maybe grab the data for how long a tap is held, 
+            //   and quit if touch is held for 3 seconds
+            if (PlayerHealth < 1)
+            {
+                //goes to game over / score screen, and player can Play Again
+                StartCoroutine(endGame());
+            }
+            else
+            {
+                HandlePlayerInputMobile();
+            }
+        
+        #endif
+
+        //Run desktop keyboard/mouse controls
 
         if (Input.GetKeyDown("escape"))
         {
