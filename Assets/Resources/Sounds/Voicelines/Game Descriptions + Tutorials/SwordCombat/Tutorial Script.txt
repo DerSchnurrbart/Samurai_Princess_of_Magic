@@ -1,0 +1,29 @@
+#############Tutorial Begin
+(a) Welcome to the sword combat tutorial. Let's begin.
+(b) Do you hear that ghost? It's directly in front of you. 
+(c) How about now? Should be to your left. You can turn to face him by swiping left on your screen. Turn to continue.
+####################User Input
+(d) Now that you're looking at him it's time to attack. Swipe down to switch your weapon to the "staff."
+####################User Input 
+(e) Okay now that you have it selected swipe up to attack. 
+####################User Input 
+(f) Good job, you've defeated your first enemy. Not all enemies will stand still though. 
+(g) For example, you should hear a wolf coming toward you. 
+(h) When an enemy gets too close they attack, taking away one of your three lives. 
+(i) This time switch to the sword and attack first before the wolf gets you.
+############User Input
+(j) The last type of enemy you'll face is crinkling paper, errr a bug. Switch to the hammer to squash it. 
+###########User Input
+(k) Congrats, you've completed this tutorial. You'll be returned back to the game setup screen, where you can choose between normal and hard mode. Good luck Samurai Princess of Magic! 
+
+
+##################
+How to implement this: 
+
+In start, spawn off coroutine 
+Two scripts? One that 
+
+if (step1 and step1notstarted)
+	step1notstarted = false 
+	startcoroutine()
+	when this coroutine ends it should set step2

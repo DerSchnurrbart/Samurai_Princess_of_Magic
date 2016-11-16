@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System;
 
 public class SwordCombat : MonoBehaviour {
 
@@ -25,13 +26,15 @@ public class SwordCombat : MonoBehaviour {
 
     /*********************************Enum Definitions************************************/
 
+    const float rotationDuration = 0.25f;
+    const float inputDelay = 0.25f;
     const int numberOfEnemies = 3;
     const int numberOfWeapons = 3;
     enum EnemyType { insect, wolf, ghost };
     enum PlayerWeapons { hammer, sword, magic_staff }; 
     //Important note: items in EnemyType map to PlayerWeapons, i.e. hammer kills insect, sword kills wolf
     enum Directions { north, east, south, west };
-    public enum GameMode { tutorial, scaling, levels, random };
+    public enum GameMode { tutorial, normal, hard, random };
     
 
     /*********************************Assets**********************************************/
@@ -48,33 +51,43 @@ public class SwordCombat : MonoBehaviour {
 
     /********************************Global State*****************************************/
 
+    static int PlayerHealth = 3;
     static PlayerWeapons currentWeapon;
     static GameMode mode;
     static Directions playerFacing;
     static bool weaponDelayActive = false;
     static bool isRotating = false;
-    static float rotationDuration = 0.25f;
-    static float inputDelay = 0.25f;
-    static float spawnRate = 1000.0f;
-    static bool scaling = false;
     static bool spawning = false;
-    static float approachRate = 0.0f;
+    static float spawnRate;
+    static bool scaling;
+    static float approachRate;
     static List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
-    static int PlayerHealth = 3;
     
     /*******************************Public Functions********************************/
-
-    public void SetDifficulty(float spawn, float approach)
-    {
-        spawnRate = spawn;
-        approachRate = approach;
-    }
 
     public void SetGameMode(GameMode m)
     {
         mode = m;
-        if (m == GameMode.scaling) scaling = true;
+        if (m == GameMode.tutorial)
+        {
+            approachRate = 0.0f;
+            spawnRate = 1000f;
+            scaling = false;
+        }
+        else if (m == GameMode.normal)
+        {
+            approachRate = 2.0f;
+            spawnRate = 50 / approachRate;
+            scaling = true;
+        }
+        else if (m == GameMode.hard)
+        {
+            approachRate = 8.0f;
+            spawnRate = 50 / approachRate;
+            scaling = true;
+        }
+
     }
 
 
@@ -120,7 +133,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
                 score++;
-                if (scaling) HandleScaling();
+                if (mode != GameMode.tutorial) HandleScaling(mode);
             }
 
         }
@@ -134,21 +147,11 @@ public class SwordCombat : MonoBehaviour {
             enemies.Clear();
         }
 
-        void HandleScaling()
+        void HandleScaling(GameMode difficulty)
         {
-            if (score % 4 == 0)
-            {
-                approachRate += 1;
-                if (approachRate > 50.0f) approachRate = 50.0f;
-                //This should never happen, if they're spawning this fast someone got way too good at this game
-            }
-
-            if (score % 6 == 0)
-            {
-                spawnRate -= 0.5f;
-                if (spawnRate < 0.5f) spawnRate = 0.5f; 
-                //This should never happen, if they're spawning this fast someone got way too good at this game
-            }
+            if (difficulty == GameMode.hard) approachRate = (float) Math.Pow(Math.Log(score, 2), 2) + 8;
+            else approachRate = (float) Math.Pow(Math.Log(score, 2), 2) + 2;
+            spawnRate = 50/approachRate;
         }
 
     };
@@ -173,7 +176,7 @@ public class SwordCombat : MonoBehaviour {
         }
 
         public enemy(Vector3 pos, Vector3 approachSpeed) : this(pos, approachSpeed, 
-                    (EnemyType)Random.Range(0, numberOfEnemies))
+                    (EnemyType)UnityEngine.Random.Range(0, numberOfEnemies))
         {
         }
 
@@ -342,7 +345,7 @@ public class SwordCombat : MonoBehaviour {
     {
         while (spawning)
         {
-            int randomNumber = Random.Range(0, 3);
+            int randomNumber = UnityEngine.Random.Range(0, 3);
             if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
             spawners[randomNumber].spawnEnemy();
             yield return new WaitForSeconds(spawnRate);
@@ -398,7 +401,6 @@ public class SwordCombat : MonoBehaviour {
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
-        
 
         StartSpawning();
 	}
@@ -483,7 +485,7 @@ public class SwordCombat : MonoBehaviour {
     {
 
         //go to game over screen after 2 seconds, 
-        //   to let the "you have been killed" voiceline finished
+        //to let the "you have been killed" voiceline finished
         yield return new WaitForSeconds(2);
         playerAudioSource.mute = true;
 
