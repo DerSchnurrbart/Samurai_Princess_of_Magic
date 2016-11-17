@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ChangeScreen : MonoBehaviour {
 
-    public void SwitchScreen()
+    public static void SwitchScreen()
     {
         Camera cam = Camera.main;
         Vector3 camPos = cam.transform.position;

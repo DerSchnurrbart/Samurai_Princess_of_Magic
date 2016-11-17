@@ -558,6 +558,7 @@ GameObject:
   - 114: {fileID: 714018555}
   - 114: {fileID: 714018554}
   - 114: {fileID: 714018557}
+  - 114: {fileID: 714018558}
   m_Layer: 5
   m_Name: Arcade Button
   m_TagString: Untagged
@@ -682,6 +683,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clicksound: {fileID: 8300000, guid: d649c15fd2ae0144e9448f289e2667fb, type: 3}
+--- !u!114 &714018558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 714018552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0dec75169e300b40b5d720a720a3c61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &718607281
 GameObject:
   m_ObjectHideFlags: 0
@@ -1186,6 +1198,7 @@ GameObject:
   - 114: {fileID: 1133849784}
   - 114: {fileID: 1133849783}
   - 114: {fileID: 1133849782}
+  - 114: {fileID: 1133849787}
   m_Layer: 5
   m_Name: Minigames
   m_TagString: Untagged
@@ -1282,6 +1295,17 @@ RectTransform:
   m_AnchoredPosition: {x: 700.6, y: 163.2}
   m_SizeDelta: {x: 814, y: 319}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1133849787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1133849781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb8c93531ebb984aa271b9150d27d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1292884821
 GameObject:
   m_ObjectHideFlags: 0
