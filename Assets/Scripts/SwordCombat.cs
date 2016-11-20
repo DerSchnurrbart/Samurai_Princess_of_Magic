@@ -8,13 +8,8 @@ public class SwordCombat : MonoBehaviour {
 
     //save the final score here, 
     //   which will be accessed and displayed on game over screen
-    public static int score;
+    public static int mostRecentScore;
 
-
-    /*********************************Mobile Touch Input************************************/
-    private Vector3 fp;   //First touch position
-    private Vector3 lp;   //Last touch position
-    private float dragDistance;  //minimum distance for a swipe to be registered
    
     
     //*********************************GameOver Variables************************************/
@@ -51,31 +46,27 @@ public class SwordCombat : MonoBehaviour {
 
     /********************************Global State*****************************************/
 
-    static int PlayerHealth = 3;
-    static PlayerWeapons currentWeapon;
-    static GameMode mode;
-    static Directions playerFacing;
-    static bool weaponDelayActive = false;
-    static bool isRotating = false;
-    static bool spawning = false;
-    static float spawnRate;
-    static bool scaling;
-    static float approachRate;
-    static List<enemySpawner> spawners;
+    int PlayerHealth = 3;
+    int score = 0;
+    PlayerWeapons currentWeapon;
+    Directions playerFacing;
+    bool weaponDelayActive = false;
+    bool isRotating = false;
+    bool spawning = false;
+    float spawnRate;
+    float approachRate;
+    bool scaling;
+    List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
+    static GameMode mode;
+    MobileInput mobInput;
     
     /*******************************Public Functions********************************/
 
     public void SetGameMode(GameMode m)
     {
         mode = m;
-        if (m == GameMode.tutorial)
-        {
-            approachRate = 0.0f;
-            spawnRate = 1000f;
-            scaling = false;
-        }
-        else if (m == GameMode.normal)
+        if (m == GameMode.normal)
         {
             approachRate = 2.0f;
             spawnRate = 50 / approachRate;
@@ -99,18 +90,23 @@ public class SwordCombat : MonoBehaviour {
         public Directions initialDirection;
         Vector3 StartingPosition;
         Vector3 AttackVector;
+        SwordCombat TopLevel;
 
-        public enemySpawner(Vector3 pos, Directions directionFromPlayer)
+        public enemySpawner(Vector3 pos, Directions directionFromPlayer, SwordCombat parent)
         {
             enemies = new List<enemy>();
+            TopLevel = parent;
             StartingPosition = pos;
             initialDirection = directionFromPlayer;
             AttackVector = -1*pos.normalized;
         }
 
-        public void spawnEnemy()
+        public void spawnEnemy(float ApproachRate)
         {
-            enemies.Add(new enemy(StartingPosition, AttackVector * approachRate));
+            if (TopLevel.PlayerHealth > 0)
+            {
+                enemies.Add(new enemy(StartingPosition, AttackVector * ApproachRate));
+            }
         }
         
         public void playerSwing(PlayerWeapons weapon)
@@ -132,7 +128,7 @@ public class SwordCombat : MonoBehaviour {
             foreach(enemy x in toRemove)
             {
                 enemies.Remove(x);
-                score++;
+                TopLevel.score++;
                 if (mode != GameMode.tutorial) HandleScaling(mode);
             }
 
@@ -149,9 +145,9 @@ public class SwordCombat : MonoBehaviour {
 
         void HandleScaling(GameMode difficulty)
         {
-            if (difficulty == GameMode.hard) approachRate = (float) Math.Pow(Math.Log(score, 2), 2) + 8;
-            else approachRate = (float) Math.Pow(Math.Log(score, 2), 2) + 2;
-            spawnRate = 50/approachRate;
+            if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 8;
+            else TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 2;
+            TopLevel.spawnRate = 50/TopLevel.approachRate + 0.5f;
         }
 
     };
@@ -182,9 +178,6 @@ public class SwordCombat : MonoBehaviour {
 
         public void kill()
         {
-            //player has killed one more monster
-            score++;
-
             DestroyImmediate(au_source);
             DestroyImmediate(source);
         }
@@ -203,81 +196,35 @@ public class SwordCombat : MonoBehaviour {
 
     void HandlePlayerInputMobile()
     {
-        // user is touching the screen with one finger
-        if (Input.touchCount == 1)
+        MobileInput.InputType input = mobInput.getInput();
+        if (!isRotating)
         {
-            Touch touch = Input.GetTouch(0);
-            //get coordinates of the first touch
-            if (touch.phase == TouchPhase.Began)
+            if (input == MobileInput.InputType.right)
             {
-                fp = touch.position;
-                lp = touch.position;
+                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
+                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
             }
-            //update the last position based on where they moved
-            else if (touch.phase == TouchPhase.Moved)
+            else if (input == MobileInput.InputType.left)
             {
-                lp = touch.position;
+                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
+                playerFacing = (Directions)(((int)playerFacing + 3) % 4); //mod on negative doesn't work, this is equivalent to subtracting 1
             }
-            //check if the finger is removed from the screen
-            else if (touch.phase == TouchPhase.Ended)
-            {
-                lp = touch.position;
-                //Check if drag distance is greater than 15% of the screen height
-                if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
-                {
-                    //check if the drag is horizontal
-                    if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
-                    {
-                        //the drag is horizontal, allow right/left swipe if not rotating
-                        if (!isRotating)
-                        {
-                            //last touch position was right of first touch position
-                            if ((lp.x > fp.x))
-                            {
-                                Debug.Log("Right Swipe");
-                                playerFacing = (Directions)(((int)playerFacing + 1) % 4);
-                                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, -90, 0), rotationDuration));
-                            }
-                            else
-                            {
-                                Debug.Log("Left Swipe");
-                                StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), rotationDuration));
-                                playerFacing = (Directions)(((int)playerFacing + 3) % 4); //mod on negative doesn't work, this is equivalent to subtracting 1
-                            }
-                        }
-                    }
-                    //movement was vertical
-                    else
-                    {
-                        //last touch position is more up of first touch position
-                        if (lp.y > fp.y)
-                        {
-                            //movement is an up swipe so check if weapon cooldown is off
-                            if (!weaponDelayActive)
-                            {
-                                Debug.Log("Up Swipe");
-                                print(playerFacing);
-                                spawners[(int)playerFacing].playerSwing(currentWeapon);
-                                StartCoroutine(inputController());
-                            }
-                        }
-                        //movement is a down swipe
-                        else
-                        {
-                            Debug.Log("Down Swipe");
-                            currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
-                            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
-                            weaponDelayActive = false;
-                        }
-                    }
+        }
 
-                }
-                //Is a tap, since distance was less than 15% of screen height
-                else
-                {
-                    Debug.Log("Tap");
-                }
+        if (!weaponDelayActive)
+        {
+            if (input == MobileInput.InputType.up)
+            {
+                spawners[(int)playerFacing].playerSwing(currentWeapon);
+                StartCoroutine(inputController());
             }
+        }
+
+        if (input == MobileInput.InputType.down)
+        {
+            currentWeapon = (PlayerWeapons)(((int)currentWeapon + 1) % numberOfWeapons);
+            playerAudioSource.PlayOneShot(weaponEquipSound[(int)currentWeapon], 0.3f);
+            weaponDelayActive = false;
         }
     }
 
@@ -347,7 +294,7 @@ public class SwordCombat : MonoBehaviour {
         {
             int randomNumber = UnityEngine.Random.Range(0, 3);
             if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
-            spawners[randomNumber].spawnEnemy();
+            spawners[randomNumber].spawnEnemy(approachRate);
             yield return new WaitForSeconds(spawnRate);
         }
     }
@@ -356,12 +303,8 @@ public class SwordCombat : MonoBehaviour {
     /*********************************Begin Unity Automatic Calls***************************************/
 
 	void Start () {
-        //score set to 0
-        score = 0;
 
-        //define what % of the screen is needed to be touched for a swipe to register
-        dragDistance = Screen.height * 15 / 100;
-
+        mobInput = new MobileInput();
         playerAudioSource = GetComponent<AudioSource>();
 
         //defeat sounds
@@ -394,10 +337,10 @@ public class SwordCombat : MonoBehaviour {
         
         spawners = new List<enemySpawner>();
         //Spawning Locations are cardinal directions
-        spawners.Add(new enemySpawner(new Vector3(0, 0, -50), Directions.north)); //in front of player
-        spawners.Add(new enemySpawner(new Vector3(50, 0, 0), Directions.east)); //right of player at start 
-        spawners.Add(new enemySpawner(new Vector3(0, 0, 50), Directions.south)); //behind player
-        spawners.Add(new enemySpawner(new Vector3(-50, 0, 0), Directions.west)); //left of player 
+        spawners.Add(new enemySpawner(new Vector3(0, 0, -50), Directions.north, this)); //in front of player
+        spawners.Add(new enemySpawner(new Vector3(50, 0, 0), Directions.east, this)); //right of player at start 
+        spawners.Add(new enemySpawner(new Vector3(0, 0, 50), Directions.south, this)); //behind player
+        spawners.Add(new enemySpawner(new Vector3(-50, 0, 0), Directions.west, this)); //left of player 
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
@@ -435,17 +378,11 @@ public class SwordCombat : MonoBehaviour {
 
         if (PlayerHealth < 1)
         {
-            /*
-            //TODO: Currently sends back to GameSetup stuff. Want a GameOver/Highscore screen that can
-            //Redirect back to GameSetup
             spawning = false;
             for (int i = 0; i < 4; i++) spawners[i].KillAll();
-            GameObject Setup = GameObject.FindWithTag("ScriptHolder");
-            Setup.AddComponent<GameSetup>();
             PlayerHealth = 3;
-            //score = 0 ??? 
-            Destroy(gameObject);
-            */
+            mostRecentScore = score;
+            score = 0;
 
             //commented out above because the following code
             //   goes to game over / score screen, and player can Play Again
@@ -483,7 +420,6 @@ public class SwordCombat : MonoBehaviour {
 
     IEnumerator endGame()
     {
-
         //go to game over screen after 2 seconds, 
         //to let the "you have been killed" voiceline finished
         yield return new WaitForSeconds(2);

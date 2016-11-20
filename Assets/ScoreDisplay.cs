@@ -23,7 +23,7 @@ public class ScoreDisplay : MonoBehaviour {
             }
             else if (Load.lastPlayedGame == 2)
             {
-                gameScore = SwordCombat.score;
+                gameScore = SwordCombat.mostRecentScore;
                 gameScoreUnits = "monsters";
             }
             else

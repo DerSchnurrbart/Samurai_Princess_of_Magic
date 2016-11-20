@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class SCTutorial : MonoBehaviour {
 
@@ -16,10 +17,47 @@ public class SCTutorial : MonoBehaviour {
     static AudioClip[] enemyDeaths;
     static AudioClip[] weaponEquipSound;
     static AudioClip[] TutorialVoiceLines;
+    static GameObject enemyPrefab;
+    static enemy currentEnemy;
+
+
+    class enemy
+    {
+        GameObject source;
+        AudioSource au_source; //Houses positional information, audio clip
+        public EnemyType type;
+        public PlayerWeapons weakness;
+
+        public enemy(Vector3 pos, float approachSpeed, EnemyType type_in)
+        {
+            source = Instantiate(enemyPrefab);
+            source.transform.position = pos;
+            au_source = source.GetComponent<AudioSource>();
+            au_source.clip = enemyNoises[(int)type_in];
+            au_source.Play();
+            source.GetComponent<Rigidbody>().velocity = -1 * pos.normalized * approachSpeed;
+            type = type_in;
+            weakness = (PlayerWeapons) type_in;
+        }
+
+        public void kill()
+        {
+            Destroy(au_source);
+            Destroy(source);
+        }
+
+    }
+
+
+
 
 
 	// Use this for initialization
 	void Start () {
+
+        playerAudioSource = GetComponent<AudioSource>();
+        enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
+
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
         enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolf") as AudioClip;
@@ -37,6 +75,17 @@ public class SCTutorial : MonoBehaviour {
         playerHit = Resources.Load("Sounds/Death/PlayerHit") as AudioClip;
 
         TutorialVoiceLines = new AudioClip[11];
+        TutorialVoiceLines[0] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/WelcomeToTheSwordTutorial") as AudioClip;
+        TutorialVoiceLines[1] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/DoYouHearThatGhost") as AudioClip;
+        TutorialVoiceLines[2] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/HowAboutNow") as AudioClip;
+        TutorialVoiceLines[3] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/NowThatYoureLooking") as AudioClip;
+        TutorialVoiceLines[4] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/SwipeUpToAttack") as AudioClip;
+        TutorialVoiceLines[5] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/GoodJob") as AudioClip;
+        TutorialVoiceLines[6] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/ShouldHearAWolf") as AudioClip;
+        TutorialVoiceLines[7] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/WhenEnemyGetsClose") as AudioClip;
+        TutorialVoiceLines[8] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/SwitchToTheSword") as AudioClip;
+        TutorialVoiceLines[9] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/CrinklingPaper") as AudioClip;
+        TutorialVoiceLines[10] = Resources.Load("Sounds/BetaVoicelines/SwordCombatTutorial/Congrats") as AudioClip;
 
         StartCoroutine(TurningTutorial());
 	}
@@ -51,6 +100,7 @@ public class SCTutorial : MonoBehaviour {
         }
         if(allowWeaponSwitch && Input.GetKeyDown("down"))
         {
+            weapon++;
             allowWeaponSwitch = false;
             if (weapon == 1)
             {
@@ -74,20 +124,22 @@ public class SCTutorial : MonoBehaviour {
             allowAttack = false;
             if (weapon == 1)
             {
-                //Play Ghost death
-                //Despawn Ghost
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.ghost]);
                 StartCoroutine(EnemyMoveTutorial());
             }
             if (weapon == 2)
             {
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.wolf]);
                 StartCoroutine(BugTutorial());
 
             }
             if (weapon == 3)
             {
-
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.insect]);
                 StartCoroutine(FinishedTutorial());
-
             }
         }
 	
@@ -96,47 +148,55 @@ public class SCTutorial : MonoBehaviour {
     public IEnumerator TurningTutorial()
     {
         playerAudioSource.PlayOneShot(TutorialVoiceLines[0]);
-        yield return new WaitForSeconds(TutorialVoiceLines[0].length);
-        //Spawn ghost in front of user
+        yield return new WaitForSeconds(TutorialVoiceLines[0].length + 0.25f);
+        currentEnemy = new enemy(new Vector3(0, 0, -25), 0.0f, EnemyType.ghost);
+        yield return new WaitForSeconds(4.0f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[1]);
-        yield return new WaitForSeconds(TutorialVoiceLines[1].length);
-        //Despawn ghost
-        //Spawn ghost to the left of user
+        yield return new WaitForSeconds(TutorialVoiceLines[1].length + 1.0f);
+        currentEnemy.kill();
+        currentEnemy = new enemy(new Vector3(-25, 0, 0), 0.0f, EnemyType.ghost);
+        yield return new WaitForSeconds(4.0f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[2]);
-        yield return new WaitForSeconds(TutorialVoiceLines[2].length/2);
+        yield return new WaitForSeconds(TutorialVoiceLines[2].length);
 
         allowturning = true;
     }
 
     public IEnumerator SwitchWeaponTutorial()
     {
+        yield return new WaitForSeconds(3.0f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[3]);
-        yield return new WaitForSeconds(TutorialVoiceLines[3].length/2);
+        yield return new WaitForSeconds(TutorialVoiceLines[3].length);
         allowWeaponSwitch = true;
     }
     public IEnumerator AttackTutorial()
     {
+        yield return new WaitForSeconds(1.5f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[4]);
-        yield return new WaitForSeconds(TutorialVoiceLines[4].length/2);
+        yield return new WaitForSeconds(TutorialVoiceLines[4].length);
         allowAttack = true;
     }
     public IEnumerator EnemyMoveTutorial()
     {
+        yield return new WaitForSeconds(1.5f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[5]);
-        yield return new WaitForSeconds(TutorialVoiceLines[5].length);
-        //Spawn Wolf that moves toward player
+        yield return new WaitForSeconds(TutorialVoiceLines[5].length + 0.25f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[6]);
-        //MAKE SURE g is FINISHED playerhit noise, wolf despawns
+        yield return new WaitForSeconds(1.0f);
+        currentEnemy = new enemy(new Vector3(-50, 0, 0), 5.0f, EnemyType.wolf);
+        yield return new WaitForSeconds(11.0f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[7]);
-        yield return new WaitForSeconds(TutorialVoiceLines[7].length);
-        //Spawn wolf that doesn't move
+        yield return new WaitForSeconds(TutorialVoiceLines[7].length + 0.25f);
+        currentEnemy = new enemy(new Vector3(-50, 0, 0), 0.0f, EnemyType.wolf);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[8]);
-        yield return new WaitForSeconds(TutorialVoiceLines[8].length/2);
+        yield return new WaitForSeconds(TutorialVoiceLines[8].length);
         allowWeaponSwitch = true;
     }
     
     public IEnumerator BugTutorial()
     {
+        yield return new WaitForSeconds(1.5f);
+        currentEnemy = new enemy(new Vector3(-50, 0, 0), 0.0f, EnemyType.insect);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[9]);
         yield return new WaitForSeconds(TutorialVoiceLines[9].length);
         allowWeaponSwitch = true;
@@ -144,9 +204,10 @@ public class SCTutorial : MonoBehaviour {
 
     public IEnumerator FinishedTutorial()
     {
+        yield return new WaitForSeconds(1.5f);
         playerAudioSource.PlayOneShot(TutorialVoiceLines[10]);
-        yield return new WaitForSeconds(TutorialVoiceLines[10].length);
-        //Load Sword Combat Scene
+        yield return new WaitForSeconds(TutorialVoiceLines[10].length + 1.0f);
+        SceneManager.LoadScene("SwordCombat");
     }
 
     public IEnumerator rotatePlayer(Quaternion startingRotation, Quaternion endingRotation, float duration)
@@ -161,4 +222,9 @@ public class SCTutorial : MonoBehaviour {
         transform.rotation = endingRotation;
     }
 
+	void OnTriggerEnter()
+    {
+        currentEnemy.kill();
+        playerAudioSource.PlayOneShot(playerHit);
+    }
 }

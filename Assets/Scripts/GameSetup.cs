@@ -40,9 +40,7 @@ public class GameSetup : MonoBehaviour {
 
         if (Input.GetKeyDown("1")) //"Tutorial level", just for explaining gameplay
         {
-            script.SetGameMode(SwordCombat.GameMode.tutorial);
-            script.enabled = true;
-            Destroy(this);
+            SceneManager.LoadScene("SCTutorial");
         } 
         else if (Input.GetKeyDown("2")) //Beginning mode
         {
@@ -100,8 +98,7 @@ public class GameSetup : MonoBehaviour {
                         else
                         {
                             Debug.Log("Left Swipe");
-                            script.SetGameMode(SwordCombat.GameMode.tutorial);
-                            script.enabled = true;
+                            SceneManager.LoadScene("SCTutorial");
                             Destroy(this);
                         }
                     }

@@ -46,11 +46,11 @@ public class GameOver : MonoBehaviour
 
         if (Input.GetKeyDown("up"))
         {
-            SceneManager.LoadScene(Load.lastPlayedGame);
+            SceneManager.LoadScene(Load.lastPlayedGame, LoadSceneMode.Single);
         }
         else if (Input.GetKeyDown("down"))
         {
-            SceneManager.LoadScene("TitleScreen");
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
 
         //This function returns the game to main menu after 3 seconds
@@ -104,13 +104,13 @@ public class GameOver : MonoBehaviour
                         {
 
                             Debug.Log("Up Swipe");
-                            SceneManager.LoadScene(Load.lastPlayedGame);
+                            SceneManager.LoadScene(Load.lastPlayedGame, LoadSceneMode.Single);
                         }
                         //movement is a down swipe
                         else
                         {
                             Debug.Log("Down Swipe");
-                            SceneManager.LoadScene("TitleScreen");
+                            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
                         }
                     }
                 }
