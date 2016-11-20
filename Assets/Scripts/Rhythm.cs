@@ -22,13 +22,14 @@ public class Rhythm : MonoBehaviour {
     public List<Action> target;
 	public List<int> unmutatedPositions;
 
-	public const int CYCLES_NEEDED_CORRECT_TO_PROCEED = 3;
+	public const int CYCLES_NEEDED_TO_PROCEED = 3;
 	public const int NUM_MOVES_INCORRECT_TO_FAIL = 5;
-	public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.95f;
+	public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
     public int difficulty;
     public int prompt_index;
     public int correct = 0;
-	public int incorrect = 0;
+	public int numBeatsThisLevel = 0;
+	public int numIncorrectThisCycle = 0;
     public bool valid_input;
     public bool activated;
     public bool triggered;
@@ -36,6 +37,7 @@ public class Rhythm : MonoBehaviour {
     public bool gameIsOver = false;
     public bool gameOverScreenLoaded = false;
     public float inputDelay = 2.0f;
+	public float timeBetweenBeats = 0.2f;
 
     public GameObject swipe_up;
     public GameObject swipe_down;
@@ -49,8 +51,6 @@ public class Rhythm : MonoBehaviour {
         //score starts at the maximum lives, 
         //   because for example if a player survives 3 beats 
         //   but then loses all 5 lives, they actually survived 5+3 beats
-        score = NUM_MOVES_INCORRECT_TO_FAIL;
-
         print("starting late start");
         prompt_index = 0;
         //difficulty = 3;
@@ -58,6 +58,7 @@ public class Rhythm : MonoBehaviour {
         activated = false;
         triggered = false;
 		reset_sequences ();
+		score = 0;
 
         rhythmDefeatVoice = GetComponent<AudioSource>();
         
@@ -94,11 +95,6 @@ public class Rhythm : MonoBehaviour {
             }
         }
 
-		if (incorrect >= NUM_MOVES_INCORRECT_TO_FAIL) {
-            gameIsOver = true;
-            StartCoroutine(endGame());
-		}
-
         //keep running prompt
         if (activated && !looping)
         {
@@ -111,53 +107,65 @@ public class Rhythm : MonoBehaviour {
 
     IEnumerator endGame()
     {
-        
-        //play first voiceline
-        if (rhythmDefeatVoiceIsPlaying == false)
-        {
-            rhythmDefeatVoiceIsPlaying = true;
-            rhythmDefeatVoice.PlayOneShot(rhythmDefeat);
-            
-        }
-        //go to game over screen after 3 seconds
-        yield return new WaitForSeconds(3);
+       	
+		if (gameOverScreenLoaded == false) {
+			gameOverScreenLoaded = true;
 
-        //show gameover screen
-        if (gameOverScreenLoaded == false) {
-            gameOverScreenLoaded = true;
+			//update before leaving scene
+			Load.updateLastPlayedGame (3);
+			SceneManager.LoadScene ("GameOver");
+		}
 
-            //update before leaving scene
-            Load.updateLastPlayedGame(3);
-            SceneManager.LoadScene("GameOver");
-        }
-        
-        
+		yield return new WaitForSeconds(0);
     }
 
     public void compare_user_input(Action act) {
         valid_input = false;
 		if (sequence [prompt_index] != act) {
-			correct = 0;
-			incorrect++;
+			numIncorrectThisCycle++;
 		} else {
-			incorrect = 0;
 			correct++;
 		}
-		if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count && unmutatedPositions.Count != 0) {
-			print ("it should mutate");
-			mutate_sequence ();
-			correct = 0;
-		} else if (correct == CYCLES_NEEDED_CORRECT_TO_PROCEED * sequence.Count) {
-			difficulty++;
-			inputDelay *= MULTIPLIER_FOR_BEAT_PERIOD;
-			reset_sequences ();
-			correct = 0;
+		numBeatsThisLevel++;
+		print ("number of beats this level: " + numBeatsThisLevel);
+		print ("number correct: " + correct);
+		print ("number incorrect: " + numIncorrectThisCycle);
+		if (numBeatsThisLevel % sequence.Count == 0) { //end of cycle
+			advancePlay ();
 		}
-        print("correct: " + correct);
-        //user has lasted one more beat
-        score++;
         return;
     }
+
+	public void advancePlay() {
+		print ("ADVANCEPLAYCALLED");
+		if (numIncorrectThisCycle > sequence.Count / 2) {
+			print ("too many incorrect");
+			score += correct;
+			gameIsOver = true;
+			StartCoroutine(endGame ());
+		} else {
+			print ("new cycle, continuing");
+			score += correct;
+			correct = 0;
+			//starting new cycle
+			numIncorrectThisCycle = 0;
+		}
+		if (numBeatsThisLevel == CYCLES_NEEDED_TO_PROCEED * sequence.Count) {
+			if (unmutatedPositions.Count != 0) {
+				print ("mutating cycle");
+				mutate_sequence ();
+			} else {
+				print ("reached next difficulty");
+				difficulty++;
+				inputDelay *= MULTIPLIER_FOR_BEAT_PERIOD;
+				timeBetweenBeats *= MULTIPLIER_FOR_BEAT_PERIOD;
+				reset_sequences ();
+			}
+			score += correct;
+			correct = 0;
+			numBeatsThisLevel = 0;
+		}
+	}
 
 	void reset_sequences() {
 		sequence.Clear ();
@@ -195,20 +203,29 @@ public class Rhythm : MonoBehaviour {
             int i = 0;
             while (i < sequence.Count)
             {
+				if (gameIsOver) {
+					return false;
+				}
                 prompt_index = i;
-                print("sequence: " + i);
                 prompt_user(sequence[i]);
                 valid_input = true;
                 yield return new WaitForSeconds(inputDelay);
                 disable_prompts();
                 if (valid_input)
                 {
-                    print("no response " + incorrect);
                     correct = 0;
-                    incorrect++;
-                    valid_input = false;
+					print ("no input given");
+                    numIncorrectThisCycle++;
+					numBeatsThisLevel++;
+					print ("number of beats this level: " + numBeatsThisLevel);
+					print ("number correct: " + correct);
+					print ("number incorrect: " + numIncorrectThisCycle);
+					if (numBeatsThisLevel % sequence.Count == 0) {
+						advancePlay ();
+					}
+					valid_input = false;
                 }
-                yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(timeBetweenBeats);
                 i++;
             }
             looping = false;
