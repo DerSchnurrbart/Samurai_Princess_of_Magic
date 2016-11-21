@@ -12,6 +12,13 @@ public class Rhythm : MonoBehaviour
     public static int score;
 
     //Voiceline
+    public float sound_speed = 1.0f;
+    public AudioSource music;
+    public AudioSource a_tap;
+    public AudioSource a_up;
+    public AudioSource a_down;
+    public AudioSource a_left;
+    public AudioSource a_right;
 
     private AudioSource rhythmDefeatVoice;
     AudioClip rhythmDefeat;
@@ -65,7 +72,7 @@ public class Rhythm : MonoBehaviour
         rhythmDefeatVoice = GetComponent<AudioSource>();
 
         rhythmDefeat = Resources.Load("Sounds/Voicelines/GameOvers/RhythmDefeat") as AudioClip;
-
+        music.GetComponent<AudioSource>().enabled = false;
     }
 
     // Update is called once per frame
@@ -107,6 +114,7 @@ public class Rhythm : MonoBehaviour
         //start prompt
         if (Input.GetKeyDown("return") && !triggered)
         {
+            music.GetComponent<AudioSource>().enabled = true;
             triggered = true;
             activated = true;
             StartCoroutine(show_sequence());
@@ -307,18 +315,23 @@ public class Rhythm : MonoBehaviour
         switch (act)
         {
             case Action.tap:
+                a_tap.GetComponent<AudioSource>().Play();
                 tap.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             case Action.swipe_up:
+                a_up.GetComponent<AudioSource>().Play();
                 swipe_up.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             case Action.swipe_down:
+                a_down.GetComponent<AudioSource>().Play();
                 swipe_down.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             case Action.swipe_left:
+                a_left.GetComponent<AudioSource>().Play();
                 swipe_left.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             case Action.swipe_right:
+                a_right.GetComponent<AudioSource>().Play();
                 swipe_right.GetComponent<SpriteRenderer>().enabled = true;
                 break;
             default:
