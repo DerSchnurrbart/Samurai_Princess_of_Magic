@@ -3,19 +3,21 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class GameSetup : MonoBehaviour {
+    /*
     //Mobile Touch Input
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
-
+    */
     static GameObject playerPrefab;
     static GameObject player;
     static SwordCombat script;
+    
 
 	// Use this for initialization
 	void Start () {
         //define what % of the screen is needed to be touched for a swipe to register
-        dragDistance = Screen.height * 15 / 100;
+        //dragDistance = Screen.height * 15 / 100;
 
 
         playerPrefab = Resources.Load("Prefabs/Player") as GameObject;
@@ -29,7 +31,30 @@ public class GameSetup : MonoBehaviour {
 
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
-        MobileInput();
+        MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.left)
+        {
+            SceneManager.LoadScene("SCTutorial");
+        }
+
+        else if (input == MobileInput.InputType.up)
+        {
+            script.SetGameMode(SwordCombat.GameMode.normal);
+            script.enabled = true;
+            Destroy(this);
+        }
+        else if (input == MobileInput.InputType.right)
+        {
+            script.SetGameMode(SwordCombat.GameMode.hard);
+            script.enabled = true;
+            Destroy(this);
+        }
+        else if (Input.GetKeyDown("3")) //Intermediate
+        {
+            script.SetGameMode(SwordCombat.GameMode.hard);
+            script.enabled = true;
+            Destroy(this);
+        }
 #endif
         //if on desktop, use keyboard controls
         if (Input.GetKeyDown("escape"))
@@ -56,7 +81,7 @@ public class GameSetup : MonoBehaviour {
         }
 	}
 
-
+    /*
     void MobileInput()
     {
         // user is touching the screen with one finger
@@ -129,5 +154,6 @@ public class GameSetup : MonoBehaviour {
             }
         }
     }
+    */
 
 }

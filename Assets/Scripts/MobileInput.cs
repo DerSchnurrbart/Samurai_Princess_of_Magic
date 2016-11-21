@@ -4,19 +4,18 @@ using System.Collections;
 public class MobileInput {
 
     /*********************************Mobile Touch Input************************************/
-    private Vector3 fp;   //First touch position
-    private Vector3 lp;   //Last touch position
-    private float dragDistance;  //minimum distance for a swipe to be registered
-
+    private static Vector3 fp;   //First touch position
+    private static Vector3 lp;   //Last touch position
+    private static float dragDistance;  //minimum distance for a swipe to be registered
     public enum InputType {left, right, up, down, tap, none};
 
     public MobileInput()
     {
         //define what % of the screen is needed to be touched for a swipe to register
-        dragDistance = Screen.height * 15 / 100;
+        dragDistance = Screen.height * 8 / 100;
     }
 
-    public InputType getInput()
+    public static InputType getInput()
     {
         InputType retVal = InputType.none;
         // user is touching the screen with one finger

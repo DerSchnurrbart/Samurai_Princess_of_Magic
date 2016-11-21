@@ -5,16 +5,20 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class BeginAdventure : MonoBehaviour {
-    //Mobile Touch Input
+//Mobile Touch Input
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
 
+
+
     // Use this for initialization
     void Start () {
-        //define what % of the screen is needed to be touched for a swipe to register
-        dragDistance = Screen.height * 15 / 100;
-    }
+        
+          //define what % of the screen is needed to be touched for a swipe to register
+        dragDistance = Screen.height * 8 / 100;
+    
+        }
 	
 	// Update is called once per frame
 	void Update () {
@@ -22,7 +26,18 @@ public class BeginAdventure : MonoBehaviour {
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
         MobileInput();
+        /*
+        if (MobileInput.getInput() == MobileInput.InputType.up)
+        {
+            ChangeScreen.SwitchScreen();
+        }
+        else if (MobileInput.getInput() == MobileInput.InputType.tap)
+        {
+            ChangeScreen.SwitchScreen();
+        }
+        */
 #endif
+
 
         //if on desktop, enter will go to arcade game screen
         if (Input.GetKeyDown("return"))
@@ -31,7 +46,7 @@ public class BeginAdventure : MonoBehaviour {
         }
 
     }
-
+    
     void MobileInput()
     {
         // user is touching the screen with one finger
@@ -55,15 +70,11 @@ public class BeginAdventure : MonoBehaviour {
             {
                 lp = touch.position;
 
-                //Check if drag distance is lower than 15% of the screen height
-                if (Mathf.Abs(lp.x - fp.x) < dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
-                {
-
-                    //Is a tap, since distance was less than 15% of screen height
+                //User has touched the screen; 
+                //   whether it was a tap or a swipe, proceed to minigame menu
                     Debug.Log("Tap");
                     ChangeScreen.SwitchScreen();
 
-                }
             }
         }
     }

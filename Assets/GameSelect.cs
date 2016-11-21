@@ -6,10 +6,11 @@ using UnityEngine.UI;
 
 public class GameSelect : MonoBehaviour
 {
-    //Mobile Touch Input
+    /*//Mobile Touch Input
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
+    */
 
     //To keep track of which game is currently selected
     bool rhythm;
@@ -19,8 +20,10 @@ public class GameSelect : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //define what % of the screen is needed to be touched for a swipe to register
+        /*
+          //define what % of the screen is needed to be touched for a swipe to register
         dragDistance = Screen.height * 15 / 100;
+        */
 
         //no game is selected initially
         rhythm = false;
@@ -34,7 +37,31 @@ public class GameSelect : MonoBehaviour
 
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
-        MobileInput();
+        if (MobileInput.getInput() == MobileInput.InputType.right)
+        {
+            rhythm = false;
+            memory = false;
+            sword = true;
+        }
+        if (MobileInput.getInput() == MobileInput.InputType.left)
+        {
+            rhythm = true;
+            memory = false;
+            sword = false;
+        }
+        if (MobileInput.getInput() == MobileInput.InputType.up)
+        {
+            rhythm = false;
+            memory = false;
+            sword = true;
+        }
+        if (MobileInput.getInput() == MobileInput.InputType.tap)
+        {
+            if (rhythm == true) SceneManager.LoadScene("RhythmMagic");
+            if (sword == true) SceneManager.LoadScene("SwordCombat");
+            if (memory == true) SceneManager.LoadScene("MemoryGame");
+        }
+
 #endif
 
         //if on desktop, press up left or right then enter
@@ -72,13 +99,14 @@ public class GameSelect : MonoBehaviour
         if (Input.GetKeyDown("return"))
         {
             Debug.Log("Tap");
+
             if (rhythm == true) SceneManager.LoadScene("RhythmMagic");
             if (sword == true) SceneManager.LoadScene("SwordCombat");
             if (memory == true) SceneManager.LoadScene("MemoryGame");
 
         }
     }
-
+    /*
     void MobileInput()
     {
         // user is touching the screen with one finger
@@ -164,5 +192,5 @@ public class GameSelect : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 }

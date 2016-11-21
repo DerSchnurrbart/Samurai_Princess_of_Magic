@@ -31,15 +31,15 @@ public class MemoryAlt : MonoBehaviour
     private AudioClip[] simple_direction;
     private AudioClip[,] ac_direction; //ac == audio clip
     private AudioClip then;
-    private AudioClip welcome; 
-    private AudioClip uhOh; 
-    private AudioClip nextPath; 
+    private AudioClip welcome;
+    private AudioClip uhOh;
+    private AudioClip nextPath;
 
     public List<Direction> sequence;
     public List<Direction> user_guess;
     bool isUsersTurn;
     bool inputDelayActive;
-    const float inputDelay = 0.5f;
+    const float inputDelay = 0.1f;
 
     /******************************************Helper Functions*****************************************/
 
@@ -53,14 +53,15 @@ public class MemoryAlt : MonoBehaviour
     private void populateSequence(int level_num)
     {
         sequence.Clear();
-        for(int i = 0; i < level_num; i++)
+        for (int i = 0; i < level_num; i++)
         {
             sequence.Add(getRandomDirection());
         }
     }
 
     //function to disable other arrows
-    public void disable_arrows() {
+    public void disable_arrows()
+    {
         //disable all arrows
         up_arrow.GetComponent<SpriteRenderer>().enabled = false;
         down_arrow.GetComponent<SpriteRenderer>().enabled = false;
@@ -69,12 +70,14 @@ public class MemoryAlt : MonoBehaviour
     }
 
     //function to light up pressed arrow, returns length audio clip being played
-    public float enable_arrow(Direction dir, bool display = false) {
+    public float enable_arrow(Direction dir, bool display = false)
+    {
         //disable other arrows
         disable_arrows();
         print(dir);
         //enable only one arrow
-        switch (dir) {
+        switch (dir)
+        {
             case Direction.Up:
                 up_arrow.GetComponent<SpriteRenderer>().enabled = true;
                 break;
@@ -140,11 +143,21 @@ public class MemoryAlt : MonoBehaviour
         StartCoroutine(show_sequence());
     }
 
-    public IEnumerator show_sequence() {
+    public IEnumerator show_sequence()
+    {
         int i = 0;
         while (i < sequence.Count)
         {
-            yield return new WaitForSeconds(enable_arrow(sequence[i], true));
+            //if it's the final instruction in the set, 
+            //   subtract one second from the waitforseconds delay so that 
+            //   the user can start inputting immediately after the last word finishes
+            if (i == sequence.Count - 1)
+            {
+                yield return new WaitForSeconds(enable_arrow(sequence[i], true) - 1);
+            }
+            else {
+                yield return new WaitForSeconds(enable_arrow(sequence[i], true));
+            }
             disable_arrows();
             if (i < sequence.Count - 1) direction_noise.PlayOneShot(then);
             yield return new WaitForSeconds(then.length);
@@ -204,32 +217,60 @@ public class MemoryAlt : MonoBehaviour
     void HandlePlayerInput()
     {
 
+#if UNITY_ANDROID
+
+        if (MobileInput.getInput() == MobileInput.InputType.up)
+        {
+            enable_arrow(Direction.Up);
+            user_guess.Add(Direction.Up);
+            StartCoroutine(inputController());
+        }
+        else if (MobileInput.getInput() == MobileInput.InputType.down)
+        {
+            enable_arrow(Direction.Down);
+            user_guess.Add(Direction.Down);
+            StartCoroutine(inputController());
+        }
+        else if (MobileInput.getInput() == MobileInput.InputType.right)
+        {
+            enable_arrow(Direction.Right);
+            user_guess.Add(Direction.Right);
+            StartCoroutine(inputController());
+        }
+        else if (MobileInput.getInput() == MobileInput.InputType.left)
+        {
+            enable_arrow(Direction.Left);
+            user_guess.Add(Direction.Left);
+            StartCoroutine(inputController());
+        }
+#endif
+
         if (Input.GetKeyDown("up"))
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);
-            direction_noise.PlayOneShot(simple_direction[0]);
+            //direction_noise.PlayOneShot(simple_direction[0]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("down"))
         {
             enable_arrow(Direction.Down);
             user_guess.Add(Direction.Down);
-            direction_noise.PlayOneShot(simple_direction[1]);
+            //direction_noise.PlayOneShot(simple_direction[1]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("left"))
         {
             enable_arrow(Direction.Left);
             user_guess.Add(Direction.Left);
-            direction_noise.PlayOneShot(simple_direction[2]);
+            //direction_noise.PlayOneShot(simple_direction[2]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("right"))
         {
             enable_arrow(Direction.Right);
             user_guess.Add(Direction.Right);
-            direction_noise.PlayOneShot(simple_direction[3]);
+            //direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
         }
 
@@ -266,33 +307,33 @@ public class MemoryAlt : MonoBehaviour
         inputDelayActive = false;
         direction_noise = GetComponent<AudioSource>();
         results_text = GameObject.Find("Canvas/Results").GetComponent<Text>();
-        
+
         then = Resources.Load("Sounds/BetaVoicelines/MemoryGame/THEN") as AudioClip;
         ac_direction = new AudioClip[4, 4];
-        ac_direction[0, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp1") as AudioClip;  
-        ac_direction[0, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp2") as AudioClip;  
-        ac_direction[0, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp3") as AudioClip;  
-        ac_direction[0, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp4") as AudioClip;  
-        ac_direction[1, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown1") as AudioClip;  
-        ac_direction[1, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown2") as AudioClip;  
-        ac_direction[1, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown3") as AudioClip;  
-        ac_direction[1, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown4") as AudioClip;  
-        ac_direction[2, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft1") as AudioClip;  
-        ac_direction[2, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft2") as AudioClip;  
-        ac_direction[2, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft3") as AudioClip;  
-        ac_direction[2, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft4") as AudioClip;  
-        ac_direction[3, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight1") as AudioClip;  
-        ac_direction[3, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight2") as AudioClip;  
-        ac_direction[3, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight3") as AudioClip;  
+        ac_direction[0, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp1") as AudioClip;
+        ac_direction[0, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp2") as AudioClip;
+        ac_direction[0, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp3") as AudioClip;
+        ac_direction[0, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp4") as AudioClip;
+        ac_direction[1, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown1") as AudioClip;
+        ac_direction[1, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown2") as AudioClip;
+        ac_direction[1, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown3") as AudioClip;
+        ac_direction[1, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown4") as AudioClip;
+        ac_direction[2, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft1") as AudioClip;
+        ac_direction[2, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft2") as AudioClip;
+        ac_direction[2, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft3") as AudioClip;
+        ac_direction[2, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft4") as AudioClip;
+        ac_direction[3, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight1") as AudioClip;
+        ac_direction[3, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight2") as AudioClip;
+        ac_direction[3, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight3") as AudioClip;
         ac_direction[3, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight4") as AudioClip;
         simple_direction = new AudioClip[4];
         simple_direction[0] = Resources.Load("Sounds/Directions/up") as AudioClip;
         simple_direction[1] = Resources.Load("Sounds/Directions/down") as AudioClip;
         simple_direction[2] = Resources.Load("Sounds/Directions/left") as AudioClip;
         simple_direction[3] = Resources.Load("Sounds/Directions/right") as AudioClip;
-        welcome = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Welcome") as AudioClip;  
-        nextPath = Resources.Load("Sounds/BetaVoicelines/MemoryGame/YourNextPathIs") as AudioClip;  
-        uhOh = Resources.Load("Sounds/BetaVoicelines/MemoryGame/UhOh") as AudioClip;  
+        welcome = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Welcome") as AudioClip;
+        nextPath = Resources.Load("Sounds/BetaVoicelines/MemoryGame/YourNextPathIs") as AudioClip;
+        uhOh = Resources.Load("Sounds/BetaVoicelines/MemoryGame/UhOh") as AudioClip;
         //Arcade Mode:
         current_difficulty = 1;
         populateSequence(current_difficulty);
@@ -332,5 +373,3 @@ public class MemoryAlt : MonoBehaviour
 
     }
 }
-
-

@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
 {
+    /*
     //Mobile Touch Input
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
+    */
 
     //Audio
     private AudioSource gameOverVoice;
@@ -20,8 +22,10 @@ public class GameOver : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        /*
         //define what % of the screen is needed to be touched for a swipe to register
         dragDistance = Screen.height * 15 / 100;
+        */
 
         gameOverVoice = GetComponent<AudioSource>();
         gameOverClip = Resources.Load("Sounds/Voicelines/GameOvers/GameOver") as AudioClip;
@@ -31,7 +35,6 @@ public class GameOver : MonoBehaviour
     void Update()
     {
 
-
         if (gameOverVoiceIsPlaying == false)
         {
             gameOverVoiceIsPlaying = true;
@@ -40,12 +43,19 @@ public class GameOver : MonoBehaviour
 
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
-        MobileInput();
+        if (MobileInput.getInput() == MobileInput.InputType.up)
+        {
+            SceneManager.LoadScene(Load.lastPlayedGame, LoadSceneMode.Single);
+        }
+        if (MobileInput.getInput() == MobileInput.InputType.down)
+        {
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        }
 #endif
         //Run desktop keyboard/mouse controls
 
         if (Input.GetKeyDown("up"))
-        {
+        { 
             SceneManager.LoadScene(Load.lastPlayedGame, LoadSceneMode.Single);
         }
         else if (Input.GetKeyDown("down"))
@@ -69,6 +79,7 @@ public class GameOver : MonoBehaviour
     }
     */
 
+        /*
     void MobileInput()
     {
         // user is touching the screen with one finger
@@ -116,7 +127,7 @@ public class GameOver : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 
 
 }

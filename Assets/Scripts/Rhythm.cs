@@ -4,32 +4,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class Rhythm : MonoBehaviour {
+public class Rhythm : MonoBehaviour
+{
 
     //save the final score here, 
     //   which will be accessed and displayed on game over screen
     public static int score;
 
     //Voiceline
-    
+
     private AudioSource rhythmDefeatVoice;
     AudioClip rhythmDefeat;
     bool rhythmDefeatVoiceIsPlaying = false;
-    
+
 
     public enum Action { tap, swipe_up, swipe_down, swipe_left, swipe_right };
     public List<Action> sequence;
     public List<Action> target;
-	public List<int> unmutatedPositions;
+    public List<int> unmutatedPositions;
 
-	public const int CYCLES_NEEDED_TO_PROCEED = 3;
-	public const int NUM_MOVES_INCORRECT_TO_FAIL = 5;
-	public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
+    public const int CYCLES_NEEDED_TO_PROCEED = 3;
+    public const int NUM_MOVES_INCORRECT_TO_FAIL = 5;
+    public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
     public int difficulty;
     public int prompt_index;
     public int correct = 0;
-	public int numBeatsThisLevel = 0;
-	public int numIncorrectThisCycle = 0;
+    public int numBeatsThisLevel = 0;
+    public int numIncorrectThisCycle = 0;
     public bool valid_input;
     public bool activated;
     public bool triggered;
@@ -37,7 +38,7 @@ public class Rhythm : MonoBehaviour {
     public bool gameIsOver = false;
     public bool gameOverScreenLoaded = false;
     public float inputDelay = 2.0f;
-	public float timeBetweenBeats = 0.2f;
+    public float timeBetweenBeats = 0.2f;
 
     public GameObject swipe_up;
     public GameObject swipe_down;
@@ -47,7 +48,8 @@ public class Rhythm : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         //score starts at the maximum lives, 
         //   because for example if a player survives 3 beats 
         //   but then loses all 5 lives, they actually survived 5+3 beats
@@ -57,17 +59,51 @@ public class Rhythm : MonoBehaviour {
         looping = false;
         activated = false;
         triggered = false;
-		reset_sequences ();
-		score = 0;
+        reset_sequences();
+        score = 0;
 
         rhythmDefeatVoice = GetComponent<AudioSource>();
-        
+
         rhythmDefeat = Resources.Load("Sounds/Voicelines/GameOvers/RhythmDefeat") as AudioClip;
-        
-        }
+
+    }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
+#if UNITY_ANDROID
+        if (MobileInput.getInput() == MobileInput.InputType.tap && !triggered)
+        {
+            triggered = true;
+            activated = true;
+            StartCoroutine(show_sequence());
+        }
+        else if (valid_input)
+        {
+            if (MobileInput.getInput() == MobileInput.InputType.tap)
+            {
+                compare_user_input(Action.tap);
+            }
+            else if (MobileInput.getInput() == MobileInput.InputType.up)
+            {
+                compare_user_input(Action.swipe_up);
+            }
+            else if (MobileInput.getInput() == MobileInput.InputType.down)
+            {
+                compare_user_input(Action.swipe_down);
+            }
+            else if (MobileInput.getInput() == MobileInput.InputType.left)
+            {
+                compare_user_input(Action.swipe_left);
+            }
+            else if (MobileInput.getInput() == MobileInput.InputType.right)
+            {
+                compare_user_input(Action.swipe_right);
+            }
+        }
+#endif
+
+
         //start prompt
         if (Input.GetKeyDown("return") && !triggered)
         {
@@ -77,20 +113,26 @@ public class Rhythm : MonoBehaviour {
         }
 
         //take user input
-        else if (valid_input) { 
-            if (Input.GetKeyDown("space")) {
+        else if (valid_input)
+        {
+            if (Input.GetKeyDown("space"))
+            {
                 compare_user_input(Action.tap);
             }
-            else if (Input.GetKeyDown("up")) {
+            else if (Input.GetKeyDown("up"))
+            {
                 compare_user_input(Action.swipe_up);
             }
-            else if (Input.GetKeyDown("down")) {
+            else if (Input.GetKeyDown("down"))
+            {
                 compare_user_input(Action.swipe_down);
             }
-            else if (Input.GetKeyDown("left")) {
+            else if (Input.GetKeyDown("left"))
+            {
                 compare_user_input(Action.swipe_left);
             }
-            else if (Input.GetKeyDown("right")) {
+            else if (Input.GetKeyDown("right"))
+            {
                 compare_user_input(Action.swipe_right);
             }
         }
@@ -98,93 +140,107 @@ public class Rhythm : MonoBehaviour {
         //keep running prompt
         if (activated && !looping)
         {
-            
-
             StartCoroutine(show_sequence());
         }
 
-	}
+    }
 
     IEnumerator endGame()
     {
-       	
-		if (gameOverScreenLoaded == false) {
-			gameOverScreenLoaded = true;
 
-			//update before leaving scene
-			Load.updateLastPlayedGame (3);
-			SceneManager.LoadScene ("GameOver");
-		}
+        if (gameOverScreenLoaded == false)
+        {
+            gameOverScreenLoaded = true;
 
-		yield return new WaitForSeconds(0);
+            //update before leaving scene
+            Load.updateLastPlayedGame(3);
+            SceneManager.LoadScene("GameOver");
+        }
+
+        yield return new WaitForSeconds(0);
     }
 
-    public void compare_user_input(Action act) {
+    public void compare_user_input(Action act)
+    {
         valid_input = false;
-		if (sequence [prompt_index] != act) {
-			numIncorrectThisCycle++;
-		} else {
-			correct++;
-		}
-		numBeatsThisLevel++;
-		print ("number of beats this level: " + numBeatsThisLevel);
-		print ("number correct: " + correct);
-		print ("number incorrect: " + numIncorrectThisCycle);
-		if (numBeatsThisLevel % sequence.Count == 0) { //end of cycle
-			advancePlay ();
-		}
+        if (sequence[prompt_index] != act)
+        {
+            numIncorrectThisCycle++;
+        }
+        else
+        {
+            correct++;
+        }
+        numBeatsThisLevel++;
+        print("number of beats this level: " + numBeatsThisLevel);
+        print("number correct: " + correct);
+        print("number incorrect: " + numIncorrectThisCycle);
+        if (numBeatsThisLevel % sequence.Count == 0)
+        { //end of cycle
+            advancePlay();
+        }
         return;
     }
 
-	public void advancePlay() {
-		print ("ADVANCEPLAYCALLED");
-		if (numIncorrectThisCycle > sequence.Count / 2) {
-			print ("too many incorrect");
-			score += correct;
-			gameIsOver = true;
-			StartCoroutine(endGame ());
-		} else {
-			print ("new cycle, continuing");
-			score += correct;
-			correct = 0;
-			//starting new cycle
-			numIncorrectThisCycle = 0;
-		}
-		if (numBeatsThisLevel == CYCLES_NEEDED_TO_PROCEED * sequence.Count) {
-			if (unmutatedPositions.Count != 0) {
-				print ("mutating cycle");
-				mutate_sequence ();
-			} else {
-				print ("reached next difficulty");
-				difficulty++;
-				inputDelay *= MULTIPLIER_FOR_BEAT_PERIOD;
-				timeBetweenBeats *= MULTIPLIER_FOR_BEAT_PERIOD;
-				reset_sequences ();
-			}
-			score += correct;
-			correct = 0;
-			numBeatsThisLevel = 0;
-		}
-	}
+    public void advancePlay()
+    {
+        print("ADVANCEPLAYCALLED");
+        if (numIncorrectThisCycle > sequence.Count / 2)
+        {
+            print("too many incorrect");
+            score += correct;
+            gameIsOver = true;
+            StartCoroutine(endGame());
+        }
+        else
+        {
+            print("new cycle, continuing");
+            score += correct;
+            correct = 0;
+            //starting new cycle
+            numIncorrectThisCycle = 0;
+        }
+        if (numBeatsThisLevel == CYCLES_NEEDED_TO_PROCEED * sequence.Count)
+        {
+            if (unmutatedPositions.Count != 0)
+            {
+                print("mutating cycle");
+                mutate_sequence();
+            }
+            else
+            {
+                print("reached next difficulty");
+                difficulty++;
+                inputDelay *= MULTIPLIER_FOR_BEAT_PERIOD;
+                timeBetweenBeats *= MULTIPLIER_FOR_BEAT_PERIOD;
+                reset_sequences();
+            }
+            score += correct;
+            correct = 0;
+            numBeatsThisLevel = 0;
+        }
+    }
 
-	void reset_sequences() {
-		sequence.Clear ();
-		target.Clear ();
-		for (int i = 0; i < difficulty; i++)
-		{
-			int val = Random.Range(1, 4);
-			target.Add((Action)val);
-			sequence.Add(Action.tap);
-			unmutatedPositions.Add (i);
-		}
-	}
+    void reset_sequences()
+    {
+        sequence.Clear();
+        target.Clear();
+        for (int i = 0; i < difficulty; i++)
+        {
+            int val = Random.Range(1, 4);
+            target.Add((Action)val);
+            sequence.Add(Action.tap);
+            unmutatedPositions.Add(i);
+        }
+    }
 
-    public void mutate_sequence() {
+    public void mutate_sequence()
+    {
         print("mutation");
-		int position = Random.Range (0, unmutatedPositions.Count);
-		int positionToMutate = unmutatedPositions [position];
-		unmutatedPositions.Remove (unmutatedPositions[position]);
-		sequence [positionToMutate] = target [positionToMutate];
+        int position = Random.Range(0, unmutatedPositions.Count);
+        int positionToMutate = unmutatedPositions[position];
+        unmutatedPositions.Remove(unmutatedPositions[position]);
+        sequence[positionToMutate] = target[positionToMutate];
     }
 
     public IEnumerator show_sequence()
@@ -203,9 +259,10 @@ public class Rhythm : MonoBehaviour {
             int i = 0;
             while (i < sequence.Count)
             {
-				if (gameIsOver) {
-					return false;
-				}
+                if (gameIsOver)
+                {
+                    SceneManager.LoadScene("GameOver");
+                }
                 prompt_index = i;
                 prompt_user(sequence[i]);
                 valid_input = true;
@@ -214,18 +271,19 @@ public class Rhythm : MonoBehaviour {
                 if (valid_input)
                 {
                     correct = 0;
-					print ("no input given");
+                    print("no input given");
                     numIncorrectThisCycle++;
-					numBeatsThisLevel++;
-					print ("number of beats this level: " + numBeatsThisLevel);
-					print ("number correct: " + correct);
-					print ("number incorrect: " + numIncorrectThisCycle);
-					if (numBeatsThisLevel % sequence.Count == 0) {
-						advancePlay ();
-					}
-					valid_input = false;
+                    numBeatsThisLevel++;
+                    print("number of beats this level: " + numBeatsThisLevel);
+                    print("number correct: " + correct);
+                    print("number incorrect: " + numIncorrectThisCycle);
+                    if (numBeatsThisLevel % sequence.Count == 0)
+                    {
+                        advancePlay();
+                    }
+                    valid_input = false;
                 }
-				yield return new WaitForSeconds(timeBetweenBeats);
+                yield return new WaitForSeconds(timeBetweenBeats);
                 i++;
             }
             looping = false;
@@ -234,7 +292,8 @@ public class Rhythm : MonoBehaviour {
     }
 
 
-    public void disable_prompts() {
+    public void disable_prompts()
+    {
         swipe_up.GetComponent<SpriteRenderer>().enabled = false;
         swipe_down.GetComponent<SpriteRenderer>().enabled = false;
         swipe_left.GetComponent<SpriteRenderer>().enabled = false;
@@ -242,9 +301,11 @@ public class Rhythm : MonoBehaviour {
         tap.GetComponent<SpriteRenderer>().enabled = false;
     }
 
-    public void prompt_user(Action act) {
+    public void prompt_user(Action act)
+    {
         disable_prompts();
-        switch (act) {
+        switch (act)
+        {
             case Action.tap:
                 tap.GetComponent<SpriteRenderer>().enabled = true;
                 break;

@@ -196,7 +196,7 @@ public class SwordCombat : MonoBehaviour {
 
     void HandlePlayerInputMobile()
     {
-        MobileInput.InputType input = mobInput.getInput();
+        MobileInput.InputType input = MobileInput.getInput();
         if (!isRotating)
         {
             if (input == MobileInput.InputType.right)
