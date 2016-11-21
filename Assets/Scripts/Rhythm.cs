@@ -58,6 +58,8 @@ public class Rhythm : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        mobInput = new MobileInput();
+
         //score starts at the maximum lives, 
         //   because for example if a player survives 3 beats 
         //   but then loses all 5 lives, they actually survived 5+3 beats
@@ -70,7 +72,7 @@ public class Rhythm : MonoBehaviour
         reset_sequences();
         score = 0;
 
-        mobInput = new MobileInput();
+
 
         rhythmDefeatVoice = GetComponent<AudioSource>();
 
@@ -83,11 +85,13 @@ public class Rhythm : MonoBehaviour
     {
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (input == MobileInput.InputType.tap && !triggered)
+        //mobile version starts automatically without needing to tap to start
+        if (!triggered)
         {
-            music.GetComponent<AudioSource>().enabled = true;
             triggered = true;
             activated = true;
+            music.GetComponent<AudioSource>().enabled = true;
+            music.GetComponent<AudioSource>().Play();
             StartCoroutine(show_sequence());
         }
         else if (valid_input)
@@ -117,7 +121,7 @@ public class Rhythm : MonoBehaviour
 
 
         //start prompt
-        if (Input.GetKeyDown("return") && !triggered)
+        if (!triggered)
         {
             music.GetComponent<AudioSource>().enabled = true;
             music.GetComponent<AudioSource>().Play();
@@ -199,7 +203,7 @@ public class Rhythm : MonoBehaviour
     public void advancePlay()
     {
         print("ADVANCEPLAYCALLED");
-        if (numIncorrectThisCycle > sequence.Count / 2)
+        if (numIncorrectThisCycle > sequence.Count / 3)
         {
             print("too many incorrect");
             score += correct;
