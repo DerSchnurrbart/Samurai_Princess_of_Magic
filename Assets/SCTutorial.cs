@@ -93,12 +93,65 @@ public class SCTutorial : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (allowturning && Input.GetKeyDown("left")) {
+#if UNITY_ANDROID
+        if (allowturning && MobileInput.getInput() == MobileInput.InputType.left)
+        {
             allowturning = false;
             StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), 0.25f));
             StartCoroutine(SwitchWeaponTutorial());
         }
-        if(allowWeaponSwitch && Input.GetKeyDown("down"))
+        if (allowWeaponSwitch && MobileInput.getInput() == MobileInput.InputType.down)
+        {
+            weapon++;
+            allowWeaponSwitch = false;
+            if (weapon == 1)
+            {
+                playerAudioSource.PlayOneShot(weaponEquipSound[(int)PlayerWeapons.magic_staff]);
+                StartCoroutine(AttackTutorial());
+            }
+            if (weapon == 2)
+            {
+                playerAudioSource.PlayOneShot(weaponEquipSound[(int)PlayerWeapons.sword]);
+                allowAttack = true;
+            }
+            if (weapon == 3)
+            {
+                playerAudioSource.PlayOneShot(weaponEquipSound[(int)PlayerWeapons.hammer]);
+                allowAttack = true;
+
+            }
+        }
+        if (allowAttack && MobileInput.getInput() == MobileInput.InputType.up)
+        {
+            allowAttack = false;
+            if (weapon == 1)
+            {
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.ghost]);
+                StartCoroutine(EnemyMoveTutorial());
+            }
+            if (weapon == 2)
+            {
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.wolf]);
+                StartCoroutine(BugTutorial());
+
+            }
+            if (weapon == 3)
+            {
+                currentEnemy.kill();
+                playerAudioSource.PlayOneShot(enemyDeaths[(int)EnemyType.insect]);
+                StartCoroutine(FinishedTutorial());
+            }
+        }
+#endif
+
+        if (allowturning && MobileInput.getInput() == MobileInput.InputType.left) {
+            allowturning = false;
+            StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), 0.25f));
+            StartCoroutine(SwitchWeaponTutorial());
+        }
+        if(allowWeaponSwitch && MobileInput.getInput() == MobileInput.InputType.down)
         {
             weapon++;
             allowWeaponSwitch = false;
@@ -119,7 +172,7 @@ public class SCTutorial : MonoBehaviour {
 
             } 
         }
-        if(allowAttack && Input.GetKeyDown("up"))
+        if(allowAttack && MobileInput.getInput() == MobileInput.InputType.up)
         {
             allowAttack = false;
             if (weapon == 1)

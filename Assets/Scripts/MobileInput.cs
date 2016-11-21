@@ -37,7 +37,7 @@ public class MobileInput {
             else if (touch.phase == TouchPhase.Ended)
             {
                 lp = touch.position;
-                //Check if drag distance is greater than 15% of the screen height
+                //Check if drag distance is greater than 8% of the screen height
                 if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
                 {
                     //check if the drag is horizontal

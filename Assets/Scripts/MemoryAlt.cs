@@ -192,7 +192,7 @@ public class MemoryAlt : MonoBehaviour
 
     IEnumerator endGame()
     {
-
+        /* This commented code is the old voiceline "You have lost your way"
         //play first voiceline
         if (memoryDefeatVoiceIsPlaying == false)
         {
@@ -203,6 +203,11 @@ public class MemoryAlt : MonoBehaviour
         //go to game over screen after 3 seconds
         yield return new WaitForSeconds(3);
 
+
+        */
+
+
+
         //show gameover screen
         if (gameOverScreenLoaded == false)
         {
@@ -212,6 +217,9 @@ public class MemoryAlt : MonoBehaviour
             Load.updateLastPlayedGame(1);
             SceneManager.LoadScene("GameOver");
         }
+
+        yield return new WaitForSeconds(0);
+
     }
 
     void HandlePlayerInput()
@@ -223,24 +231,28 @@ public class MemoryAlt : MonoBehaviour
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);
+            direction_noise.PlayOneShot(simple_direction[0]);
             StartCoroutine(inputController());
         }
         else if (MobileInput.getInput() == MobileInput.InputType.down)
         {
             enable_arrow(Direction.Down);
             user_guess.Add(Direction.Down);
+            direction_noise.PlayOneShot(simple_direction[1]);
             StartCoroutine(inputController());
         }
         else if (MobileInput.getInput() == MobileInput.InputType.right)
         {
             enable_arrow(Direction.Right);
             user_guess.Add(Direction.Right);
+            direction_noise.PlayOneShot(simple_direction[2]);
             StartCoroutine(inputController());
         }
         else if (MobileInput.getInput() == MobileInput.InputType.left)
         {
             enable_arrow(Direction.Left);
             user_guess.Add(Direction.Left);
+            direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
         }
 #endif
@@ -249,28 +261,28 @@ public class MemoryAlt : MonoBehaviour
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);
-            //direction_noise.PlayOneShot(simple_direction[0]);
+            direction_noise.PlayOneShot(simple_direction[0]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("down"))
         {
             enable_arrow(Direction.Down);
             user_guess.Add(Direction.Down);
-            //direction_noise.PlayOneShot(simple_direction[1]);
+            direction_noise.PlayOneShot(simple_direction[1]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("left"))
         {
             enable_arrow(Direction.Left);
             user_guess.Add(Direction.Left);
-            //direction_noise.PlayOneShot(simple_direction[2]);
+            direction_noise.PlayOneShot(simple_direction[2]);
             StartCoroutine(inputController());
         }
         else if (Input.GetKeyDown("right"))
         {
             enable_arrow(Direction.Right);
             user_guess.Add(Direction.Right);
-            //direction_noise.PlayOneShot(simple_direction[3]);
+            direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
         }
 
