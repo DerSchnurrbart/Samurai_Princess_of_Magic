@@ -145,8 +145,8 @@ public class SwordCombat : MonoBehaviour {
 
         void HandleScaling(GameMode difficulty)
         {
-            if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 8;
-            else TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 2;
+            if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 7;
+            else TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 3;
             TopLevel.spawnRate = 50/TopLevel.approachRate + 0.5f;
         }
 
