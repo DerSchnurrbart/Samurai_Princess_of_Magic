@@ -83,8 +83,9 @@ public class Rhythm : MonoBehaviour
     {
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (!triggered)
+        if (input == MobileInput.InputType.tap && !triggered)
         {
+            music.GetComponent<AudioSource>().enabled = true;
             triggered = true;
             activated = true;
             StartCoroutine(show_sequence());
@@ -116,7 +117,7 @@ public class Rhythm : MonoBehaviour
 
 
         //start prompt
-        if (!triggered)
+        if (Input.GetKeyDown("return") && !triggered)
         {
             music.GetComponent<AudioSource>().enabled = true;
             triggered = true;
