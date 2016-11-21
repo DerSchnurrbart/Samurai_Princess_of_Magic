@@ -19,7 +19,7 @@ public class ScoreDisplay : MonoBehaviour {
             if (Load.lastPlayedGame == 1)
             {
                 gameScore = MemoryAlt.score;
-                gameScoreUnits = "rounds";
+                gameScoreUnits = "directions";
             }
             else if (Load.lastPlayedGame == 2)
             {
@@ -39,13 +39,18 @@ public class ScoreDisplay : MonoBehaviour {
                         //gameScoreUnits = "rounds";
 
         //Example text: You lasted 5 rounds!
-        txt.text = "You lasted " + gameScore + " " + gameScoreUnits + "!";
+        txt.text = "You lasted at least " + gameScore + " " + gameScoreUnits + "!";
 
         //If game played was survival game,
         //Example text: You killed 5 monsters!
         if (Load.lastPlayedGame == 2)
         {
-            txt.text = "You killed " + gameScore + " " + gameScoreUnits + "!";
+            txt.text = "You killed at least " + gameScore + " " + gameScoreUnits + "!";
         }
-	}
+        //If memory game
+        if (Load.lastPlayedGame == 1)
+        {
+            txt.text = "You followed at least " + gameScore + " " + gameScoreUnits + "!";
+        }
+    }
 }

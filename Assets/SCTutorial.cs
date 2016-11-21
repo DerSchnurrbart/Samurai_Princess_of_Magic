@@ -146,12 +146,12 @@ public class SCTutorial : MonoBehaviour {
         }
 #endif
 
-        if (allowturning && MobileInput.getInput() == MobileInput.InputType.left) {
+        if (allowturning && Input.GetKeyDown("left")) {
             allowturning = false;
             StartCoroutine(rotatePlayer(transform.rotation, transform.rotation * Quaternion.Euler(0, 90, 0), 0.25f));
             StartCoroutine(SwitchWeaponTutorial());
         }
-        if(allowWeaponSwitch && MobileInput.getInput() == MobileInput.InputType.down)
+        if(allowWeaponSwitch && Input.GetKeyDown("down"))
         {
             weapon++;
             allowWeaponSwitch = false;
@@ -172,7 +172,7 @@ public class SCTutorial : MonoBehaviour {
 
             } 
         }
-        if(allowAttack && MobileInput.getInput() == MobileInput.InputType.up)
+        if(allowAttack && Input.GetKeyDown("up"))
         {
             allowAttack = false;
             if (weapon == 1)

@@ -79,7 +79,8 @@ public class Rhythm : MonoBehaviour
     void Update()
     {
 #if UNITY_ANDROID
-        if (MobileInput.getInput() == MobileInput.InputType.tap && !triggered)
+        MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.tap && !triggered)
         {
             triggered = true;
             activated = true;
@@ -87,23 +88,23 @@ public class Rhythm : MonoBehaviour
         }
         else if (valid_input)
         {
-            if (MobileInput.getInput() == MobileInput.InputType.tap)
+            if (input == MobileInput.InputType.tap)
             {
                 compare_user_input(Action.tap);
             }
-            else if (MobileInput.getInput() == MobileInput.InputType.up)
+            else if (input == MobileInput.InputType.up)
             {
                 compare_user_input(Action.swipe_up);
             }
-            else if (MobileInput.getInput() == MobileInput.InputType.down)
+            else if (input == MobileInput.InputType.down)
             {
                 compare_user_input(Action.swipe_down);
             }
-            else if (MobileInput.getInput() == MobileInput.InputType.left)
+            else if (input == MobileInput.InputType.left)
             {
                 compare_user_input(Action.swipe_left);
             }
-            else if (MobileInput.getInput() == MobileInput.InputType.right)
+            else if (input == MobileInput.InputType.right)
             {
                 compare_user_input(Action.swipe_right);
             }

@@ -70,29 +70,32 @@ public class MemoryAlt : MonoBehaviour
     }
 
     //function to light up pressed arrow, returns length audio clip being played
-    public float enable_arrow(Direction dir, bool display = false)
+    public float enable_arrow(Direction dir, bool display = false, bool hide = false)
     {
         //disable other arrows
         disable_arrows();
         print(dir);
         //enable only one arrow
-        switch (dir)
+        if (hide == false)
         {
-            case Direction.Up:
-                up_arrow.GetComponent<SpriteRenderer>().enabled = true;
-                break;
-            case Direction.Down:
-                down_arrow.GetComponent<SpriteRenderer>().enabled = true;
-                break;
-            case Direction.Left:
-                left_arrow.GetComponent<SpriteRenderer>().enabled = true;
-                break;
-            case Direction.Right:
-                right_arrow.GetComponent<SpriteRenderer>().enabled = true;
-                break;
-            default:
-                print("ERROR: unrecognized Direction");
-                return 0.0f;
+            switch (dir)
+            {
+                case Direction.Up:
+                    up_arrow.GetComponent<SpriteRenderer>().enabled = true;
+                    break;
+                case Direction.Down:
+                    down_arrow.GetComponent<SpriteRenderer>().enabled = true;
+                    break;
+                case Direction.Left:
+                    left_arrow.GetComponent<SpriteRenderer>().enabled = true;
+                    break;
+                case Direction.Right:
+                    right_arrow.GetComponent<SpriteRenderer>().enabled = true;
+                    break;
+                default:
+                    print("ERROR: unrecognized Direction");
+                    return 0.0f;
+            }
         }
 
         if (display)
@@ -153,10 +156,10 @@ public class MemoryAlt : MonoBehaviour
             //   the user can start inputting immediately after the last word finishes
             if (i == sequence.Count - 1)
             {
-                yield return new WaitForSeconds(enable_arrow(sequence[i], true) - 1);
+                yield return new WaitForSeconds(enable_arrow(sequence[i], true, true) - 1);
             }
             else {
-                yield return new WaitForSeconds(enable_arrow(sequence[i], true));
+                yield return new WaitForSeconds(enable_arrow(sequence[i], true, true));
             }
             disable_arrows();
             if (i < sequence.Count - 1) direction_noise.PlayOneShot(then);
@@ -226,29 +229,29 @@ public class MemoryAlt : MonoBehaviour
     {
 
 #if UNITY_ANDROID
-
-        if (MobileInput.getInput() == MobileInput.InputType.up)
+        MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.up)
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);
             direction_noise.PlayOneShot(simple_direction[0]);
             StartCoroutine(inputController());
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.down)
+        else if (input == MobileInput.InputType.down)
         {
             enable_arrow(Direction.Down);
             user_guess.Add(Direction.Down);
             direction_noise.PlayOneShot(simple_direction[1]);
             StartCoroutine(inputController());
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.right)
+        else if (input == MobileInput.InputType.right)
         {
             enable_arrow(Direction.Right);
             user_guess.Add(Direction.Right);
             direction_noise.PlayOneShot(simple_direction[2]);
             StartCoroutine(inputController());
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.left)
+        else if (input == MobileInput.InputType.left)
         {
             enable_arrow(Direction.Left);
             user_guess.Add(Direction.Left);
