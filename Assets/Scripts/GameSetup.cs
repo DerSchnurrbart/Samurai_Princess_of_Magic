@@ -12,18 +12,23 @@ public class GameSetup : MonoBehaviour {
     static GameObject playerPrefab;
     static GameObject player;
     static SwordCombat script;
+
+    private AudioSource source;
+    private AudioClip mode;
     
 
 	// Use this for initialization
 	void Start () {
         //define what % of the screen is needed to be touched for a swipe to register
         //dragDistance = Screen.height * 15 / 100;
-
+        source = GetComponent<AudioSource>();
+        mode = Resources.Load("Sounds/BetaVoicelines/SurvivalGameModeSelect") as AudioClip;
 
         playerPrefab = Resources.Load("Prefabs/Player") as GameObject;
         player = Instantiate(playerPrefab);
         script = player.GetComponent<SwordCombat>();
-        
+
+        StartCoroutine(playSound());
 	}
 	
 	// Update is called once per frame
@@ -39,18 +44,14 @@ public class GameSetup : MonoBehaviour {
 
         else if (input == MobileInput.InputType.up)
         {
+            source.Stop();
             script.SetGameMode(SwordCombat.GameMode.normal);
             script.enabled = true;
             Destroy(this);
         }
         else if (input == MobileInput.InputType.right)
         {
-            script.SetGameMode(SwordCombat.GameMode.hard);
-            script.enabled = true;
-            Destroy(this);
-        }
-        else if (Input.GetKeyDown("3")) //Intermediate
-        {
+            source.Stop();
             script.SetGameMode(SwordCombat.GameMode.hard);
             script.enabled = true;
             Destroy(this);
@@ -61,6 +62,7 @@ public class GameSetup : MonoBehaviour {
         {
             print("ESCAPE");
             SceneManager.LoadScene("TitleScreen");
+            
         }
 
         if (Input.GetKeyDown("1")) //"Tutorial level", just for explaining gameplay
@@ -69,17 +71,25 @@ public class GameSetup : MonoBehaviour {
         } 
         else if (Input.GetKeyDown("2")) //Beginning mode
         {
+            source.Stop();
             script.SetGameMode(SwordCombat.GameMode.normal);
             script.enabled = true;
             Destroy(this);
         }
         else if (Input.GetKeyDown("3")) //Intermediate
         {
+            source.Stop();
             script.SetGameMode(SwordCombat.GameMode.hard);
             script.enabled = true;
             Destroy(this);
         }
 	}
+
+    public IEnumerator playSound()
+    {
+        yield return new WaitForSeconds(0);
+        source.PlayOneShot(mode);
+    }
 
     /*
     void MobileInput()

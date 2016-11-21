@@ -53,6 +53,7 @@ public class Rhythm : MonoBehaviour
     public GameObject swipe_right;
     public GameObject tap;
 
+    MobileInput mobInput;
 
     // Use this for initialization
     void Start()
@@ -69,6 +70,8 @@ public class Rhythm : MonoBehaviour
         reset_sequences();
         score = 0;
 
+        mobInput = new MobileInput();
+
         rhythmDefeatVoice = GetComponent<AudioSource>();
 
         rhythmDefeat = Resources.Load("Sounds/Voicelines/GameOvers/RhythmDefeat") as AudioClip;
@@ -80,7 +83,7 @@ public class Rhythm : MonoBehaviour
     {
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (input == MobileInput.InputType.tap && !triggered)
+        if (!triggered)
         {
             triggered = true;
             activated = true;
@@ -113,7 +116,7 @@ public class Rhythm : MonoBehaviour
 
 
         //start prompt
-        if (Input.GetKeyDown("return") && !triggered)
+        if (!triggered)
         {
             music.GetComponent<AudioSource>().enabled = true;
             triggered = true;

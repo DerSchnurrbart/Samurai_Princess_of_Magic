@@ -43,15 +43,14 @@ public class GameSelect : MonoBehaviour
         sword = false;
         memory = false;
         back = false;
+
+        StartCoroutine(playSound());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (BeginAdventure.gameSelectStarted == true)
-        {
-            StartCoroutine(playSound());
-        }
+        
         
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
@@ -162,13 +161,8 @@ public class GameSelect : MonoBehaviour
 
     public IEnumerator playSound()
     {
-        //sets it to false, so update never plays the instructions again
-        //   since there's no other way to set the variable to true other than
-        //   by going back to title screen and tapping begin adventure again
-        BeginAdventure.gameSelectStarted = false;
-
-        yield return new WaitForSeconds(0);
         source.PlayOneShot(instructions);
+        yield return new WaitForSeconds(0);
     }
 
     public IEnumerator playSword()

@@ -53,10 +53,10 @@ public class GameOver : MonoBehaviour
         directions = Resources.Load("Sounds/BetaVoicelines/GameOver/Directions") as AudioClip;
         monsters = Resources.Load("Sounds/BetaVoicelines/GameOver/Monsters") as AudioClip;
 
-        score = new AudioClip[30];
+        score = new AudioClip[31];
         compliment = new AudioClip[5];
 
-        //initiate audioclips 0 to 29 with score number voicelines
+        //initiate audioclips 0 to 30 with score number voicelines
         //   and 0 to 4 with compliments
         initAudioClips();
 
@@ -151,17 +151,17 @@ public class GameOver : MonoBehaviour
             source.PlayOneShot(compliment[0]);
             yield return new WaitForSeconds(compliment[0].length);
         }
-        else if (newestScore >= 5)
+        else if (newestScore >= 5 && newestScore < 15)
         {
             source.PlayOneShot(compliment[1]);
             yield return new WaitForSeconds(compliment[1].length);
         }
-        if (newestScore >= 15)
+        if (newestScore >= 15 && newestScore < 25)
         {
             source.PlayOneShot(compliment[2]);
             yield return new WaitForSeconds(compliment[2].length);
         }
-        if (newestScore >= 25)
+        if (newestScore >= 25 && newestScore < 35)
         {
             source.PlayOneShot(compliment[3]);
             yield return new WaitForSeconds(compliment[3].length);
@@ -179,7 +179,9 @@ public class GameOver : MonoBehaviour
     //returns the index of what audio clip to be played for the score number
     public int getIndex(int playerScore)
     {
-        if (newestScore == 1) return 0;
+        //index 30 is a audioclip that says "zero"
+        if (newestScore == 0) return 30;
+        else if (newestScore == 1) return 0;
         else if (newestScore == 2) return 1;
         else if (newestScore == 3) return 2;
         else if (newestScore == 4) return 3;
@@ -213,6 +215,7 @@ public class GameOver : MonoBehaviour
 
     public void initAudioClips()
     {
+        score[30] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/0") as AudioClip;
         score[0] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/1") as AudioClip;
         score[1] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/2") as AudioClip;
         score[2] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/3") as AudioClip;

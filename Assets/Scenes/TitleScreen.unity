@@ -915,8 +915,8 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 247.5, y: 120.5}
-  m_SizeDelta: {x: 495, y: 241}
+  m_AnchoredPosition: {x: 349.5, y: 170.5}
+  m_SizeDelta: {x: 699, y: 341}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1106893719
 MonoBehaviour:
@@ -986,7 +986,6 @@ GameObject:
   - 114: {fileID: 1272000796}
   - 114: {fileID: 1272000795}
   - 114: {fileID: 1272000794}
-  - 114: {fileID: 1272000793}
   - 82: {fileID: 1272000799}
   m_Layer: 5
   m_Name: Minigames (1)
@@ -995,17 +994,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1272000793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1272000792}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bb8c93531ebb984aa271b9150d27d8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1272000794
 MonoBehaviour:
   m_ObjectHideFlags: 0

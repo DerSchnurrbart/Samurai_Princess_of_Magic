@@ -13,14 +13,11 @@ public class BeginAdventure : MonoBehaviour {
     private AudioSource source;
     private AudioClip welcome;
     //helper for triggering game select directions after tapping on title screen
-    public static bool gameSelectStarted;
 
     // Use this for initialization
     void Start () {
           //define what % of the screen is needed to be touched for a swipe to register
         dragDistance = Screen.height * 8 / 100;
-
-        gameSelectStarted = false;
 
         source = GetComponent<AudioSource>();
         welcome = Resources.Load("Sounds/BetaVoicelines/Menu/Welcome") as AudioClip;
@@ -50,9 +47,7 @@ public class BeginAdventure : MonoBehaviour {
         //if on desktop, enter will go to arcade game screen
         if (Input.GetKeyDown("return"))
         {
-            ChangeScreen.SwitchScreen();
-            source.Stop();
-            gameSelectStarted = true;
+            SceneManager.LoadScene("MinigameScreen");
         }
 
     }
@@ -89,9 +84,7 @@ public class BeginAdventure : MonoBehaviour {
                 //User has touched the screen; 
                 //   whether it was a tap or a swipe, proceed to minigame menu
                     Debug.Log("Tap");
-                source.Stop();
-                ChangeScreen.SwitchScreen();
-                gameSelectStarted = true;
+                SceneManager.LoadScene("MinigameScreen");
 
             }
         }

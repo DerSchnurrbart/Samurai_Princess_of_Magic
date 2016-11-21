@@ -244,17 +244,17 @@ public class MemoryAlt : MonoBehaviour
             direction_noise.PlayOneShot(simple_direction[1]);
             StartCoroutine(inputController());
         }
-        else if (input == MobileInput.InputType.right)
-        {
-            enable_arrow(Direction.Right);
-            user_guess.Add(Direction.Right);
-            direction_noise.PlayOneShot(simple_direction[2]);
-            StartCoroutine(inputController());
-        }
         else if (input == MobileInput.InputType.left)
         {
             enable_arrow(Direction.Left);
             user_guess.Add(Direction.Left);
+            direction_noise.PlayOneShot(simple_direction[2]);
+            StartCoroutine(inputController());
+        }
+        else if (input == MobileInput.InputType.right)
+        {
+            enable_arrow(Direction.Right);
+            user_guess.Add(Direction.Right);
             direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
         }

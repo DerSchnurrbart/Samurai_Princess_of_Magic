@@ -40,6 +40,7 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip playerHit;
     static AudioClip heartbeat;
     static AudioClip[] weaponEquipSound;
+    private AudioClip beginning;
     AudioClip twoLivesLeft;
     AudioClip oneLifeLeft;
     static GameObject enemyPrefab;
@@ -331,6 +332,8 @@ public class SwordCombat : MonoBehaviour {
         weaponMiss = Resources.Load("Sounds/PlayerWeapons/SwingMiss") as AudioClip;
         playerHit = Resources.Load("Sounds/Death/PlayerHit") as AudioClip;
 
+        beginning = Resources.Load("Sounds/BetaVoicelines/BeginningGame") as AudioClip;
+
         currentWeapon = PlayerWeapons.hammer;
         playerFacing = Directions.north;
 
@@ -344,6 +347,7 @@ public class SwordCombat : MonoBehaviour {
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
+        StartCoroutine(playSound());
 
         StartSpawning();
 	}
@@ -461,4 +465,11 @@ public class SwordCombat : MonoBehaviour {
         yield return new WaitForSeconds(2);
         audioIsPlaying = false;
     }
+
+    public IEnumerator playSound()
+    {
+        yield return new WaitForSeconds(0);
+        playerAudioSource.PlayOneShot(beginning);
+    }
+
 }
