@@ -120,6 +120,7 @@ public class Rhythm : MonoBehaviour
         if (Input.GetKeyDown("return") && !triggered)
         {
             music.GetComponent<AudioSource>().enabled = true;
+            music.GetComponent<AudioSource>().Play();
             triggered = true;
             activated = true;
             StartCoroutine(show_sequence());
