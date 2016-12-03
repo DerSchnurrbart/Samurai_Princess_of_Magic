@@ -39,20 +39,21 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip weaponMiss;
     static AudioClip playerHit;
     static AudioClip heartbeat;
+    static AudioClip player_death;
     static AudioClip[] weaponEquipSound;
     private AudioClip beginning;
     static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
 
-    int PlayerHealth = 3;
+    int player_health = 3;
+    int enemies_per_spawn = 1;
+    public int active_enemies = 0;
     int score = 0;
     PlayerWeapons currentWeapon;
     Directions playerFacing;
     bool weaponDelayActive = false;
     bool isRotating = false;
-    bool spawning = false;
-    float spawnRate;
     float approachRate;
     float attack_delay;
     List<enemySpawner> spawners;
@@ -68,14 +69,12 @@ public class SwordCombat : MonoBehaviour {
         if (m == GameMode.normal)
         {
             approachRate = 2.0f;
-            spawnRate = 50 / approachRate;
             attack_delay = 2.0f;
         }
         else if (m == GameMode.hard)
         {
             approachRate = 8.0f;
             attack_delay = 1.0f;
-            spawnRate = 50 / approachRate;
         }
 
     }
@@ -100,11 +99,11 @@ public class SwordCombat : MonoBehaviour {
             AttackVector = -1*pos.normalized;
         }
 
-        public void spawnEnemy(float ApproachRate, SwordCombat parent)
+        public void spawnEnemy(float ApproachRate)
         {
-            if (TopLevel.PlayerHealth > 0)
+            if (TopLevel.player_health > 0)
             {
-                enemies.Add(new enemy(StartingPosition, AttackVector * ApproachRate, parent));
+                enemies.Add(new enemy(StartingPosition, AttackVector * ApproachRate, TopLevel));
             }
         }
         
@@ -128,6 +127,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
                 TopLevel.score++;
+                if (TopLevel.score % 25 == 0) TopLevel.enemies_per_spawn++;
                 HandleScaling(mode);
             }
 
@@ -146,7 +146,6 @@ public class SwordCombat : MonoBehaviour {
         {
             if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 7;
             else TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 3;
-            TopLevel.spawnRate = 50/TopLevel.approachRate + 0.5f;
         }
 
     };
@@ -157,6 +156,7 @@ public class SwordCombat : MonoBehaviour {
         AudioSource au_source; //Houses positional information, audio clip
         public EnemyType type;
         public PlayerWeapons weakness;
+        SwordCombat parent;
 
         public enemy(Vector3 pos, Vector3 approachSpeed, EnemyType type_in, SwordCombat parent)
         {
@@ -168,6 +168,8 @@ public class SwordCombat : MonoBehaviour {
             source.GetComponent<Rigidbody>().velocity = approachSpeed;
             source.GetComponent<EnemyLogic>().currentInstance = parent;
             source.GetComponent<EnemyLogic>().attack_delay = parent.attack_delay;
+            this.parent = parent;
+            parent.active_enemies++;
             type = type_in;
             weakness = (PlayerWeapons) type_in;
         }
@@ -179,6 +181,7 @@ public class SwordCombat : MonoBehaviour {
 
         public void kill()
         {
+            parent.active_enemies--;
             DestroyImmediate(au_source);
             DestroyImmediate(source);
         }
@@ -188,12 +191,6 @@ public class SwordCombat : MonoBehaviour {
 
     /******************************************Helper Functions*****************************************/
 
-    //Spawn Rate and Approach Rate should be set first or undefined behavior 
-    void StartSpawning()
-    {
-        spawning = true;
-        StartCoroutine(spawnMaster());
-    }
 
     void HandlePlayerInputMobile()
     {
@@ -289,17 +286,17 @@ public class SwordCombat : MonoBehaviour {
         weaponDelayActive = false;
     }
 
-    public IEnumerator spawnMaster()
+    public IEnumerator spawn_enemy()
     {
-        while (spawning)
+        if (mode == GameMode.normal) yield return new WaitForSeconds(1.0f);
+        if (mode == GameMode.hard) yield return new WaitForSeconds(0.5f);
+        int randomNumber = UnityEngine.Random.Range(0, 3);
+        while (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection)
         {
-            int randomNumber = UnityEngine.Random.Range(0, 3);
-            if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
-            spawners[randomNumber].spawnEnemy(approachRate, this);
-            yield return new WaitForSeconds(spawnRate);
+            randomNumber = UnityEngine.Random.Range(0, 3);
         }
+        spawners[randomNumber].spawnEnemy(approachRate);
     }
-
 
     /*********************************Begin Unity Automatic Calls***************************************/
 
@@ -310,8 +307,6 @@ public class SwordCombat : MonoBehaviour {
 
         //defeat sounds
         swordDefeat = Resources.Load("Sounds/Voicelines/GameOvers/SwordDefeat") as AudioClip;
-        AudioClip twoLivesLeft = Resources.Load("Sounds/Voicelines/Lives/2LivesLeft") as AudioClip;
-        AudioClip oneLifeLeft = Resources.Load("Sounds/Voicelines/Lives/1LifeLeft") as AudioClip;
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
@@ -321,6 +316,7 @@ public class SwordCombat : MonoBehaviour {
         enemyDeaths[(int)EnemyType.wolf] = Resources.Load("Sounds/Death/wolfdeath") as AudioClip;
         enemyDeaths[(int)EnemyType.insect] = Resources.Load("Sounds/Death/bugsmash") as AudioClip;
         enemyDeaths[(int)EnemyType.ghost] = Resources.Load("Sounds/Death/Wilhelm") as AudioClip;
+        player_death = Resources.Load("Sounds/Death/player_death") as AudioClip;
 
         weaponEquipSound = new AudioClip[3];
         weaponEquipSound[(int)PlayerWeapons.sword] = Resources.Load("Sounds/PlayerWeapons/unsheath") as AudioClip;
@@ -349,7 +345,7 @@ public class SwordCombat : MonoBehaviour {
 
         playerAudioSource.PlayOneShot(beginning);
 
-        StartSpawning();
+        spawn_enemy();
 	}
     
     // Update is called once per frame
@@ -360,7 +356,7 @@ public class SwordCombat : MonoBehaviour {
             //TODO: Implement a way to escape the game
             //   Maybe grab the data for how long a tap is held, 
             //   and quit if touch is held for 3 seconds
-            if (PlayerHealth < 1)
+            if (player_health < 1)
             {
                 //goes to game over / score screen, and player can Play Again
                 StartCoroutine(endGame());
@@ -380,11 +376,10 @@ public class SwordCombat : MonoBehaviour {
             SceneManager.LoadScene("TitleScreen");
         }
 
-        if (PlayerHealth < 1)
+        if (player_health < 1)
         {
-            spawning = false;
             for (int i = 0; i < 4; i++) spawners[i].KillAll();
-            PlayerHealth = 3;
+            player_health = 3;
             mostRecentScore = score;
             score = 0;
 
@@ -395,20 +390,24 @@ public class SwordCombat : MonoBehaviour {
         else
         {
             HandlePlayerInput();
+            if (active_enemies == 0)
+            {
+                for (int i = 0; i < enemies_per_spawn; i++) spawn_enemy();
+            }
         }
 	}
 
 	public void enemy_attacked()
     {
-        PlayerHealth--;
-        if (PlayerHealth == 2)
+        player_health--;
+        if (player_health == 2)
         {
             playerAudioSource.PlayOneShot(playerHit);
         }
-        else if (PlayerHealth == 1)
+        else if (player_health == 1)
         {
             playerAudioSource.PlayOneShot(playerHit);
-            if (PlayerHealth == 1)
+            if (player_health == 1)
             {
                 playerAudioSource.PlayOneShot(heartbeat);
             }
@@ -419,14 +418,13 @@ public class SwordCombat : MonoBehaviour {
 
         }
 
-        print(PlayerHealth);
+        print(player_health);
     }
 
     IEnumerator endGame()
     {
-        //go to game over screen after 2 seconds, 
-        //to let the "you have been killed" voiceline finished
-        yield return new WaitForSeconds(2);
+        playerAudioSource.PlayOneShot(player_death);
+        yield return new WaitForSeconds(player_death.length);
         playerAudioSource.mute = true;
 
         //show gameover screen

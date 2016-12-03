@@ -18,6 +18,7 @@ public class EnemyLogic : MonoBehaviour {
     {
         yield return new WaitForSeconds(attack_delay);
         currentInstance.enemy_attacked();
+        currentInstance.active_enemies--;
         Destroy(gameObject);
     }
 }
