@@ -65,18 +65,18 @@ public class GameSetup : MonoBehaviour {
             
         }
 
-        if (Input.GetKeyDown("1")) //"Tutorial level", just for explaining gameplay
+        if (Input.GetKeyDown("left")) //"Tutorial level", just for explaining gameplay
         {
             SceneManager.LoadScene("SCTutorial");
         } 
-        else if (Input.GetKeyDown("2")) //Beginning mode
+        else if (Input.GetKeyDown("up")) //Beginning mode
         {
             source.Stop();
             script.SetGameMode(SwordCombat.GameMode.normal);
             script.enabled = true;
             Destroy(this);
         }
-        else if (Input.GetKeyDown("3")) //Intermediate
+        else if (Input.GetKeyDown("right")) //Intermediate
         {
             source.Stop();
             script.SetGameMode(SwordCombat.GameMode.hard);

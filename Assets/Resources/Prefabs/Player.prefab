@@ -189,6 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3c82117e85df804299b429799599b54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameIsOver: 0
+  gameOverScreenLoaded: 0
 --- !u!136 &136000013510595962
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -198,7 +200,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 1
+  m_Height: 10
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

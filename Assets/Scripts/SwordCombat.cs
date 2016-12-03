@@ -41,8 +41,6 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip heartbeat;
     static AudioClip[] weaponEquipSound;
     private AudioClip beginning;
-    AudioClip twoLivesLeft;
-    AudioClip oneLifeLeft;
     static GameObject enemyPrefab;
 
     /********************************Global State*****************************************/
@@ -56,7 +54,7 @@ public class SwordCombat : MonoBehaviour {
     bool spawning = false;
     float spawnRate;
     float approachRate;
-    bool scaling;
+    float attack_delay;
     List<enemySpawner> spawners;
     static AudioSource playerAudioSource;
     static GameMode mode;
@@ -71,13 +69,13 @@ public class SwordCombat : MonoBehaviour {
         {
             approachRate = 2.0f;
             spawnRate = 50 / approachRate;
-            scaling = true;
+            attack_delay = 2.0f;
         }
         else if (m == GameMode.hard)
         {
             approachRate = 8.0f;
+            attack_delay = 1.0f;
             spawnRate = 50 / approachRate;
-            scaling = true;
         }
 
     }
@@ -102,11 +100,11 @@ public class SwordCombat : MonoBehaviour {
             AttackVector = -1*pos.normalized;
         }
 
-        public void spawnEnemy(float ApproachRate)
+        public void spawnEnemy(float ApproachRate, SwordCombat parent)
         {
             if (TopLevel.PlayerHealth > 0)
             {
-                enemies.Add(new enemy(StartingPosition, AttackVector * ApproachRate));
+                enemies.Add(new enemy(StartingPosition, AttackVector * ApproachRate, parent));
             }
         }
         
@@ -130,7 +128,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
                 TopLevel.score++;
-                if (mode != GameMode.tutorial) HandleScaling(mode);
+                HandleScaling(mode);
             }
 
         }
@@ -160,7 +158,7 @@ public class SwordCombat : MonoBehaviour {
         public EnemyType type;
         public PlayerWeapons weakness;
 
-        public enemy(Vector3 pos, Vector3 approachSpeed, EnemyType type_in)
+        public enemy(Vector3 pos, Vector3 approachSpeed, EnemyType type_in, SwordCombat parent)
         {
             source = Instantiate(enemyPrefab);
             source.transform.position = pos;
@@ -168,12 +166,14 @@ public class SwordCombat : MonoBehaviour {
             au_source.clip = enemyNoises[(int)type_in];
             au_source.Play();
             source.GetComponent<Rigidbody>().velocity = approachSpeed;
+            source.GetComponent<EnemyLogic>().currentInstance = parent;
+            source.GetComponent<EnemyLogic>().attack_delay = parent.attack_delay;
             type = type_in;
             weakness = (PlayerWeapons) type_in;
         }
 
-        public enemy(Vector3 pos, Vector3 approachSpeed) : this(pos, approachSpeed, 
-                    (EnemyType)UnityEngine.Random.Range(0, numberOfEnemies))
+        public enemy(Vector3 pos, Vector3 approachSpeed, SwordCombat parent) : this(pos, approachSpeed, 
+                    (EnemyType)UnityEngine.Random.Range(0, numberOfEnemies), parent)
         {
         }
 
@@ -295,7 +295,7 @@ public class SwordCombat : MonoBehaviour {
         {
             int randomNumber = UnityEngine.Random.Range(0, 3);
             if (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection) continue;
-            spawners[randomNumber].spawnEnemy(approachRate);
+            spawners[randomNumber].spawnEnemy(approachRate, this);
             yield return new WaitForSeconds(spawnRate);
         }
     }
@@ -347,7 +347,7 @@ public class SwordCombat : MonoBehaviour {
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
-        StartCoroutine(playSound());
+        playerAudioSource.PlayOneShot(beginning);
 
         StartSpawning();
 	}
@@ -398,7 +398,7 @@ public class SwordCombat : MonoBehaviour {
         }
 	}
 
-	void OnTriggerEnter()
+	public void enemy_attacked()
     {
         PlayerHealth--;
         if (PlayerHealth == 2)
@@ -440,36 +440,5 @@ public class SwordCombat : MonoBehaviour {
         }
     }
 
-    //helper function to play audio for lives remaining
-    IEnumerator livesLeft(int lives)
-    {
-        //wait 2 seconds after oof SFX
-        yield return new WaitForSeconds(2);
-
-        //if an audio is playing, do not play more than one thing at a time
-        if (audioIsPlaying == false)
-        {
-            audioIsPlaying = true;
-            if (lives == 2)
-            {
-                playerAudioSource.PlayOneShot(twoLivesLeft);
-            }
-            if (lives == 1)
-            {
-                playerAudioSource.PlayOneShot(oneLifeLeft);
-            }
-
-            
-        }
-        //after voiceline finishes, future audio can play
-        yield return new WaitForSeconds(2);
-        audioIsPlaying = false;
-    }
-
-    public IEnumerator playSound()
-    {
-        yield return new WaitForSeconds(0);
-        playerAudioSource.PlayOneShot(beginning);
-    }
 
 }
