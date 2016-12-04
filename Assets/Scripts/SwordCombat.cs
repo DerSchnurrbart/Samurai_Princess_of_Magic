@@ -43,6 +43,7 @@ public class SwordCombat : MonoBehaviour {
     static AudioClip[] weaponEquipSound;
     private AudioClip beginning;
     static GameObject enemyPrefab;
+    public GameObject screen_tear;
 
     /********************************Global State*****************************************/
 
@@ -286,10 +287,8 @@ public class SwordCombat : MonoBehaviour {
         weaponDelayActive = false;
     }
 
-    public IEnumerator spawn_enemy()
+    public void spawn_enemy()
     {
-        if (mode == GameMode.normal) yield return new WaitForSeconds(1.0f);
-        if (mode == GameMode.hard) yield return new WaitForSeconds(0.5f);
         int randomNumber = UnityEngine.Random.Range(0, 3);
         while (((int)playerFacing + 2) % 4 == (int)spawners[randomNumber].initialDirection)
         {
@@ -298,19 +297,25 @@ public class SwordCombat : MonoBehaviour {
         spawners[randomNumber].spawnEnemy(approachRate);
     }
 
+    public IEnumerator attack_screen()
+    {
+        screen_tear.SetActive(true);
+        yield return new WaitForSeconds(0.25f);
+        screen_tear.SetActive(false);
+    }
+
     /*********************************Begin Unity Automatic Calls***************************************/
 
 	void Start () {
 
         mobInput = new MobileInput();
         playerAudioSource = GetComponent<AudioSource>();
-
         //defeat sounds
         swordDefeat = Resources.Load("Sounds/Voicelines/GameOvers/SwordDefeat") as AudioClip;
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
-        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolf") as AudioClip;
+        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolfhowl") as AudioClip;
         enemyNoises[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghost") as AudioClip;
         enemyDeaths = new AudioClip[3];
         enemyDeaths[(int)EnemyType.wolf] = Resources.Load("Sounds/Death/wolfdeath") as AudioClip;
@@ -397,8 +402,12 @@ public class SwordCombat : MonoBehaviour {
         }
 	}
 
+    
+
 	public void enemy_attacked()
     {
+
+        StartCoroutine(attack_screen());
         player_health--;
         if (player_health == 2)
         {

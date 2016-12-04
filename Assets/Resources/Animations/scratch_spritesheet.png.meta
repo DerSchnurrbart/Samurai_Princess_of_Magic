@@ -1,0 +1,248 @@
+fileFormatVersion: 2
+guid: 03e87e5d8593d054a8923a803e50adca
+timeCreated: 1480810999
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: scratch_spritesheet_0
+    21300002: scratch_spritesheet_1
+    21300004: scratch_spritesheet_2
+    21300006: scratch_spritesheet_3
+    21300008: scratch_spritesheet_4
+    21300010: scratch_spritesheet_5
+    21300012: scratch_spritesheet_6
+    21300014: scratch_spritesheet_7
+    21300016: scratch_spritesheet_8
+    21300018: scratch_spritesheet_9
+    21300020: scratch_spritesheet_10
+    21300022: scratch_spritesheet_11
+    21300024: scratch_spritesheet_12
+    21300026: scratch_spritesheet_13
+    21300028: scratch_spritesheet_14
+    21300030: scratch_spritesheet_15
+    21300032: scratch_spritesheet_16
+    21300034: scratch_spritesheet_17
+    21300036: scratch_spritesheet_18
+    21300038: scratch_spritesheet_19
+    21300040: scratch_spritesheet_20
+    21300042: scratch_spritesheet_21
+    21300044: scratch_spritesheet_22
+    21300046: scratch_spritesheet_23
+    21300048: scratch_spritesheet_24
+    21300050: scratch_spritesheet_25
+    21300052: scratch_spritesheet_26
+    21300054: scratch_spritesheet_27
+    21300056: scratch_spritesheet_28
+    21300058: scratch_spritesheet_29
+    21300060: scratch_spritesheet_30
+    21300062: scratch_spritesheet_31
+    21300064: scratch_spritesheet_32
+    21300066: scratch_spritesheet_33
+    21300068: scratch_spritesheet_34
+    21300070: scratch_spritesheet_35
+    21300072: scratch_spritesheet_36
+    21300074: scratch_spritesheet_37
+    21300076: scratch_spritesheet_38
+    21300078: scratch_spritesheet_39
+    21300080: scratch_spritesheet_40
+    21300082: scratch_spritesheet_41
+    21300084: scratch_spritesheet_42
+    21300086: scratch_spritesheet_43
+    21300088: scratch_spritesheet_44
+    21300090: scratch_spritesheet_45
+    21300092: scratch_spritesheet_46
+    21300094: scratch_spritesheet_47
+    21300096: scratch_spritesheet_48
+    21300098: scratch_spritesheet_49
+    21300100: scratch_spritesheet_50
+    21300102: scratch_spritesheet_51
+    21300104: scratch_spritesheet_52
+    21300106: scratch_spritesheet_53
+    21300108: scratch_spritesheet_54
+    21300110: scratch_spritesheet_55
+    21300112: scratch_spritesheet_56
+    21300114: scratch_spritesheet_57
+    21300116: scratch_spritesheet_58
+    21300118: scratch_spritesheet_59
+    21300120: scratch_spritesheet_60
+    21300122: scratch_spritesheet_61
+    21300124: scratch_spritesheet_62
+    21300126: scratch_spritesheet_63
+    21300128: scratch_spritesheet_64
+    21300130: scratch_spritesheet_65
+    21300132: scratch_spritesheet_66
+    21300134: scratch_spritesheet_67
+    21300136: scratch_spritesheet_68
+    21300138: scratch_spritesheet_69
+    21300140: scratch_spritesheet_70
+    21300142: scratch_spritesheet_71
+    21300144: scratch_spritesheet_72
+    21300146: scratch_spritesheet_73
+    21300148: scratch_spritesheet_74
+    21300150: scratch_spritesheet_75
+    21300152: scratch_spritesheet_76
+    21300154: scratch_spritesheet_77
+    21300156: scratch_spritesheet_78
+    21300158: scratch_spritesheet_79
+    21300160: scratch_spritesheet_80
+    21300162: scratch_spritesheet_81
+    21300164: scratch_spritesheet_82
+    21300166: scratch_spritesheet_83
+    21300168: scratch_spritesheet_84
+    21300170: scratch_spritesheet_85
+    21300172: scratch_spritesheet_86
+    21300174: scratch_spritesheet_87
+    21300176: scratch_spritesheet_88
+    21300178: scratch_spritesheet_89
+    21300180: scratch_spritesheet_90
+    21300182: scratch_spritesheet_91
+    21300184: scratch_spritesheet_92
+    21300186: scratch_spritesheet_93
+    21300188: scratch_spritesheet_94
+    21300190: scratch_spritesheet_95
+    21300192: scratch_spritesheet_96
+    21300194: scratch_spritesheet_97
+    21300196: scratch_spritesheet_98
+    21300198: scratch_spritesheet_99
+    21300200: scratch_spritesheet_100
+    21300202: scratch_spritesheet_101
+    21300204: scratch_spritesheet_102
+    21300206: scratch_spritesheet_103
+    21300208: scratch_spritesheet_104
+    21300210: scratch_spritesheet_105
+    21300212: scratch_spritesheet_106
+    21300214: scratch_spritesheet_107
+    21300216: scratch_spritesheet_108
+    21300218: scratch_spritesheet_109
+    21300220: scratch_spritesheet_110
+    21300222: scratch_spritesheet_111
+    21300224: scratch_spritesheet_112
+    21300226: scratch_spritesheet_113
+    21300228: scratch_spritesheet_114
+    21300230: scratch_spritesheet_115
+    21300232: scratch_spritesheet_116
+    21300234: scratch_spritesheet_117
+    21300236: scratch_spritesheet_118
+    21300238: scratch_spritesheet_119
+    21300240: scratch_spritesheet_120
+    21300242: scratch_spritesheet_121
+    21300244: scratch_spritesheet_122
+    21300246: scratch_spritesheet_123
+    21300248: scratch_spritesheet_124
+    21300250: scratch_spritesheet_125
+    21300252: scratch_spritesheet_126
+    21300254: scratch_spritesheet_127
+    21300256: scratch_spritesheet_128
+    21300258: scratch_spritesheet_129
+    21300260: scratch_spritesheet_130
+    21300262: scratch_spritesheet_131
+    21300264: scratch_spritesheet_132
+    21300266: scratch_spritesheet_133
+    21300268: scratch_spritesheet_134
+    21300270: scratch_spritesheet_135
+    21300272: scratch_spritesheet_136
+    21300274: scratch_spritesheet_137
+    21300276: scratch_spritesheet_138
+    21300278: scratch_spritesheet_139
+    21300280: scratch_spritesheet_140
+    21300282: scratch_spritesheet_141
+    21300284: scratch_spritesheet_142
+    21300286: scratch_spritesheet_143
+    21300288: scratch_spritesheet_144
+    21300290: scratch_spritesheet_145
+    21300292: scratch_spritesheet_146
+    21300294: scratch_spritesheet_147
+    21300296: scratch_spritesheet_148
+    21300298: scratch_spritesheet_149
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 400
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: scratch_spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 800
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: scratch_spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 800
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: scratch_spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 800
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
