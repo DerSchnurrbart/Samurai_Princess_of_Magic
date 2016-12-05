@@ -116,64 +116,69 @@ public class GameOver : MonoBehaviour
 
     public IEnumerator playSound()
     {
-        //if rhythm magic
-        if (Load.lastPlayedGame == 3)
-        {
-            source.PlayOneShot(youLasted);
-            yield return new WaitForSeconds(youLasted.length + 0.1f);
-            source.PlayOneShot(score[getIndex(newestScore)]);
-            yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-            source.PlayOneShot(rounds);
-            yield return new WaitForSeconds(rounds.length);
-        }
-        else if (Load.lastPlayedGame == 1)
-        {
-            source.PlayOneShot(youFollowed);
-            yield return new WaitForSeconds(youFollowed.length + 0.1f);
-            source.PlayOneShot(score[getIndex(newestScore)]);
-            yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-            source.PlayOneShot(directions);
-            yield return new WaitForSeconds(directions.length);
-        }
-        else if (Load.lastPlayedGame == 2)
-        {
-            source.PlayOneShot(youKilled);
-            yield return new WaitForSeconds(youKilled.length + 0.1f);
-            source.PlayOneShot(score[getIndex(newestScore)]);
-            yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-            source.PlayOneShot(monsters);
-            yield return new WaitForSeconds(monsters.length);
-        }
+        while(true) {
+            //if rhythm magic
+            if (Load.lastPlayedGame == 3)
+            {
+                source.PlayOneShot(youLasted);
+                yield return new WaitForSeconds(youLasted.length + 0.1f);
+                source.PlayOneShot(score[getIndex(newestScore)]);
+                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
+                source.PlayOneShot(rounds);
+                yield return new WaitForSeconds(rounds.length);
+            }
+            else if (Load.lastPlayedGame == 1)
+            {
+                source.PlayOneShot(youFollowed);
+                yield return new WaitForSeconds(youFollowed.length + 0.1f);
+                source.PlayOneShot(score[getIndex(newestScore)]);
+                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
+                source.PlayOneShot(directions);
+                yield return new WaitForSeconds(directions.length);
+            }
+            else if (Load.lastPlayedGame == 2)
+            {
+                source.PlayOneShot(youKilled);
+                yield return new WaitForSeconds(youKilled.length + 0.1f);
+                source.PlayOneShot(score[getIndex(newestScore)]);
+                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
+                source.PlayOneShot(monsters);
+                yield return new WaitForSeconds(monsters.length);
+            }
 
-        //play the compliment voicelines
-        if (newestScore >= 0)
-        {
-            source.PlayOneShot(compliment[0]);
-            yield return new WaitForSeconds(compliment[0].length);
-        }
-        else if (newestScore >= 5 && newestScore < 15)
-        {
-            source.PlayOneShot(compliment[1]);
-            yield return new WaitForSeconds(compliment[1].length);
-        }
-        if (newestScore >= 15 && newestScore < 25)
-        {
-            source.PlayOneShot(compliment[2]);
-            yield return new WaitForSeconds(compliment[2].length);
-        }
-        if (newestScore >= 25 && newestScore < 35)
-        {
-            source.PlayOneShot(compliment[3]);
-            yield return new WaitForSeconds(compliment[3].length);
-        }
-        if (newestScore >= 35)
-        {
-            source.PlayOneShot(compliment[4]);
-            yield return new WaitForSeconds(compliment[4].length);
-        }
+            //play the compliment voicelines
+            if (newestScore >= 0)
+            {
+                source.PlayOneShot(compliment[0]);
+                yield return new WaitForSeconds(compliment[0].length);
+            }
+            else if (newestScore >= 5 && newestScore < 15)
+            {
+                source.PlayOneShot(compliment[1]);
+                yield return new WaitForSeconds(compliment[1].length);
+            }
+            else if (newestScore >= 15 && newestScore < 25)
+            {
+                source.PlayOneShot(compliment[2]);
+                yield return new WaitForSeconds(compliment[2].length);
+            }
+            else if (newestScore >= 25 && newestScore < 35)
+            {
+                source.PlayOneShot(compliment[3]);
+                yield return new WaitForSeconds(compliment[3].length);
+            }
+            else if (newestScore >= 35)
+            {
+                source.PlayOneShot(compliment[4]);
+                yield return new WaitForSeconds(compliment[4].length);
+            }
 
-        yield return new WaitForSeconds(0.5f);
-        source.PlayOneShot(playAgain);
+            yield return new WaitForSeconds(0.5f);
+            source.PlayOneShot(playAgain);
+
+            //loop the voicelines with 5 seconds in between
+            yield return new WaitForSeconds(playAgain.length + 5);
+        }
     }
 
     //returns the index of what audio clip to be played for the score number
@@ -190,27 +195,31 @@ public class GameOver : MonoBehaviour
         else if (newestScore == 7) return 6;
         else if (newestScore == 8) return 7;
         else if (newestScore == 9) return 8;
-        else if (newestScore == 10) return 9;
-        else if (newestScore > 15) return 10;
-        else if (newestScore > 20) return 11;
-        else if (newestScore > 25) return 12;
-        else if (newestScore > 30) return 13;
-        else if (newestScore > 35) return 14;
-        else if (newestScore > 40) return 15;
-        else if (newestScore > 45) return 16;
-        else if (newestScore > 50) return 17;
-        else if (newestScore > 60) return 18;
-        else if (newestScore > 70) return 19;
-        else if (newestScore > 80) return 20;
-        else if (newestScore > 90) return 21;
-        else if (newestScore > 100) return 22;
-        else if (newestScore > 120) return 23;
-        else if (newestScore > 140) return 24;
-        else if (newestScore > 160) return 25;
-        else if (newestScore > 180) return 26;
-        else if (newestScore > 200) return 27;
+
+        else if (newestScore > 300) return 29;
         else if (newestScore > 250) return 28;
-        else return 29;
+        else if (newestScore > 200) return 27;
+        else if (newestScore > 180) return 26;
+        else if (newestScore > 160) return 25;
+        else if (newestScore > 140) return 24;
+        else if (newestScore > 120) return 23;
+        else if (newestScore > 100) return 22;
+        else if (newestScore > 90) return 21;
+        else if (newestScore > 80) return 20;
+        else if (newestScore > 70) return 19;
+        else if (newestScore > 60) return 18;
+        else if (newestScore > 50) return 17;
+        else if (newestScore > 45) return 16;
+        else if (newestScore > 40) return 15;
+        else if (newestScore > 35) return 14;
+        else if (newestScore > 30) return 13;
+        else if (newestScore > 25) return 12;
+        else if (newestScore > 20) return 11;
+        else if (newestScore > 15) return 10;
+
+        //it is smaller than 15 and must be 10 or greater, 
+        //    so return the index 9 to play the voiceline "over 10"
+        return 9;
     }
 
     public void initAudioClips()
@@ -235,7 +244,7 @@ public class GameOver : MonoBehaviour
         score[16] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/45") as AudioClip;
         score[17] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/50") as AudioClip;
         score[18] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/60") as AudioClip;
-        score[19] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/0") as AudioClip;
+        score[19] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/70") as AudioClip;
         score[20] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/80") as AudioClip;
         score[21] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/90") as AudioClip;
         score[22] = Resources.Load("Sounds/BetaVoicelines/GameOver/Score/100") as AudioClip;

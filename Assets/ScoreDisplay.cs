@@ -6,7 +6,7 @@ public class ScoreDisplay : MonoBehaviour {
 
     Text txt;
 
-    private int gameScore = 0;
+    public static int gameScore = 0;
     private string gameScoreUnits;
 
 	// Use this for initialization

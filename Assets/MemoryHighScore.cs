@@ -4,32 +4,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class BeginAdventure : MonoBehaviour {
-//Mobile Touch Input
+public class MemoryHighScore : MonoBehaviour
+{
+    //Mobile Touch Input
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
 
-    private AudioSource source;
-    private AudioClip welcome;
-    //helper for triggering game select directions after tapping on title screen
+    Text txt;
 
     // Use this for initialization
-    void Start () {
-          //define what % of the screen is needed to be touched for a swipe to register
-        dragDistance = Screen.height * 8 / 100;
-
-        source = GetComponent<AudioSource>();
-        welcome = Resources.Load("Sounds/BetaVoicelines/Menu/Welcome") as AudioClip;
-
-        StartCoroutine(playSound());
+    void Start()
+    {
+        txt = gameObject.GetComponent<Text>();
+        txt.text = PlayerPrefs.GetInt(HighScore.highScoreMemoryKey, 0) + " directions";
     }
-	
-	// Update is called once per frame
-	void Update () {
-        
 
-        //if on android, tap will go to arcade game screen
+    // Update is called once per frame
+    void Update()
+    {
 #if UNITY_ANDROID
         MobileInput();
         /*
@@ -45,20 +38,11 @@ public class BeginAdventure : MonoBehaviour {
 #endif
 
         //if on desktop, enter will go to arcade game screen
-        if (Input.GetKeyDown("return"))
+        if (Input.GetKeyDown("down"))
         {
             SceneManager.LoadScene("MinigameScreen");
         }
 
-    }
-
-    public IEnumerator playSound()
-    {
-        while (true)
-        {
-            source.PlayOneShot(welcome);
-            yield return new WaitForSeconds(10);
-        }
     }
 
     void MobileInput()
@@ -84,11 +68,20 @@ public class BeginAdventure : MonoBehaviour {
             {
                 lp = touch.position;
 
-                //User has touched the screen; 
-                //   whether it was a tap or a swipe, proceed to minigame menu
-                    Debug.Log("Tap");
-                SceneManager.LoadScene("MinigameScreen");
+                //Check if drag distance is greater than 15% of the screen height
+                if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
+                {
 
+                    //check if the drag is vertical
+                    if (Mathf.Abs(lp.x - fp.x) < Mathf.Abs(lp.y - fp.y))
+                    {
+                        if (lp.y < fp.y)
+                        {
+                            Debug.Log("Down Swipe");
+                            SceneManager.LoadScene("MinigameScreen", LoadSceneMode.Single);
+                        }
+                    }
+                }
             }
         }
     }

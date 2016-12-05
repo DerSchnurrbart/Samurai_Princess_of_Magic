@@ -50,8 +50,8 @@ public class GameSelect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        
+
+
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
         MobileInput();
@@ -80,10 +80,7 @@ public class GameSelect : MonoBehaviour
         }
         if (input == MobileInput.InputType.down)
         {
-            rhythm = false;
-            memory = false;
-            sword = false;
-            back = true;
+             SceneManager.LoadScene("HighScores");
         }
         if (input == MobileInput.InputType.tap)
         {
@@ -141,11 +138,7 @@ public class GameSelect : MonoBehaviour
         if (Input.GetKeyDown("down"))
         {
             Debug.Log("Down Swipe");
-            SceneManager.LoadScene("TitleScreen");
-            //Optional Design: swiping down clears selection
-            //rhythm = false;
-            //memory = false;
-            //sword = false;
+            SceneManager.LoadScene("HighScores");
         }
         //Confirm game selection
         if (Input.GetKeyDown("return"))
@@ -162,7 +155,7 @@ public class GameSelect : MonoBehaviour
     public IEnumerator playSound()
     {
         source.PlayOneShot(instructions);
-        yield return new WaitForSeconds(0);
+        yield return new WaitForSeconds(instructions.length + 5);
     }
 
     public IEnumerator playSword()
@@ -257,14 +250,7 @@ public class GameSelect : MonoBehaviour
                         else
                         {
                             Debug.Log("Down Swipe");
-                            rhythm = false;
-            memory = false;
-            sword = false;
-            back = true;
-                            //Optional Design: swiping down clears selection
-                            //rhythm = false;
-                            //memory = false;
-                            //sword = false;
+                            SceneManager.LoadScene("HighScores");
                         }
                     }
 

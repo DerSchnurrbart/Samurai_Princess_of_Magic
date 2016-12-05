@@ -19,3 +19,5 @@ EditorBuildSettings:
     path: Assets/Scenes/SCTutorial.unity
   - enabled: 1
     path: Assets/Scenes/MinigameScreen.unity
+  - enabled: 1
+    path: Assets/Scenes/HighScores.unity
