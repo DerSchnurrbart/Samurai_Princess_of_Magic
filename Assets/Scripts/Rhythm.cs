@@ -30,9 +30,13 @@ public class Rhythm : MonoBehaviour
     public List<Action> target;
     public List<int> unmutatedPositions;
 
-    public const int CYCLES_NEEDED_TO_PROCEED = 3;
-    public const int NUM_MOVES_INCORRECT_TO_FAIL = 5;
-    public const float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
+	public enum GameMode { tutorial, normal, hard, random };
+	public GameMode mode;
+	public GameObject playerPrefab;
+
+    public int CYCLES_NEEDED_TO_PROCEED = 3;
+    public int NUM_MOVES_INCORRECT_TO_FAIL = 5;
+    public float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
     public int difficulty;
     public int prompt_index;
     public int correct = 0;
@@ -55,6 +59,25 @@ public class Rhythm : MonoBehaviour
 
     MobileInput mobInput;
 
+
+	public void SetGameMode(GameMode m) {
+		mode = m;
+
+		if (m == GameMode.normal) {
+			CYCLES_NEEDED_TO_PROCEED = 3;
+			MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
+			timeBetweenBeats = 0.2f;
+			difficulty = 3;
+			inputDelay = 1.0f;
+		} else if (m == GameMode.hard) {
+			CYCLES_NEEDED_TO_PROCEED = 2;
+			MULTIPLIER_FOR_BEAT_PERIOD = 0.95f;
+			timeBetweenBeats = 0.2f;
+			difficulty = 3;
+			inputDelay = 2.0f;
+		}
+
+	}
     // Use this for initialization
     void Start()
     {
