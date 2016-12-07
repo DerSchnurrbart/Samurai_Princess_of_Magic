@@ -94,6 +94,10 @@ public class GameSetup : MonoBehaviour
             script.enabled = true;
             Destroy(this);
         }
+        else if (Input.GetKeyDown("down"))
+        {
+
+        }
 
     }
 

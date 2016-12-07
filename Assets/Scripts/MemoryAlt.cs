@@ -32,7 +32,7 @@ public class MemoryAlt : MonoBehaviour
     private AudioClip[,] ac_direction; //ac == audio clip
     private AudioClip then;
     private AudioClip welcome;
-    private AudioClip uhOh;
+    private AudioClip[] uhOh;
     private AudioClip nextPath;
 
     public List<Direction> sequence;
@@ -184,8 +184,9 @@ public class MemoryAlt : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
         results_text.text = "Incorrect sequence!";
-        direction_noise.PlayOneShot(uhOh);
-        yield return new WaitForSeconds(uhOh.length);
+        int uhoh_index = Random.Range(0, 4);
+        direction_noise.PlayOneShot(uhOh[uhoh_index]);
+        yield return new WaitForSeconds(uhOh[uhoh_index].length);
         user_guess.Clear();
         current_difficulty = 1;
         populateSequence(current_difficulty);
@@ -329,18 +330,22 @@ public class MemoryAlt : MonoBehaviour
         ac_direction[0, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp2") as AudioClip;
         ac_direction[0, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp3") as AudioClip;
         ac_direction[0, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp4") as AudioClip;
+        ac_direction[0, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeUp5") as AudioClip;
         ac_direction[1, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown1") as AudioClip;
         ac_direction[1, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown2") as AudioClip;
         ac_direction[1, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown3") as AudioClip;
         ac_direction[1, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown4") as AudioClip;
+        ac_direction[1, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeDown5") as AudioClip;
         ac_direction[2, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft1") as AudioClip;
         ac_direction[2, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft2") as AudioClip;
         ac_direction[2, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft3") as AudioClip;
         ac_direction[2, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft4") as AudioClip;
+        ac_direction[2, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeLeft5") as AudioClip;
         ac_direction[3, 0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight1") as AudioClip;
         ac_direction[3, 1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight2") as AudioClip;
         ac_direction[3, 2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight3") as AudioClip;
         ac_direction[3, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight4") as AudioClip;
+        ac_direction[3, 3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/SwipeRight5") as AudioClip;
         simple_direction = new AudioClip[4];
         simple_direction[0] = Resources.Load("Sounds/Directions/up") as AudioClip;
         simple_direction[1] = Resources.Load("Sounds/Directions/down") as AudioClip;
@@ -348,7 +353,11 @@ public class MemoryAlt : MonoBehaviour
         simple_direction[3] = Resources.Load("Sounds/Directions/right") as AudioClip;
         welcome = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Welcome") as AudioClip;
         nextPath = Resources.Load("Sounds/BetaVoicelines/MemoryGame/YourNextPathIs") as AudioClip;
-        uhOh = Resources.Load("Sounds/BetaVoicelines/MemoryGame/UhOh") as AudioClip;
+        uhOh = new AudioClip[4];
+        uhOh[0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/UhOhPigs") as AudioClip;
+        uhOh[1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/OuchBurnt") as AudioClip;
+        uhOh[2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/OhNoQuickSand") as AudioClip;
+        uhOh[3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/WhoopsCliff") as AudioClip;
         //Arcade Mode:
         current_difficulty = 1;
         populateSequence(current_difficulty);
