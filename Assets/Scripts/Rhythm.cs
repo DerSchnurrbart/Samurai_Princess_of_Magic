@@ -34,6 +34,9 @@ public class Rhythm : MonoBehaviour
 	public GameMode mode;
 	public GameObject playerPrefab;
 
+	public int NUM_INVINCIBILITY_BEATS;
+
+	public int totalBeats = 0;
     public int CYCLES_NEEDED_TO_PROCEED = 3;
     public int NUM_MOVES_INCORRECT_TO_FAIL = 5;
     public float MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
@@ -70,12 +73,14 @@ public class Rhythm : MonoBehaviour
 			timeBetweenBeats = 0.2f;
 			difficulty = 3;
 			inputDelay = 1.0f;
+			NUM_INVINCIBILITY_BEATS = 3;
 		} else if (m == GameMode.hard) {
 			CYCLES_NEEDED_TO_PROCEED = 2;
 			MULTIPLIER_FOR_BEAT_PERIOD = 0.95f;
 			timeBetweenBeats = 0.2f;
 			difficulty = 3;
 			inputDelay = 2.0f;
+			NUM_INVINCIBILITY_BEATS = 4;
 		}
 
 	}
@@ -223,6 +228,7 @@ public class Rhythm : MonoBehaviour
             correct++;
 			score++;
         }
+		totalBeats++;
         numBeatsThisLevel++;
         print("number of beats this level: " + numBeatsThisLevel);
         print("number correct: " + correct);
@@ -237,7 +243,7 @@ public class Rhythm : MonoBehaviour
     public void advancePlay()
     {
         print("ADVANCEPLAYCALLED");
-        if (numIncorrectThisCycle > sequence.Count / 3)
+		if (numIncorrectThisCycle > sequence.Count / 3 && totalBeats > NUM_INVINCIBILITY_BEATS)
         {
             print("too many incorrect");
             gameIsOver = true;
@@ -320,6 +326,7 @@ public class Rhythm : MonoBehaviour
                 if (valid_input)
                 {
                     correct = 0;
+					totalBeats++;
                     print("no input given");
                     numIncorrectThisCycle++;
                     numBeatsThisLevel++;
