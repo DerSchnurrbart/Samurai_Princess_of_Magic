@@ -13,8 +13,11 @@ public class HighScore : MonoBehaviour {
 
     private AudioSource source;
     private AudioClip youLasted;
+	private AudioClip youLastedOver;
     private AudioClip youFollowed;
+	private AudioClip youFollowedOver;
     private AudioClip youKilled;
+	private AudioClip youKilledOver;
     private AudioClip[] score;
     private AudioClip beats;
     private AudioClip directions;
@@ -27,9 +30,12 @@ public class HighScore : MonoBehaviour {
         highScoreClip = Resources.Load("Sounds/BetaVoicelines/HighScores/HighScores") as AudioClip;
 
         source = GetComponent<AudioSource>();
-        youLasted = Resources.Load("Sounds/BetaVoicelines/HighScores/YouLastedOver") as AudioClip;
-        youFollowed = Resources.Load("Sounds/BetaVoicelines/HighScores/YouFollowedOver") as AudioClip;
-        youKilled = Resources.Load("Sounds/BetaVoicelines/HighScores/YouKilledOver") as AudioClip;
+		youLasted = Resources.Load("Sounds/BetaVoicelines/HighScores/YouLasted") as AudioClip;
+        youLastedOver = Resources.Load("Sounds/BetaVoicelines/HighScores/YouLastedOver") as AudioClip;
+		youFollowed = Resources.Load("Sounds/BetaVoicelines/HighScores/YouFollowed") as AudioClip;
+        youFollowedOver = Resources.Load("Sounds/BetaVoicelines/HighScores/YouFollowedOver") as AudioClip;
+		youKilled = Resources.Load("Sounds/BetaVoicelines/HighScores/YouKilled") as AudioClip;
+        youKilledOver = Resources.Load("Sounds/BetaVoicelines/HighScores/YouKilledOver") as AudioClip;
         beats = Resources.Load("Sounds/BetaVoicelines/GameOver/Beats") as AudioClip;
         directions = Resources.Load("Sounds/BetaVoicelines/GameOver/Directions") as AudioClip;
         monsters = Resources.Load("Sounds/BetaVoicelines/GameOver/Monsters") as AudioClip;
@@ -77,22 +83,37 @@ public class HighScore : MonoBehaviour {
             source.PlayOneShot(highScoreClip);
             yield return new WaitForSeconds(highScoreClip.length + 0.2f);
 
-            source.PlayOneShot(youFollowed);
-            yield return new WaitForSeconds(youFollowed.length + 0.1f);
+			if (memoryScore <= 10) {
+				source.PlayOneShot (youFollowed);
+				yield return new WaitForSeconds (youFollowed.length + 0.1f);
+			} else {
+				source.PlayOneShot (youFollowedOver);
+				yield return new WaitForSeconds (youFollowedOver.length + 0.1f);
+			}
             source.PlayOneShot(score[getIndex(memoryScore)]);
             yield return new WaitForSeconds(score[getIndex(memoryScore)].length + 0.1f);
             source.PlayOneShot(directions);
             yield return new WaitForSeconds(directions.length + 0.5f);
 
-            source.PlayOneShot(youKilled);
-            yield return new WaitForSeconds(youKilled.length + 0.1f);
+			if (swordScore <= 10) {
+				source.PlayOneShot (youKilled);
+				yield return new WaitForSeconds(youKilled.length + 0.1f);
+			} else {
+				source.PlayOneShot (youKilledOver);
+				yield return new WaitForSeconds(youKilledOver.length + 0.1f);
+			}
             source.PlayOneShot(score[getIndex(swordScore)]);
             yield return new WaitForSeconds(score[getIndex(swordScore)].length + 0.1f);
             source.PlayOneShot(monsters);
             yield return new WaitForSeconds(monsters.length + 0.5f);
 
-            source.PlayOneShot(youLasted);
-            yield return new WaitForSeconds(youLasted.length + 0.1f);
+			if (rhythmScore <= 10) {
+				source.PlayOneShot (youLasted);
+				yield return new WaitForSeconds (youLasted.length + 0.1f);
+			} else {
+				source.PlayOneShot (youLastedOver);
+				yield return new WaitForSeconds (youLastedOver.length + 0.1f);
+			}
             source.PlayOneShot(score[getIndex(rhythmScore)]);
             yield return new WaitForSeconds(score[getIndex(rhythmScore)].length + 0.1f);
             source.PlayOneShot(beats);

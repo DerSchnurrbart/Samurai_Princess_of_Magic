@@ -21,6 +21,9 @@ public class GameOver : MonoBehaviour
     private AudioClip youLasted;
     private AudioClip youFollowed;
     private AudioClip youKilled;
+	private AudioClip youLastedOver;
+	private AudioClip youFollowedOver;
+	private AudioClip youKilledOver;
     private AudioClip[] score;
     private AudioClip beats;
     private AudioClip directions;
@@ -40,13 +43,16 @@ public class GameOver : MonoBehaviour
         dragDistance = Screen.height * 15 / 100;
         */
 
-        newRecord = Resources.Load("Sounds/BetaVoicelines/GameOvers/NewRecord") as AudioClip;
+        newRecord = Resources.Load("Sounds/BetaVoicelines/GameOver/NewRecord") as AudioClip;
 
         source = GetComponent<AudioSource>();
         playAgain = Resources.Load("Sounds/BetaVoicelines/GameOver/PlayAgain") as AudioClip;
-        youLasted = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouLasted") as AudioClip;
-        youFollowed = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouFollowed") as AudioClip;
-        youKilled = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouKilled") as AudioClip;
+        youLastedOver = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouLasted") as AudioClip;
+		youLasted = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouLasted0") as AudioClip;
+        youFollowedOver = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouFollowed") as AudioClip;
+		youFollowed = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouFollowed0") as AudioClip;
+		youKilledOver = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouKilled") as AudioClip;
+		youKilled = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouKilled0") as AudioClip;
         beats = Resources.Load("Sounds/BetaVoicelines/GameOver/Beats") as AudioClip;
         directions = Resources.Load("Sounds/BetaVoicelines/GameOver/Directions") as AudioClip;
         monsters = Resources.Load("Sounds/BetaVoicelines/GameOver/Monsters") as AudioClip;
@@ -112,51 +118,56 @@ public class GameOver : MonoBehaviour
     {
         while(true) {
             //if rhythm magic
-            if (Load.lastPlayedGame == 3)
-            {
-                source.PlayOneShot(youLasted);
-                yield return new WaitForSeconds(youLasted.length + 0.1f);
-                source.PlayOneShot(score[getIndex(newestScore)]);
-                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-                source.PlayOneShot(beats);
-                yield return new WaitForSeconds(beats.length);
 
-                if (UpdateHighScore.newRecord == true)
-                {
-                    source.PlayOneShot(newRecord);
-                    yield return new WaitForSeconds(newRecord.length);
-                }
-            }
-            else if (Load.lastPlayedGame == 1)
-            {
-                source.PlayOneShot(youFollowed);
-                yield return new WaitForSeconds(youFollowed.length + 0.1f);
-                source.PlayOneShot(score[getIndex(newestScore)]);
-                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-                source.PlayOneShot(directions);
-                yield return new WaitForSeconds(directions.length);
+			AudioClip[] clips = new AudioClip[3];
+			if (Load.lastPlayedGame == 3) {
 
-                if (UpdateHighScore.newRecord == true)
-                {
-                    source.PlayOneShot(newRecord);
-                    yield return new WaitForSeconds(newRecord.length);
-                }
-            }
+				if (newestScore <= 10) {
+					clips [0] = youLasted;
+				} else {
+					clips [0] = youLastedOver;
+				}
+				clips [2] = beats;
+			} else if (Load.lastPlayedGame == 1) {
+				if (newestScore <= 10) {
+					clips [0] = youFollowed;
+				} else {
+					clips [0] = youFollowedOver;
+				}
+				clips [2] = directions;
+			}
             else if (Load.lastPlayedGame == 2)
             {
-                source.PlayOneShot(youKilled);
-                yield return new WaitForSeconds(youKilled.length + 0.1f);
-                source.PlayOneShot(score[getIndex(newestScore)]);
-                yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-                source.PlayOneShot(monsters);
-                yield return new WaitForSeconds(monsters.length);
-
-                if (UpdateHighScore.newRecord == true)
-                {
-                    source.PlayOneShot(newRecord);
-                    yield return new WaitForSeconds(newRecord.length);
-                }
+				if (newestScore <= 10) {
+					clips [0] = youKilled;
+				} else {
+					clips [0] = youKilledOver;
+				}
+				clips [2] = monsters;
+                //source.PlayOneShot(youKilled);
+                //yield return new WaitForSeconds(youKilled.length + 0.1f);
+                //source.PlayOneShot(score[getIndex(newestScore)]);
+                //yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
+                //source.PlayOneShot(monsters);
+                //yield return new WaitForSeconds(monsters.length);
+				//
+                //if (UpdateHighScore.newRecord == true)
+                //{
+                //    source.PlayOneShot(newRecord);
+                //    yield return new WaitForSeconds(newRecord.length);
+                //}
             }
+
+			clips [1] = score [getIndex (newestScore)];
+			for (int i = 0; i < 3; i++) {
+				source.PlayOneShot (clips [i]);
+				yield return new WaitForSeconds (clips [i].length + 0.1f);
+			}
+
+			if (UpdateHighScore.newRecord == true) {
+				source.PlayOneShot (newRecord);
+				yield return new WaitForSeconds (newRecord.length);
+			}
 
             //play the compliment voicelines
             if (newestScore >= 0)

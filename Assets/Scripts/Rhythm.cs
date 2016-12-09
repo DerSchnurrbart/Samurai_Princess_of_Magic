@@ -68,19 +68,19 @@ public class Rhythm : MonoBehaviour
 		mode = m;
 
 		if (m == GameMode.normal) {
-			CYCLES_NEEDED_TO_PROCEED = 3;
-			MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
-			timeBetweenBeats = 0.2f;
-			difficulty = 3;
-			inputDelay = 1.0f;
-			NUM_INVINCIBILITY_BEATS = 3;
-		} else if (m == GameMode.hard) {
 			CYCLES_NEEDED_TO_PROCEED = 2;
 			MULTIPLIER_FOR_BEAT_PERIOD = 0.95f;
 			timeBetweenBeats = 0.2f;
 			difficulty = 3;
 			inputDelay = 2.0f;
 			NUM_INVINCIBILITY_BEATS = 4;
+		} else if (m == GameMode.hard) {
+			CYCLES_NEEDED_TO_PROCEED = 3;
+			MULTIPLIER_FOR_BEAT_PERIOD = 0.90f;
+			timeBetweenBeats = 0.2f;
+			difficulty = 3;
+			inputDelay = 1.0f;
+			NUM_INVINCIBILITY_BEATS = 3;
 		}
 
 	}
