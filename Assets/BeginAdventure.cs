@@ -18,30 +18,32 @@ public class BeginAdventure : MonoBehaviour {
 
         StartCoroutine(playSound());
     }
-	
-	// Update is called once per frame
-	void Update () {
-        
+
+    // Update is called once per frame
+    void Update()
+    {
 
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
-        MobileInput();
-        /*
-        if (MobileInput.getInput() == MobileInput.InputType.up)
+        MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.tap)
         {
-            ChangeScreen.SwitchScreen();
+            SceneManager.LoadScene("MinigameScreen");
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.tap)
+        else if (input == MobileInput.InputType.down)
         {
-            ChangeScreen.SwitchScreen();
+            SceneManager.LoadScene("Credits");
         }
-        */
 #endif
 
         //if on desktop, enter will go to arcade game screen
         if (Input.GetKeyDown("return"))
         {
             SceneManager.LoadScene("MinigameScreen");
+        }
+        else if (Input.GetKeyDown("down"))
+        {
+            SceneManager.LoadScene("Credits");
         }
 
     }

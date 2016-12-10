@@ -11,7 +11,7 @@ public class SwordHighScore : MonoBehaviour
     void Start()
     {
         txt = gameObject.GetComponent<Text>();
-        txt.text = PlayerPrefs.GetInt(HighScore.highScoreSwordKey, 0) + " monsters";
+        txt.text = PlayerPrefs.GetInt(UpdateHighScore.highScoreSwordKey, 0) + " monsters";
     }
 
     // Update is called once per frame

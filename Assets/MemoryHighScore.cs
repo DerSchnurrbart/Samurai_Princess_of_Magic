@@ -17,7 +17,7 @@ public class MemoryHighScore : MonoBehaviour
     void Start()
     {
         txt = gameObject.GetComponent<Text>();
-        txt.text = PlayerPrefs.GetInt(HighScore.highScoreMemoryKey, 0) + " directions";
+        txt.text = PlayerPrefs.GetInt(UpdateHighScore.highScoreMemoryKey, 0) + " directions";
     }
 
     // Update is called once per frame

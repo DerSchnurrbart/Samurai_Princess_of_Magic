@@ -32,6 +32,7 @@ public class MemoryAlt : MonoBehaviour
     private AudioClip[,] ac_direction; //ac == audio clip
     private AudioClip then;
     private AudioClip welcome;
+    private AudioClip instructions;
     private AudioClip[] uhOh;
     private AudioClip nextPath;
 
@@ -141,6 +142,8 @@ public class MemoryAlt : MonoBehaviour
 
     public IEnumerator OnStart()
     {
+        direction_noise.PlayOneShot(instructions);
+        yield return new WaitForSeconds(instructions.length);
         direction_noise.PlayOneShot(welcome);
         yield return new WaitForSeconds(welcome.length);
         StartCoroutine(show_sequence());
@@ -352,6 +355,7 @@ public class MemoryAlt : MonoBehaviour
         simple_direction[2] = Resources.Load("Sounds/Directions/left") as AudioClip;
         simple_direction[3] = Resources.Load("Sounds/Directions/right") as AudioClip;
         welcome = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Welcome") as AudioClip;
+        instructions = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Instructions") as AudioClip;
         nextPath = Resources.Load("Sounds/BetaVoicelines/MemoryGame/YourNextPathIs") as AudioClip;
         uhOh = new AudioClip[4];
         uhOh[0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/UhOhPigs") as AudioClip;

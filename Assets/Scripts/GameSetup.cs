@@ -38,7 +38,7 @@ public class GameSetup : MonoBehaviour
     {
 
         //if on android, tap will go to arcade game screen
-        #if UNITY_ANDROID
+#if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
         if (input == MobileInput.InputType.left)
         {
@@ -60,9 +60,9 @@ public class GameSetup : MonoBehaviour
         }
         else if (input == MobileInput.InputType.down)
         {
-            SceneManager.LoadScene("TitleScreen");
+            SceneManager.LoadScene("MinigameScreen");
         }
-        #endif
+#endif
 
         if (Input.GetKeyDown("left")) //"Tutorial level"
         {
@@ -84,7 +84,7 @@ public class GameSetup : MonoBehaviour
         }
         else if (Input.GetKeyDown("down"))
         {
-            SceneManager.LoadScene("TitleScreen");
+            SceneManager.LoadScene("MinigameScreen");
         }
 
     }

@@ -23,7 +23,7 @@ public class GameOver : MonoBehaviour
     private AudioClip youFollowed;
     private AudioClip youKilled;
     private AudioClip[] score;
-    private AudioClip rounds;
+    private AudioClip beats;
     private AudioClip directions;
     private AudioClip monsters;
     private AudioClip[] compliment;
@@ -49,7 +49,7 @@ public class GameOver : MonoBehaviour
         youLasted = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouLasted") as AudioClip;
         youFollowed = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouFollowed") as AudioClip;
         youKilled = Resources.Load("Sounds/BetaVoicelines/GameOver/GOYouKilled") as AudioClip;
-        rounds = Resources.Load("Sounds/BetaVoicelines/GameOver/Rounds") as AudioClip;
+        beats = Resources.Load("Sounds/BetaVoicelines/GameOver/Beats") as AudioClip;
         directions = Resources.Load("Sounds/BetaVoicelines/GameOver/Directions") as AudioClip;
         monsters = Resources.Load("Sounds/BetaVoicelines/GameOver/Monsters") as AudioClip;
 
@@ -124,8 +124,8 @@ public class GameOver : MonoBehaviour
                 yield return new WaitForSeconds(youLasted.length + 0.1f);
                 source.PlayOneShot(score[getIndex(newestScore)]);
                 yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
-                source.PlayOneShot(rounds);
-                yield return new WaitForSeconds(rounds.length);
+                source.PlayOneShot(beats);
+                yield return new WaitForSeconds(beats.length);
             }
             else if (Load.lastPlayedGame == 1)
             {

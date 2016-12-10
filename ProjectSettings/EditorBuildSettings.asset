@@ -21,3 +21,5 @@ EditorBuildSettings:
     path: Assets/Scenes/MinigameScreen.unity
   - enabled: 1
     path: Assets/Scenes/HighScores.unity
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity

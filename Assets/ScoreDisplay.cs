@@ -29,7 +29,7 @@ public class ScoreDisplay : MonoBehaviour {
             else
             {
                 gameScore = Rhythm.score;
-                gameScoreUnits = "rounds";
+                gameScoreUnits = "beats";
             }
             
                 
@@ -39,18 +39,18 @@ public class ScoreDisplay : MonoBehaviour {
                         //gameScoreUnits = "rounds";
 
         //Example text: You lasted 5 rounds!
-        txt.text = "You lasted at least " + gameScore + " " + gameScoreUnits + "!";
+        txt.text = "You lasted over " + gameScore + " " + gameScoreUnits + "!";
 
         //If game played was survival game,
         //Example text: You killed 5 monsters!
         if (Load.lastPlayedGame == 2)
         {
-            txt.text = "You killed at least " + gameScore + " " + gameScoreUnits + "!";
+            txt.text = "You killed over " + gameScore + " " + gameScoreUnits + "!";
         }
         //If memory game
         if (Load.lastPlayedGame == 1)
         {
-            txt.text = "You followed at least " + gameScore + " " + gameScoreUnits + "!";
+            txt.text = "You followed over " + gameScore + " " + gameScoreUnits + "!";
         }
     }
 }

@@ -11,7 +11,7 @@ public class RhythmHighScore : MonoBehaviour
     void Start()
     {
         txt = gameObject.GetComponent<Text>();
-        txt.text = PlayerPrefs.GetInt(HighScore.highScoreRhythmKey, 0) + " beats";
+        txt.text = PlayerPrefs.GetInt(UpdateHighScore.highScoreRhythmKey, 0) + " beats";
     }
 
     // Update is called once per frame
