@@ -4,12 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class GameSetup : MonoBehaviour
 {
-    /*
-    //Mobile Touch Input
-    private Vector3 fp;   //First touch position
-    private Vector3 lp;   //Last touch position
-    private float dragDistance;  //minimum distance for a swipe to be registered
-    */
     static GameObject playerPrefab;
     static GameObject player;
     static SwordCombat script;
@@ -23,8 +17,6 @@ public class GameSetup : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //define what % of the screen is needed to be touched for a swipe to register
-        //dragDistance = Screen.height * 15 / 100;
         source = GetComponent<AudioSource>();
         mode = Resources.Load("Sounds/BetaVoicelines/SurvivalGameModeSelect") as AudioClip;
 
@@ -46,13 +38,12 @@ public class GameSetup : MonoBehaviour
     {
 
         //if on android, tap will go to arcade game screen
-#if UNITY_ANDROID
+        #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
         if (input == MobileInput.InputType.left)
         {
             SceneManager.LoadScene("SCTutorial");
         }
-
         else if (input == MobileInput.InputType.up)
         {
             source.Stop();
@@ -67,16 +58,13 @@ public class GameSetup : MonoBehaviour
             script.enabled = true;
             Destroy(this);
         }
-#endif
-        //if on desktop, use keyboard controls
-        if (Input.GetKeyDown("escape"))
+        else if (input == MobileInput.InputType.down)
         {
-            print("ESCAPE");
             SceneManager.LoadScene("TitleScreen");
-
         }
+        #endif
 
-        if (Input.GetKeyDown("left")) //"Tutorial level", just for explaining gameplay
+        if (Input.GetKeyDown("left")) //"Tutorial level"
         {
             SceneManager.LoadScene("SCTutorial");
         }
@@ -96,14 +84,17 @@ public class GameSetup : MonoBehaviour
         }
         else if (Input.GetKeyDown("down"))
         {
-
+            SceneManager.LoadScene("TitleScreen");
         }
 
     }
 
     public IEnumerator playSound()
     {
-        yield return new WaitForSeconds(0);
-        source.PlayOneShot(mode);
+        while (true)
+        {
+            source.PlayOneShot(mode);
+            yield return new WaitForSeconds(mode.length + 3.0f);
+        }
     }
 }

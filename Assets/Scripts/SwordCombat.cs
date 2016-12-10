@@ -315,7 +315,7 @@ public class SwordCombat : MonoBehaviour {
 
         enemyNoises = new AudioClip[3];
         enemyNoises[(int)EnemyType.insect] = Resources.Load("Sounds/Enemies/scratching") as AudioClip;
-        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolfhowl") as AudioClip;
+        enemyNoises[(int)EnemyType.wolf] = Resources.Load("Sounds/Enemies/wolf") as AudioClip;
         enemyNoises[(int)EnemyType.ghost] = Resources.Load("Sounds/Enemies/ghost") as AudioClip;
         enemyDeaths = new AudioClip[3];
         enemyDeaths[(int)EnemyType.wolf] = Resources.Load("Sounds/Death/wolfdeath") as AudioClip;

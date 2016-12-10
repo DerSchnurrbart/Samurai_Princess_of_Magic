@@ -255,7 +255,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -460,7 +460,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 222401691}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75d1d43d46d32a44095833ecb94f8392, type: 3}
   m_Name: 
@@ -475,6 +475,11 @@ MonoBehaviour:
   sequence: 
   target: 
   unmutatedPositions: 
+  mode: 0
+  playerPrefab: {fileID: 0}
+  CYCLES_NEEDED_TO_PROCEED: 3
+  NUM_MOVES_INCORRECT_TO_FAIL: 5
+  MULTIPLIER_FOR_BEAT_PERIOD: 0.9
   difficulty: 3
   prompt_index: 0
   correct: 0
@@ -844,7 +849,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1009,7 +1014,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1112,7 +1117,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:

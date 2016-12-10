@@ -4,35 +4,19 @@ using UnityEngine.SceneManagement;
 
 public class RhythmSetup : MonoBehaviour
 {
-	/*
-    //Mobile Touch Input
-	private Vector3 fp;   //First touch position
-	private Vector3 lp;   //Last touch position
-	private float dragDistance;  //minimum distance for a swipe to be registered
-	*/
-	static GameObject playerPrefab;
-	static GameObject player;
-	static Rhythm script;
+	static GameObject script_holder;
+	static Rhythm rhythm_game;
 
 	private AudioSource source;
 	private AudioClip mode;
 
-	GameObject screen_tear;
-	Animator an;
-
 	// Use this for initialization
 	void Start()
 	{
-		//define what % of the screen is needed to be touched for a swipe to register
-		//dragDistance = Screen.height * 15 / 100;
 		source = GetComponent<AudioSource>();
-		mode = Resources.Load("Sounds/BetaVoicelines/SurvivalGameModeSelect") as AudioClip;
+		mode = Resources.Load("Sounds/BetaVoicelines/Rhythm/RhythmSetupVoiceline") as AudioClip;
 
-
-		playerPrefab = Resources.Load("Prefabs/Player") as GameObject;
-		player = Instantiate(playerPrefab);
-		script = player.GetComponent<Rhythm>();
-
+		rhythm_game = gameObject.GetComponent<Rhythm>();
 
 		StartCoroutine(playSound());
 	}
@@ -46,31 +30,27 @@ public class RhythmSetup : MonoBehaviour
 		MobileInput.InputType input = MobileInput.getInput();
 		if (input == MobileInput.InputType.left)
 		{
-		SceneManager.LoadScene("SCTutorial");
+            SceneManager.LoadScene("RhythmTutorial");
 		}
-
 		else if (input == MobileInput.InputType.up)
 		{
-		source.Stop();
-		script.SetGameMode(SwordCombat.GameMode.normal);
-		script.enabled = true;
-		Destroy(this);
+            source.Stop();
+            rhythm_game.SetGameMode(Rhythm.GameMode.normal);
+            rhythm_game.enabled = true;
+            this.enabled = false;
 		}
 		else if (input == MobileInput.InputType.right)
 		{
-		source.Stop();
-		script.SetGameMode(SwordCombat.GameMode.hard);
-		script.enabled = true;
-		Destroy(this);
+            source.Stop();
+            rhythm_game.SetGameMode(Rhythm.GameMode.normal);
+            rhythm_game.enabled = true;
+            this.enabled = false;
 		}
+        else if (input == MobileInput.InputType.down)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
 		#endif
-		//if on desktop, use keyboard controls
-		if (Input.GetKeyDown("escape"))
-		{
-			print("ESCAPE");
-			SceneManager.LoadScene("TitleScreen");
-
-		}
 
 		if (Input.GetKeyDown("left")) //"Tutorial level", just for explaining gameplay
 		{
@@ -79,23 +59,30 @@ public class RhythmSetup : MonoBehaviour
 		else if (Input.GetKeyDown("up")) //Beginning mode
 		{
 			source.Stop();
-			script.SetGameMode(Rhythm.GameMode.normal);
-			script.enabled = true;
-			Destroy(this);
+			rhythm_game.SetGameMode(Rhythm.GameMode.normal);
+			rhythm_game.enabled = true;
+            this.enabled = false;
 		}
 		else if (Input.GetKeyDown("right")) //Intermediate
 		{
 			source.Stop();
-			script.SetGameMode(Rhythm.GameMode.hard);
-			script.enabled = true;
-			Destroy(this);
+			rhythm_game.SetGameMode(Rhythm.GameMode.hard);
+			rhythm_game.enabled = true;
+            this.enabled = false;
 		}
+        else if (Input.GetKeyDown("down"))
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
 
 	}
 
 	public IEnumerator playSound()
 	{
-		yield return new WaitForSeconds(0);
-		source.PlayOneShot(mode);
+        while (true)
+        {
+            source.PlayOneShot(mode);
+            yield return new WaitForSeconds(mode.length + 3.0f);
+        }
 	}
 }

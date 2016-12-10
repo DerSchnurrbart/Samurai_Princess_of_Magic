@@ -7,6 +7,7 @@ public class EnemyLogic : MonoBehaviour {
     public EnemyType type;
     public float attack_delay;
     public SwordCombat currentInstance;
+    public bool has_attacked_flag;
 
 	void OnTriggerEnter()
     {
@@ -17,6 +18,7 @@ public class EnemyLogic : MonoBehaviour {
     IEnumerator delay_attack()
     {
         yield return new WaitForSeconds(attack_delay);
+        has_attacked_flag = true;
         currentInstance.enemy_attacked();
         currentInstance.active_enemies--;
         Destroy(gameObject);
