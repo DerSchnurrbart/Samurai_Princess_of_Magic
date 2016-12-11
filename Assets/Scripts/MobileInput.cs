@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class MobileInput {
 
@@ -7,7 +10,10 @@ public class MobileInput {
     private static Vector3 fp;   //First touch position
     private static Vector3 lp;   //Last touch position
     private static float dragDistance;  //minimum distance for a swipe to be registered
-    public enum InputType {left, right, up, down, tap, none};
+    public enum InputType {left, right, up, down, tap, hold, none};
+
+    private static float holdTime = 3.0f;
+    private static float acumTime = 0;
 
     public MobileInput()
     {
@@ -22,6 +28,16 @@ public class MobileInput {
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
+
+            //record how much time the screen is held
+            acumTime += Input.GetTouch(0).deltaTime;
+
+            //if screen is held for the minimum length then register a hold input
+            if (acumTime >= holdTime)
+            {
+                retVal = InputType.hold;
+            }
+
             //get coordinates of the first touch
             if (touch.phase == TouchPhase.Began)
             {
@@ -36,6 +52,9 @@ public class MobileInput {
             //check if the finger is removed from the screen
             else if (touch.phase == TouchPhase.Ended)
             {
+                //input was not a hold for 3 seconds; reset the timer to 0
+                acumTime = 0;
+
                 lp = touch.position;
                 //Check if drag distance is greater than 8% of the screen height
                 if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)

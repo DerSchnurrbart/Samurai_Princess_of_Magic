@@ -119,7 +119,11 @@ public class Rhythm : MonoBehaviour
         }
         else if (valid_input)
         {
-            if (input == MobileInput.InputType.tap)
+            if (input == MobileInput.InputType.hold)
+            {
+                SceneManager.LoadScene("TitleScreen");
+            }
+            else if (input == MobileInput.InputType.tap)
             {
                 compare_user_input(Action.tap);
             }
