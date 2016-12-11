@@ -11,9 +11,6 @@ public class BeginAdventure : MonoBehaviour
     private Vector3 lp;   //Last touch position
     private float dragDistance;  //minimum distance for a swipe to be registered
 
-    private float holdTime = 5.0f;
-    private float acumTime = 0;
-
     private AudioSource source;
     private AudioClip welcome;
     //helper for triggering game select directions after tapping on title screen
@@ -71,15 +68,6 @@ public class BeginAdventure : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
 
-            //record how much time the screen is held
-            acumTime += Input.GetTouch(0).deltaTime;
-
-            //if screen is held for the minimum length then register a hold input
-            if (acumTime >= holdTime)
-            {
-                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-            }
-
             //get coordinates of the first touch
             if (touch.phase == TouchPhase.Began)
             {
@@ -94,54 +82,28 @@ public class BeginAdventure : MonoBehaviour
             //check if the finger is removed from the screen
             else if (touch.phase == TouchPhase.Ended)
             {
-                //input was not a hold for 3 seconds; reset the timer to 0
-                acumTime = 0;
-
                 lp = touch.position;
-
-                //Check if drag distance is greater than 15% of the screen height
                 if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
                 {
-                    //check if the drag is horizontal
                     if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
                     {
-                        //the drag is horizontal                          
-                        //last touch position was right of first touch position
-                        if ((lp.x > fp.x))
-                        {
-                            Debug.Log("Right Swipe");
-
-                        }
-                        else
-                        {
-                            Debug.Log("Left Swipe");
-
-                        }
+                        Debug.Log("horiziontal swipe");
                     }
-                    //movement was vertical
-                    else
+
+                    else // vertical swipe
                     {
                         //last touch position is more up of first touch position
-                        if (lp.y > fp.y)
+                        if (lp.y < fp.y)
                         {
-                            Debug.Log("Up Swipe");
-
-                        }
-                        //movement is a down swipe
-                        else
-                        {
-                            Debug.Log("Down Swipe");
+                            Debug.Log("down swipe");
                             SceneManager.LoadScene("Credits");
                         }
                     }
+                }
+                //User tapped
+                Debug.Log("Tap");
+                SceneManager.LoadScene("MinigameScreen");
 
-                }
-                //was not a swipe
-                else
-                {
-                    Debug.Log("Tap");
-                    SceneManager.LoadScene("MinigameScreen");
-                }
             }
         }
     }

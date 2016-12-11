@@ -188,6 +188,7 @@ public class GameSelect : MonoBehaviour
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
+            acumTime = 0;
 
             //record how much time the screen is held
             acumTime += Input.GetTouch(0).deltaTime;
@@ -195,6 +196,7 @@ public class GameSelect : MonoBehaviour
             //if screen is held for the minimum length then register a hold input
             if (acumTime >= holdTime)
             {
+                acumTime = 0;
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             }
 

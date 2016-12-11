@@ -23,6 +23,8 @@ public class MobileInput {
 
     public static InputType getInput()
     {
+        acumTime = 0;
+
         InputType retVal = InputType.none;
         // user is touching the screen with one finger
         if (Input.touchCount == 1)
@@ -35,6 +37,7 @@ public class MobileInput {
             //if screen is held for the minimum length then register a hold input
             if (acumTime >= holdTime)
             {
+                acumTime = 0;
                 retVal = InputType.hold;
             }
 
