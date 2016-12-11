@@ -54,7 +54,7 @@ public class RhythmSetup : MonoBehaviour
 
 		if (Input.GetKeyDown("left")) //"Tutorial level", just for explaining gameplay
 		{
-			SceneManager.LoadScene("RhythmTutorial");
+			SceneManager.LoadScene("RMTutorial");
 		}
 		else if (Input.GetKeyDown("up")) //Beginning mode
 		{
