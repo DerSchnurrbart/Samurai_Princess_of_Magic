@@ -28,7 +28,11 @@ public class RhythmSetup : MonoBehaviour
 		//if on android, tap will go to arcade game screen
 		#if UNITY_ANDROID
 		MobileInput.InputType input = MobileInput.getInput();
-		if (input == MobileInput.InputType.left)
+        if (input == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+        else if (input == MobileInput.InputType.left)
 		{
             SceneManager.LoadScene("RhythmTutorial");
 		}
@@ -54,7 +58,7 @@ public class RhythmSetup : MonoBehaviour
 
 		if (Input.GetKeyDown("left")) //"Tutorial level", just for explaining gameplay
 		{
-			SceneManager.LoadScene("RhythmTutorial");
+			SceneManager.LoadScene("RMTutorial");
 		}
 		else if (Input.GetKeyDown("up")) //Beginning mode
 		{

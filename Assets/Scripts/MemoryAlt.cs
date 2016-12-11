@@ -222,7 +222,11 @@ public class MemoryAlt : MonoBehaviour
 
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (input == MobileInput.InputType.up)
+        if (input == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+        else if (input == MobileInput.InputType.up)
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);

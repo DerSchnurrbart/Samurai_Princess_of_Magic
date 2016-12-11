@@ -26,10 +26,14 @@ public class BeginAdventure : MonoBehaviour {
         //if on android, tap will go to arcade game screen
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (input == MobileInput.InputType.tap)
+        if (input == MobileInput.InputType.hold)
         {
-            SceneManager.LoadScene("MinigameScreen");
+            SceneManager.LoadScene("TitleScreen");
         }
+        //else if (input == MobileInput.InputType.tap)
+        //{
+        //    SceneManager.LoadScene("MinigameScreen");
+        //}
         else if (input == MobileInput.InputType.down)
         {
             SceneManager.LoadScene("Credits");
