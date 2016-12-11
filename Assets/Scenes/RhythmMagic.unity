@@ -293,6 +293,7 @@ GameObject:
   - 114: {fileID: 222401693}
   - 82: {fileID: 222401692}
   - 114: {fileID: 222401697}
+  - 114: {fileID: 222401698}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -498,6 +499,17 @@ MonoBehaviour:
   swipe_left: {fileID: 1266635178}
   swipe_right: {fileID: 901133414}
   tap: {fileID: 590326834}
+--- !u!114 &222401698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 222401691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143e30183435cfc4385da28d0095db98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &575471493
 GameObject:
   m_ObjectHideFlags: 0
