@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class RhythmSetup : MonoBehaviour
 {
+    bool play_menu_prompt;
 	static GameObject script_holder;
 	static Rhythm rhythm_game;
 
@@ -13,7 +14,8 @@ public class RhythmSetup : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		source = GetComponent<AudioSource>();
+        play_menu_prompt = true;
+        source = GetComponent<AudioSource>();
 		mode = Resources.Load("Sounds/BetaVoicelines/Rhythm/RhythmSetupVoiceline") as AudioClip;
 
 		rhythm_game = gameObject.GetComponent<Rhythm>();
@@ -66,6 +68,7 @@ public class RhythmSetup : MonoBehaviour
 			rhythm_game.SetGameMode(Rhythm.GameMode.normal);
 			rhythm_game.enabled = true;
             this.enabled = false;
+            play_menu_prompt = false;
 		}
 		else if (Input.GetKeyDown("right")) //Intermediate
 		{
@@ -73,7 +76,9 @@ public class RhythmSetup : MonoBehaviour
 			rhythm_game.SetGameMode(Rhythm.GameMode.hard);
 			rhythm_game.enabled = true;
             this.enabled = false;
-		}
+            play_menu_prompt = false;
+
+        }
         else if (Input.GetKeyDown("down"))
         {
             SceneManager.LoadScene("TitleScreen");
@@ -83,7 +88,7 @@ public class RhythmSetup : MonoBehaviour
 
 	public IEnumerator playSound()
 	{
-        while (true)
+        while (play_menu_prompt)
         {
             source.PlayOneShot(mode);
             yield return new WaitForSeconds(mode.length + 3.0f);
