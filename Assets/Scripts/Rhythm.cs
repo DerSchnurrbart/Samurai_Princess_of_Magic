@@ -56,6 +56,7 @@ public class Rhythm : MonoBehaviour
     public GameObject swipe_left;
     public GameObject swipe_right;
     public GameObject tap;
+	public Text scoreText;
 
     MobileInput mobInput;
 
@@ -81,11 +82,11 @@ public class Rhythm : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+		scoreText = gameObject.GetComponent<Text> ();
+
         mobInput = new MobileInput();
 
-        //score starts at the maximum lives, 
-        //   because for example if a player survives 3 beats 
-        //   but then loses all 5 lives, they actually survived 5+3 beats
+        
         print("starting late start");
         prompt_index = 0;
         //difficulty = 3;
@@ -188,7 +189,12 @@ public class Rhythm : MonoBehaviour
             StartCoroutine(show_sequence());
         }
 
+		UpdateScore ();
     }
+
+	public void UpdateScore() {
+		scoreText.text = score.ToString();
+	}
 
     IEnumerator endGame()
     {
@@ -215,6 +221,7 @@ public class Rhythm : MonoBehaviour
         else
         {
             correct++;
+			score++;
         }
         numBeatsThisLevel++;
         print("number of beats this level: " + numBeatsThisLevel);
@@ -233,14 +240,12 @@ public class Rhythm : MonoBehaviour
         if (numIncorrectThisCycle > sequence.Count / 3)
         {
             print("too many incorrect");
-            score += correct;
             gameIsOver = true;
             StartCoroutine(endGame());
         }
         else
         {
             print("new cycle, continuing");
-            score += correct;
             correct = 0;
             //starting new cycle
             numIncorrectThisCycle = 0;
@@ -260,7 +265,6 @@ public class Rhythm : MonoBehaviour
                 timeBetweenBeats *= MULTIPLIER_FOR_BEAT_PERIOD;
                 reset_sequences();
             }
-            score += correct;
             correct = 0;
             numBeatsThisLevel = 0;
         }
