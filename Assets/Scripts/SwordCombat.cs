@@ -50,7 +50,6 @@ public class SwordCombat : MonoBehaviour {
     /********************************Global State*****************************************/
 
     int player_health = 3;
-    int enemies_per_spawn = 1;
     public int active_enemies = 0;
     int score = 0;
     PlayerWeapons currentWeapon;
@@ -59,7 +58,7 @@ public class SwordCombat : MonoBehaviour {
     bool isRotating = false;
     float approachRate;
     float attack_delay;
-    List<enemySpawner> spawners;
+    List<EnemySpawner> spawners;
     static AudioSource playerAudioSource;
     static GameMode mode;
     MobileInput mobInput;
@@ -76,7 +75,7 @@ public class SwordCombat : MonoBehaviour {
         }
         else if (m == GameMode.hard)
         {
-            approachRate = 8.0f;
+            approachRate = 6.0f;
             attack_delay = 1.0f;
         }
 
@@ -85,7 +84,7 @@ public class SwordCombat : MonoBehaviour {
 
     /*************************************Class Definitions********************************************/
 
-    class enemySpawner
+    class EnemySpawner
     {
         List<enemy> enemies;
         public Directions initialDirection;
@@ -93,7 +92,7 @@ public class SwordCombat : MonoBehaviour {
         Vector3 AttackVector;
         SwordCombat TopLevel;
 
-        public enemySpawner(Vector3 pos, Directions directionFromPlayer, SwordCombat parent)
+        public EnemySpawner(Vector3 pos, Directions directionFromPlayer, SwordCombat parent)
         {
             enemies = new List<enemy>();
             TopLevel = parent;
@@ -102,7 +101,7 @@ public class SwordCombat : MonoBehaviour {
             AttackVector = -1*pos.normalized;
         }
 
-        public void spawnEnemy(float ApproachRate)
+        public void spawn_enemy(float ApproachRate)
         {
             if (TopLevel.player_health > 0)
             {
@@ -110,31 +109,30 @@ public class SwordCombat : MonoBehaviour {
             }
         }
         
-        public void playerSwing(PlayerWeapons weapon)
+        public void player_swing(PlayerWeapons weapon)
         {
-            //Sloppy implementation, kills all enemies of a type in a direction
-            //May want to change to only kill closest enemy
-            List<enemy> toRemove = new List<enemy>();
-            foreach(enemy x in enemies)
+            if (enemies.Count > 0)
             {
-                if (x.weakness == weapon)
+                if (enemies[0] != null)
                 {
-                    x.kill();
-                    toRemove.Add(x);
-                    //Todo Add death sound
+                    if (!enemies[0].source.GetComponent<EnemyLogic>().has_attacked_flag)
+                    {
+                        if (enemies[0].weakness == weapon)
+                        {
+                            enemies[0].kill();
+                            playerAudioSource.PlayOneShot(enemyDeaths[(int)weapon]);
+                            enemies.RemoveAt(0);
+                            TopLevel.score++;
+                            TopLevel.score_text.GetComponent<Text>().text = TopLevel.score + "";
+                            HandleScaling(mode);
+                            return;
+                        }
+                    }
                 }
             }
-            if (toRemove.Count > 0) playerAudioSource.PlayOneShot(enemyDeaths[(int)weapon]);
-            else playerAudioSource.PlayOneShot(weaponMiss);
-            foreach(enemy x in toRemove)
-            {
-                enemies.Remove(x);
-                TopLevel.score++;
-                TopLevel.score_text.GetComponent<Text>().text = TopLevel.score + "";
-                if (TopLevel.score % 25 == 0) TopLevel.enemies_per_spawn++;
-                HandleScaling(mode);
-            }
 
+            playerAudioSource.PlayOneShot(weaponMiss);
+            return;
         }
 
         public void KillAll()
@@ -148,7 +146,7 @@ public class SwordCombat : MonoBehaviour {
 
         void HandleScaling(GameMode difficulty)
         {
-            if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 7;
+            if (difficulty == GameMode.hard) TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 6;
             else TopLevel.approachRate = (float) Math.Pow(Math.Log(TopLevel.score, 2), 2) + 3;
         }
 
@@ -156,7 +154,7 @@ public class SwordCombat : MonoBehaviour {
 
     class enemy
     {
-        GameObject source;
+        public GameObject source;
         AudioSource au_source; //Houses positional information, audio clip
         public EnemyType type;
         public PlayerWeapons weakness;
@@ -171,6 +169,7 @@ public class SwordCombat : MonoBehaviour {
             au_source.Play();
             source.GetComponent<Rigidbody>().velocity = approachSpeed;
             source.GetComponent<EnemyLogic>().currentInstance = parent;
+            source.GetComponent<EnemyLogic>().has_attacked_flag = false;
             source.GetComponent<EnemyLogic>().attack_delay = parent.attack_delay;
             this.parent = parent;
             parent.active_enemies++;
@@ -222,7 +221,7 @@ public class SwordCombat : MonoBehaviour {
         {
             if (input == MobileInput.InputType.up)
             {
-                spawners[(int)playerFacing].playerSwing(currentWeapon);
+                spawners[(int)playerFacing].player_swing(currentWeapon);
                 StartCoroutine(inputController());
             }
         }
@@ -255,7 +254,7 @@ public class SwordCombat : MonoBehaviour {
         {
             if (Input.GetKeyDown("up"))
             {
-                spawners[(int)playerFacing].playerSwing(currentWeapon);
+                spawners[(int)playerFacing].player_swing(currentWeapon);
                 StartCoroutine(inputController());
             }
         }
@@ -302,7 +301,7 @@ public class SwordCombat : MonoBehaviour {
         {
             randomNumber = UnityEngine.Random.Range(0, 3);
         }
-        spawners[randomNumber].spawnEnemy(approachRate);
+        spawners[randomNumber].spawn_enemy(approachRate);
     }
 
     public IEnumerator attack_screen()
@@ -349,12 +348,12 @@ public class SwordCombat : MonoBehaviour {
         playerFacing = Directions.north;
 
         
-        spawners = new List<enemySpawner>();
+        spawners = new List<EnemySpawner>();
         //Spawning Locations are cardinal directions
-        spawners.Add(new enemySpawner(new Vector3(0, 0, -50), Directions.north, this)); //in front of player
-        spawners.Add(new enemySpawner(new Vector3(50, 0, 0), Directions.east, this)); //right of player at start 
-        spawners.Add(new enemySpawner(new Vector3(0, 0, 50), Directions.south, this)); //behind player
-        spawners.Add(new enemySpawner(new Vector3(-50, 0, 0), Directions.west, this)); //left of player 
+        spawners.Add(new EnemySpawner(new Vector3(0, 0, -50), Directions.north, this)); //in front of player
+        spawners.Add(new EnemySpawner(new Vector3(50, 0, 0), Directions.east, this)); //right of player at start 
+        spawners.Add(new EnemySpawner(new Vector3(0, 0, 50), Directions.south, this)); //behind player
+        spawners.Add(new EnemySpawner(new Vector3(-50, 0, 0), Directions.west, this)); //left of player 
 
         enemyPrefab = Resources.Load("Prefabs/enemy") as GameObject;
 
@@ -407,7 +406,7 @@ public class SwordCombat : MonoBehaviour {
             HandlePlayerInput();
             if (active_enemies == 0)
             {
-                for (int i = 0; i < enemies_per_spawn; i++) spawn_enemy();
+                spawn_enemy();
             }
         }
 	}
