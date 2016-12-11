@@ -12,7 +12,7 @@ public class MobileInput {
     private static float dragDistance;  //minimum distance for a swipe to be registered
     public enum InputType {left, right, up, down, tap, hold, none};
 
-    private static float holdTime = 3.0f;
+    private static float holdTime = 6.0f;
     private static float acumTime = 0;
 
     public MobileInput()
