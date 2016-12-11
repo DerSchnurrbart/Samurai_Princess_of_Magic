@@ -33,6 +33,7 @@ public class MemoryAlt : MonoBehaviour
     private AudioClip then;
     private AudioClip welcome;
     private AudioClip instructions;
+    private AudioClip[] should_have_direction;
     private AudioClip[] uhOh;
     private AudioClip nextPath;
 
@@ -183,13 +184,15 @@ public class MemoryAlt : MonoBehaviour
         StartCoroutine(show_sequence());
     }
 
-    IEnumerator incorrectGuess()
+    IEnumerator incorrectGuess(Direction correct_path)
     {
         yield return new WaitForSeconds(1.0f);
         results_text.text = "Incorrect sequence!";
         int uhoh_index = Random.Range(0, 4);
         direction_noise.PlayOneShot(uhOh[uhoh_index]);
-        yield return new WaitForSeconds(uhOh[uhoh_index].length);
+        yield return new WaitForSeconds(uhOh[uhoh_index].length + 0.2f);
+        direction_noise.PlayOneShot(should_have_direction[(int)correct_path]);
+        yield return new WaitForSeconds(should_have_direction[(int)correct_path].length);
         user_guess.Clear();
         current_difficulty = 1;
         populateSequence(current_difficulty);
@@ -199,21 +202,6 @@ public class MemoryAlt : MonoBehaviour
 
     IEnumerator endGame()
     {
-        /* This commented code is the old voiceline "You have lost your way"
-        //play first voiceline
-        if (memoryDefeatVoiceIsPlaying == false)
-        {
-            memoryDefeatVoiceIsPlaying = true;
-            memoryDefeatVoice.PlayOneShot(memoryDefeat);
-
-        }
-        //go to game over screen after 3 seconds
-        yield return new WaitForSeconds(3);
-
-
-        */
-
-
 
         //show gameover screen
         if (gameOverScreenLoaded == false)
@@ -293,25 +281,29 @@ public class MemoryAlt : MonoBehaviour
             StartCoroutine(inputController());
         }
 
-        if (user_guess.Count == sequence.Count) isUsersTurn = false;
-        if (user_guess.Count == sequence.Count) HandlePlayerGuess();
+        HandlePlayerGuess();
 
     }
 
     void HandlePlayerGuess()
     {
-        for (int i = 0; i < sequence.Count; i++)
+        for (int i = 0; i < user_guess.Count; i++)
         {
             if (user_guess[i] != sequence[i])
             {
-                StartCoroutine(incorrectGuess());
+                isUsersTurn = false;
+                StartCoroutine(incorrectGuess(sequence[i]));
                 return;
             }
         }
 
-        StartCoroutine(correctGuess());
-        populateSequence(++current_difficulty);
-        user_guess.Clear();
+        if (user_guess.Count == sequence.Count)
+        {
+            isUsersTurn = false;
+            StartCoroutine(correctGuess());
+            populateSequence(++current_difficulty);
+            user_guess.Clear();
+        }
 
     }
 
@@ -354,6 +346,11 @@ public class MemoryAlt : MonoBehaviour
         simple_direction[1] = Resources.Load("Sounds/Directions/down") as AudioClip;
         simple_direction[2] = Resources.Load("Sounds/Directions/left") as AudioClip;
         simple_direction[3] = Resources.Load("Sounds/Directions/right") as AudioClip;
+        should_have_direction = new AudioClip[4];
+        should_have_direction[0] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/ShouldHaveGoneForward") as AudioClip;
+        should_have_direction[1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/ShouldHaveGoneBack") as AudioClip;
+        should_have_direction[2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/ShouldHaveGoneLeft") as AudioClip;
+        should_have_direction[3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/ShouldHaveGoneRight") as AudioClip;
         welcome = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Welcome") as AudioClip;
         instructions = Resources.Load("Sounds/BetaVoicelines/MemoryGame/Instructions") as AudioClip;
         nextPath = Resources.Load("Sounds/BetaVoicelines/MemoryGame/YourNextPathIs") as AudioClip;
@@ -362,6 +359,7 @@ public class MemoryAlt : MonoBehaviour
         uhOh[1] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/OuchBurnt") as AudioClip;
         uhOh[2] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/OhNoQuickSand") as AudioClip;
         uhOh[3] = Resources.Load("Sounds/BetaVoicelines/MemoryGame/WhoopsCliff") as AudioClip;
+
         //Arcade Mode:
         current_difficulty = 1;
         populateSequence(current_difficulty);
