@@ -36,6 +36,7 @@ public class MemoryAlt : MonoBehaviour
     private AudioClip[] should_have_direction;
     private AudioClip[] uhOh;
     private AudioClip nextPath;
+    private GameObject score_text;
 
     public List<Direction> sequence;
     public List<Direction> user_guess;
@@ -193,10 +194,11 @@ public class MemoryAlt : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
         results_text.text = "Correct sequence!";
+        score++;
+        score_text.GetComponent<Text>().text = score + "";
         direction_noise.PlayOneShot(nextPath);
         yield return new WaitForSeconds(nextPath.length);
         results_text.text = "";
-        score++;
         StartCoroutine(show_sequence());
     }
 
@@ -345,6 +347,8 @@ public class MemoryAlt : MonoBehaviour
         inputDelayActive = false;
         direction_noise = GetComponent<AudioSource>();
         results_text = GameObject.Find("Canvas/Results").GetComponent<Text>();
+        score_text = GameObject.Find("/Canvas/Score");
+        score_text.GetComponent<Text>().text = "0";
 
         then = Resources.Load("Sounds/BetaVoicelines/MemoryGame/THEN") as AudioClip;
         ac_direction = new AudioClip[4, 4];

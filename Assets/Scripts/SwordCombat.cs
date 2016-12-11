@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -44,6 +45,7 @@ public class SwordCombat : MonoBehaviour {
     private AudioClip beginning;
     static GameObject enemyPrefab;
     public GameObject screen_tear;
+    public GameObject score_text;
 
     /********************************Global State*****************************************/
 
@@ -128,6 +130,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
                 TopLevel.score++;
+                TopLevel.score_text.GetComponent<Text>().text = TopLevel.score + "";
                 if (TopLevel.score % 25 == 0) TopLevel.enemies_per_spawn++;
                 HandleScaling(mode);
             }
@@ -313,6 +316,8 @@ public class SwordCombat : MonoBehaviour {
 
 	void Start () {
 
+        score_text = GameObject.Find("/Canvas/Score");
+        score_text.GetComponent<Text>().text = "0";
         mobInput = new MobileInput();
         playerAudioSource = GetComponent<AudioSource>();
         //defeat sounds
