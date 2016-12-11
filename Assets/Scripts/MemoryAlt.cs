@@ -144,9 +144,25 @@ public class MemoryAlt : MonoBehaviour
     public IEnumerator OnStart()
     {
         direction_noise.PlayOneShot(instructions);
-        yield return new WaitForSeconds(instructions.length);
+        while(!Input.GetKeyDown("return") 
+              && direction_noise.isPlaying 
+              && MobileInput.getInput() != MobileInput.InputType.tap)
+        {
+            yield return null;
+        }
+
+        direction_noise.Stop();
+        yield return new WaitForSeconds(0.2f);
         direction_noise.PlayOneShot(welcome);
-        yield return new WaitForSeconds(welcome.length);
+
+        while(!Input.GetKeyDown("return")
+              && direction_noise.isPlaying 
+              && MobileInput.getInput() != MobileInput.InputType.tap)
+        {
+            yield return null;
+        }
+
+        direction_noise.Stop();
         StartCoroutine(show_sequence());
     }
 
@@ -254,6 +270,9 @@ public class MemoryAlt : MonoBehaviour
             direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
         }
+        else if (input == MobileInput.InputType.tap)
+        {
+        }
 #endif
 
         if (Input.GetKeyDown("up"))
@@ -283,6 +302,10 @@ public class MemoryAlt : MonoBehaviour
             user_guess.Add(Direction.Right);
             direction_noise.PlayOneShot(simple_direction[3]);
             StartCoroutine(inputController());
+        }
+        else if (Input.GetKeyDown("enter"))
+        {
+
         }
 
         HandlePlayerGuess();
