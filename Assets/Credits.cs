@@ -16,7 +16,7 @@ public class Credits : MonoBehaviour {
     {
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
-        if (MobileInput.getInput() == MobileInput.InputType.down)
+        if (MobileInput.getInput() == MobileInput.InputType.hold)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
@@ -33,6 +33,10 @@ public class Credits : MonoBehaviour {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
         else if (MobileInput.getInput() == MobileInput.InputType.tap)
+        {
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        }
+        else if (MobileInput.getInput() == MobileInput.InputType.down)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }

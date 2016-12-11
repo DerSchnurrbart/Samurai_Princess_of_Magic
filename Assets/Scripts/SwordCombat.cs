@@ -196,6 +196,11 @@ public class SwordCombat : MonoBehaviour {
     void HandlePlayerInputMobile()
     {
         MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+
         if (!isRotating)
         {
             if (input == MobileInput.InputType.right)

@@ -17,6 +17,9 @@ public class GameSelect : MonoBehaviour
     private AudioClip magic;
     private AudioClip survival;
 
+    private static float holdTime = 3.0f;
+    private static float acumTime = 0;
+
     //To keep track of which game is currently selected
     bool rhythm;
     bool sword;
@@ -186,6 +189,15 @@ public class GameSelect : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
 
+            //record how much time the screen is held
+            acumTime += Input.GetTouch(0).deltaTime;
+
+            //if screen is held for the minimum length then register a hold input
+            if (acumTime >= holdTime)
+            {
+                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+            }
+
             //get coordinates of the first touch
             if (touch.phase == TouchPhase.Began)
             {
@@ -200,6 +212,9 @@ public class GameSelect : MonoBehaviour
             //check if the finger is removed from the screen
             else if (touch.phase == TouchPhase.Ended)
             {
+                //input was not a hold for 3 seconds; reset the timer to 0
+                acumTime = 0;
+
                 lp = touch.position;
 
                 //Check if drag distance is greater than 15% of the screen height

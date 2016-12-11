@@ -89,6 +89,10 @@ public class GameOver : MonoBehaviour
 
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
+        if (MobileInput.getInput() == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        }
         if (MobileInput.getInput() == MobileInput.InputType.up)
         {
             SceneManager.LoadScene(Load.lastPlayedGame, LoadSceneMode.Single);
