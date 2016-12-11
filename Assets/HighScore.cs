@@ -51,7 +51,12 @@ public class HighScore : MonoBehaviour {
     {
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
-        if (MobileInput.getInput() == MobileInput.InputType.down)
+        MobileInput.InputType input = MobileInput.getInput();
+        if (input == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        }
+        else if (input == MobileInput.InputType.down)
         {
             SceneManager.LoadScene("MinigameScreen", LoadSceneMode.Single);
         }

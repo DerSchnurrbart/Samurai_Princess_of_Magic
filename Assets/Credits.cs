@@ -6,37 +6,42 @@ using UnityEngine.UI;
 
 public class Credits : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    private AudioSource creditsVoice;
+    private AudioClip swipe;
+
+    // Use this for initialization
+    void Start () {
+        creditsVoice = GetComponent<AudioSource>();
+
+        swipe = Resources.Load("Sounds/BetaVoicelines/CreditsSwipeDown") as AudioClip;
+
+        creditsVoice.PlayOneShot(swipe);
+    }
 
     // Update is called once per frame
     void Update()
     {
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
-        if (MobileInput.getInput() == MobileInput.InputType.hold)
+        MobileInput.InputType input = MobileInput.getInput();
+        
+        if (input == MobileInput.InputType.up)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.up)
+        else if (input == MobileInput.InputType.right)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.right)
+        else if (input == MobileInput.InputType.left)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.left)
+        else if (input == MobileInput.InputType.tap)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
-        else if (MobileInput.getInput() == MobileInput.InputType.tap)
-        {
-            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-        }
-        else if (MobileInput.getInput() == MobileInput.InputType.down)
+        else if (input == MobileInput.InputType.down)
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }

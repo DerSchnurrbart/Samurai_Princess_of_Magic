@@ -54,7 +54,7 @@ public class RhythmSetup : MonoBehaviour
 		}
         else if (input == MobileInput.InputType.down)
         {
-            SceneManager.LoadScene("TitleScreen");
+            SceneManager.LoadScene("MinigameScreen");
         }
 		#endif
 
@@ -81,7 +81,7 @@ public class RhythmSetup : MonoBehaviour
         }
         else if (Input.GetKeyDown("down"))
         {
-            SceneManager.LoadScene("TitleScreen");
+            SceneManager.LoadScene("MinigameScreen");
         }
 
 	}

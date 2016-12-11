@@ -94,6 +94,11 @@ public class SCTutorial : MonoBehaviour {
 	void Update () {
 
 #if UNITY_ANDROID
+        if (MobileInput.getInput() == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+
         if (allowturning && MobileInput.getInput() == MobileInput.InputType.left)
         {
             allowturning = false;

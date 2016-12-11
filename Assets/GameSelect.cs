@@ -184,21 +184,26 @@ public class GameSelect : MonoBehaviour
 
     void MobileInput()
     {
+
+        if (Input.touchCount == 3)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
         // user is touching the screen with one finger
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
-            acumTime = 0;
+            //acumTime = 0;
 
             //record how much time the screen is held
-            acumTime += Input.GetTouch(0).deltaTime;
+            //acumTime += Input.GetTouch(0).deltaTime;
 
             //if screen is held for the minimum length then register a hold input
-            if (acumTime >= holdTime)
+            /*if (acumTime >= holdTime)
             {
                 acumTime = 0;
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-            }
+            }*/
 
             //get coordinates of the first touch
             if (touch.phase == TouchPhase.Began)
@@ -215,7 +220,7 @@ public class GameSelect : MonoBehaviour
             else if (touch.phase == TouchPhase.Ended)
             {
                 //input was not a hold for 3 seconds; reset the timer to 0
-                acumTime = 0;
+                //acumTime = 0;
 
                 lp = touch.position;
 
@@ -276,23 +281,28 @@ public class GameSelect : MonoBehaviour
                 //Confirm game selection
                 else
                 {
-                   if (rhythm == true) 
-                {
-                    SceneManager.LoadScene("RhythmMagic");
-                }
-                else if (sword == true)
-                {
-                    SceneManager.LoadScene("SwordCombat");
-                }
-                else if (memory == true)
-                {
-                    SceneManager.LoadScene("MemoryGame");
-                }
-                else if (back == true)
-                {
-                    SceneManager.LoadScene("TitleScreen");
-                }
                     
+                    if (rhythm == true)
+                    {
+                        source.Stop();
+                        SceneManager.LoadScene("RhythmMagic");
+                    }
+                    else if (sword == true)
+                    {
+                        source.Stop();
+                        SceneManager.LoadScene("SwordCombat");
+                    }
+                    else if (memory == true)
+                    {
+                        source.Stop();
+                        SceneManager.LoadScene("MemoryGame");
+                    }
+                    else if (back == true)
+                    {
+                        source.Stop();
+                        SceneManager.LoadScene("TitleScreen");
+                    }
+
                 }
             }
         }

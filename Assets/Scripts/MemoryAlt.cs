@@ -240,11 +240,7 @@ public class MemoryAlt : MonoBehaviour
 
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
-        if (input == MobileInput.InputType.hold)
-        {
-            SceneManager.LoadScene("TitleScreen");
-        }
-        else if (input == MobileInput.InputType.up)
+        if (input == MobileInput.InputType.up)
         {
             enable_arrow(Direction.Up);
             user_guess.Add(Direction.Up);
@@ -414,6 +410,13 @@ public class MemoryAlt : MonoBehaviour
             }
         }
 
+#if UNITY_ANDROID
+        MobileInput.InputType input2 = MobileInput.getInput();
+        if (input2 == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+#endif
         //if user hits escape, go back to main menu
         if (Input.GetKeyDown("escape"))
         {

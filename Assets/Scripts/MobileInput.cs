@@ -12,8 +12,8 @@ public class MobileInput {
     private static float dragDistance;  //minimum distance for a swipe to be registered
     public enum InputType {left, right, up, down, tap, hold, none};
 
-    private static float holdTime = 6.0f;
-    private static float acumTime = 0;
+    //private static float holdTime = 3.0f;
+    //private static float acumTime = 0;
 
     public MobileInput()
     {
@@ -23,23 +23,29 @@ public class MobileInput {
 
     public static InputType getInput()
     {
-        acumTime = 0;
+        //acumTime = 0;
 
         InputType retVal = InputType.none;
+        
+        if (Input.touchCount == 3)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
+
         // user is touching the screen with one finger
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
 
             //record how much time the screen is held
-            acumTime += Input.GetTouch(0).deltaTime;
+            //acumTime += Input.GetTouch(0).deltaTime;
 
             //if screen is held for the minimum length then register a hold input
-            if (acumTime >= holdTime)
+            /*if (acumTime >= holdTime)
             {
                 acumTime = 0;
                 retVal = InputType.hold;
-            }
+            }*/
 
             //get coordinates of the first touch
             if (touch.phase == TouchPhase.Began)
@@ -56,7 +62,7 @@ public class MobileInput {
             else if (touch.phase == TouchPhase.Ended)
             {
                 //input was not a hold for 3 seconds; reset the timer to 0
-                acumTime = 0;
+                //acumTime = 0;
 
                 lp = touch.position;
                 //Check if drag distance is greater than 8% of the screen height

@@ -100,9 +100,12 @@ public class BeginAdventure : MonoBehaviour
                         }
                     }
                 }
-                //User tapped
-                Debug.Log("Tap");
-                SceneManager.LoadScene("MinigameScreen");
+                else
+                {   //User tapped
+                    Debug.Log("Tap");
+                    SceneManager.LoadScene("MinigameScreen");
+                }
+                
 
             }
         }

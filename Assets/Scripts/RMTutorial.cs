@@ -106,6 +106,11 @@ public class RMTutorial : MonoBehaviour {
 #if UNITY_ANDROID
         MobileInput.InputType input = MobileInput.getInput();
         //mobile version starts automatically without needing to tap to start
+
+        if (input == MobileInput.InputType.hold)
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
         if (!triggered)
         {
             triggered = true;
