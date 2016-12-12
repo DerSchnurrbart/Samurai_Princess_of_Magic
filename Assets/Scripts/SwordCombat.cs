@@ -124,7 +124,7 @@ public class SwordCombat : MonoBehaviour {
                             playerAudioSource.PlayOneShot(enemyDeaths[(int)weapon]);
                             enemies.RemoveAt(0);
                             TopLevel.score++;
-                            TopLevel.score_text.GetComponent<Text>().text = TopLevel.score + "";
+                            TopLevel.score_text.GetComponent<Text>().text = "Score: " + TopLevel.score + "";
                             HandleScaling(mode);
                             return;
                         }
