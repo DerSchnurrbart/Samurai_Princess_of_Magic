@@ -36,7 +36,7 @@ public class RhythmSetup : MonoBehaviour
         }
         else if (input == MobileInput.InputType.left)
 		{
-            SceneManager.LoadScene("RhythmTutorial");
+            SceneManager.LoadScene("RMTutorial");
 		}
 		else if (input == MobileInput.InputType.up)
 		{
