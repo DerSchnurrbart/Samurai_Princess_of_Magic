@@ -256,19 +256,29 @@ public class RMTutorial : MonoBehaviour {
         //introduction
         philipe.PlayOneShot(philipe_instructions[0]);
         yield return new WaitForSeconds(philipe_instructions[0].length);
+        prompt_user(Action.tap);
         yield return StartCoroutine(WaitForKeyDown(KeyCode.Space));
+        disable_prompts();
 
         //the five dance moves
         philipe.PlayOneShot(philipe_instructions[1]);
         yield return new WaitForSeconds(philipe_instructions[1].length);
         a_up.Play();
+        prompt_user(Action.swipe_up);
         yield return StartCoroutine(WaitForKeyDown(KeyCode.UpArrow));
+        disable_prompts();
         a_down.Play();
+        prompt_user(Action.swipe_down);
         yield return StartCoroutine(WaitForKeyDown(KeyCode.DownArrow));
+        disable_prompts();
         a_left.Play();
+        prompt_user(Action.swipe_left);
         yield return StartCoroutine(WaitForKeyDown(KeyCode.LeftArrow));
+        disable_prompts();
         a_right.Play();
+        prompt_user(Action.swipe_right);
         yield return StartCoroutine(WaitForKeyDown(KeyCode.RightArrow));
+        disable_prompts();
 
         //start dancing
         philipe.PlayOneShot(philipe_instructions[2]);
