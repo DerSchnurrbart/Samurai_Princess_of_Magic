@@ -248,9 +248,7 @@ public class RMTutorial : MonoBehaviour {
     //function to wait for user input
     IEnumerator WaitForKeyDown(KeyCode keyCode, MobileInput.InputType m_input)
     {
-        MobileInput.InputType input = MobileInput.getInput();
-        input = MobileInput.getInput();
-        while (!Input.GetKeyDown(keyCode) && input != m_input)
+        while (!Input.GetKeyDown(keyCode) && m_input != MobileInput.getInput()) 
             yield return null;
     }
 
