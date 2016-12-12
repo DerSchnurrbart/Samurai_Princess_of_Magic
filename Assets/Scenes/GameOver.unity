@@ -239,7 +239,7 @@ RectTransform:
   m_GameObject: {fileID: 109102521}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -17.2}
-  m_LocalScale: {x: 1.8000001, y: 2.3249998, z: 1}
+  m_LocalScale: {x: 2, y: 2.2, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 324176078}
@@ -257,9 +257,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 109102521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 920e31dbddc433c429c171149bb40a3b, type: 3}
+  m_Script: {fileID: 11500000, guid: e8860dedc1d3a2a4f9c307e989991f7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highScoreMemory: 0
+  highScoreSword: 0
+  highScoreRhythm: 0
 --- !u!114 &109102524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,7 +334,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3.5, y: 1}
+  m_AnchoredPosition: {x: 1, y: -4}
   m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &194982363
@@ -360,13 +363,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 56
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' Return to  Main Menu'
+  m_Text: Return to Main Menu
 --- !u!222 &194982364
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -591,7 +594,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.5, y: -13}
-  m_SizeDelta: {x: 300, y: 100}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &363384204
 MonoBehaviour:
@@ -614,7 +617,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 32
+    m_FontSize: 38
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -675,7 +678,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7, y: -45}
+  m_AnchoredPosition: {x: 0.7, y: -49}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &723998608

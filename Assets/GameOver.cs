@@ -14,8 +14,7 @@ public class GameOver : MonoBehaviour
     */
 
     //Audio
-    private AudioSource gameOverVoice;
-    private AudioClip gameOverClip;
+    private AudioClip newRecord;
 
     private AudioSource source;
     private AudioClip playAgain;
@@ -41,8 +40,7 @@ public class GameOver : MonoBehaviour
         dragDistance = Screen.height * 15 / 100;
         */
 
-        gameOverVoice = GetComponent<AudioSource>();
-        gameOverClip = Resources.Load("Sounds/Voicelines/GameOvers/GameOver") as AudioClip;
+        newRecord = Resources.Load("Sounds/BetaVoicelines/GameOvers/NewRecord") as AudioClip;
 
         source = GetComponent<AudioSource>();
         playAgain = Resources.Load("Sounds/BetaVoicelines/GameOver/PlayAgain") as AudioClip;
@@ -80,12 +78,6 @@ public class GameOver : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (gameOverVoiceIsPlaying == false)
-        {
-            gameOverVoiceIsPlaying = true;
-            gameOverVoice.PlayOneShot(gameOverClip);
-        }
 
         //If running on Unity Android, run this block to use mobile input controls
 #if UNITY_ANDROID
@@ -128,6 +120,12 @@ public class GameOver : MonoBehaviour
                 yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
                 source.PlayOneShot(beats);
                 yield return new WaitForSeconds(beats.length);
+
+                if (UpdateHighScore.newRecord == true)
+                {
+                    source.PlayOneShot(newRecord);
+                    yield return new WaitForSeconds(newRecord.length);
+                }
             }
             else if (Load.lastPlayedGame == 1)
             {
@@ -137,6 +135,12 @@ public class GameOver : MonoBehaviour
                 yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
                 source.PlayOneShot(directions);
                 yield return new WaitForSeconds(directions.length);
+
+                if (UpdateHighScore.newRecord == true)
+                {
+                    source.PlayOneShot(newRecord);
+                    yield return new WaitForSeconds(newRecord.length);
+                }
             }
             else if (Load.lastPlayedGame == 2)
             {
@@ -146,6 +150,12 @@ public class GameOver : MonoBehaviour
                 yield return new WaitForSeconds(score[getIndex(newestScore)].length + 0.1f);
                 source.PlayOneShot(monsters);
                 yield return new WaitForSeconds(monsters.length);
+
+                if (UpdateHighScore.newRecord == true)
+                {
+                    source.PlayOneShot(newRecord);
+                    yield return new WaitForSeconds(newRecord.length);
+                }
             }
 
             //play the compliment voicelines

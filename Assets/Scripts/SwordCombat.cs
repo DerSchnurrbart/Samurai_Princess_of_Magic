@@ -46,6 +46,7 @@ public class SwordCombat : MonoBehaviour {
     static GameObject enemyPrefab;
     public GameObject screen_tear;
     public GameObject score_text;
+    public GameObject livesText;
 
     /********************************Global State*****************************************/
 
@@ -130,7 +131,7 @@ public class SwordCombat : MonoBehaviour {
             {
                 enemies.Remove(x);
                 TopLevel.score++;
-                TopLevel.score_text.GetComponent<Text>().text = TopLevel.score + "";
+                TopLevel.score_text.GetComponent<Text>().text = "Score: " + TopLevel.score + "";
                 if (TopLevel.score % 25 == 0) TopLevel.enemies_per_spawn++;
                 HandleScaling(mode);
             }
@@ -317,7 +318,11 @@ public class SwordCombat : MonoBehaviour {
 	void Start () {
 
         score_text = GameObject.Find("/Canvas/Score");
-        score_text.GetComponent<Text>().text = "0";
+        score_text.GetComponent<Text>().text = "Score: 0";
+
+        livesText = GameObject.Find("/Canvas/Lives");
+        livesText.GetComponent<Text>().text = "Lives: 3";
+
         mobInput = new MobileInput();
         playerAudioSource = GetComponent<AudioSource>();
         //defeat sounds
@@ -366,6 +371,7 @@ public class SwordCombat : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+        
         //If running on Unity Android, run this block to use mobile input controls
         #if UNITY_ANDROID
             //TODO: Implement a way to escape the game
@@ -419,6 +425,7 @@ public class SwordCombat : MonoBehaviour {
 
         StartCoroutine(attack_screen());
         player_health--;
+        livesText.GetComponent<Text>().text = "Lives: " + player_health + "";
         if (player_health == 2)
         {
             playerAudioSource.PlayOneShot(playerHit);

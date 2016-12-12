@@ -10,6 +10,7 @@ public class UpdateHighScore : MonoBehaviour {
 
     Text txt;
 
+    public static bool newRecord;
 
     public int highScoreMemory = 0;
     public int highScoreSword = 0;
@@ -20,6 +21,8 @@ public class UpdateHighScore : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        newRecord = false;
+
         txt = gameObject.GetComponent<Text>();
 
         //Get value if highscore has been assigned to highScoreKey yet, else 0
@@ -31,24 +34,31 @@ public class UpdateHighScore : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //if most recent score is greater than high score, update and display "High Score!" text
+        Debug.Log("GameOverScreen");
+        Debug.Log("Last played game is: " + Load.lastPlayedGame + "and the score is" + ScoreDisplay.gameScore);
         if (Load.lastPlayedGame == 1 && ScoreDisplay.gameScore > highScoreMemory)
         {
+            newRecord = true;
             PlayerPrefs.SetInt(highScoreMemoryKey, ScoreDisplay.gameScore);
             txt.text = "High Score!";
             PlayerPrefs.Save();
         }
         else if (Load.lastPlayedGame == 2 && ScoreDisplay.gameScore > highScoreSword)
         {
+            newRecord = true;
+            Debug.Log("High Score before new record: " + PlayerPrefs.GetInt(UpdateHighScore.highScoreRhythmKey, 0));
             PlayerPrefs.SetInt(highScoreSwordKey, ScoreDisplay.gameScore);
             txt.text = "High Score!";
             PlayerPrefs.Save();
-            Debug.Log("High Score for Sword Game is: " + PlayerPrefs.GetInt(highScoreSwordKey));
-            Debug.Log("highScoreSword (previous highscore) is: " + highScoreSword);
+            Debug.Log("High Score set to new record: " + PlayerPrefs.GetInt(UpdateHighScore.highScoreSwordKey, 0));
             
         }
         else if (Load.lastPlayedGame == 3 && ScoreDisplay.gameScore > highScoreRhythm)
         {
+            newRecord = true;
+            Debug.Log("High Score before new record: " + PlayerPrefs.GetInt(UpdateHighScore.highScoreRhythmKey, 0));
             PlayerPrefs.SetInt(highScoreRhythmKey, ScoreDisplay.gameScore);
+            Debug.Log("High Score set to new record: " + PlayerPrefs.GetInt(UpdateHighScore.highScoreRhythmKey, 0));
             txt.text = "High Score!";
             PlayerPrefs.Save();
         }

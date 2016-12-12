@@ -193,9 +193,9 @@ public class MemoryAlt : MonoBehaviour
     public IEnumerator correctGuess()
     {
         yield return new WaitForSeconds(1.0f);
-        results_text.text = "Correct sequence!";
+        results_text.text = "Correct!";
         score++;
-        score_text.GetComponent<Text>().text = score + "";
+        score_text.GetComponent<Text>().text = "Score: " + score + "";
         direction_noise.PlayOneShot(nextPath);
         yield return new WaitForSeconds(nextPath.length);
         results_text.text = "";
@@ -205,7 +205,7 @@ public class MemoryAlt : MonoBehaviour
     IEnumerator incorrectGuess(Direction correct_path)
     {
         yield return new WaitForSeconds(1.0f);
-        results_text.text = "Incorrect sequence!";
+        results_text.text = "Wrong Direction!";
         int uhoh_index = Random.Range(0, 4);
         direction_noise.PlayOneShot(uhOh[uhoh_index]);
         yield return new WaitForSeconds(uhOh[uhoh_index].length + 0.2f);
@@ -344,7 +344,7 @@ public class MemoryAlt : MonoBehaviour
         direction_noise = GetComponent<AudioSource>();
         results_text = GameObject.Find("Canvas/Results").GetComponent<Text>();
         score_text = GameObject.Find("/Canvas/Score");
-        score_text.GetComponent<Text>().text = "0";
+        score_text.GetComponent<Text>().text = "Score: 0";
 
         then = Resources.Load("Sounds/BetaVoicelines/MemoryGame/THEN") as AudioClip;
         ac_direction = new AudioClip[4, 4];

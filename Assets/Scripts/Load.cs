@@ -8,9 +8,9 @@ public class Load : MonoBehaviour
     //but also saves the name of the scene passing it,
     //so the game can keep track of what scene it was on previously (so you can return)
 
-        //initialize to survival game for testing purposes
-        //3 is rhythm magic, 2 is survival game, 1 is memory game
-    public static int lastPlayedGame = 2;
+    //initialize to survival game for testing purposes
+    //3 is rhythm magic, 2 is survival game, 1 is memory game
+    public static int lastPlayedGame;
     
     public static void updateLastPlayedGame(int sceneNumber){
         lastPlayedGame = sceneNumber;

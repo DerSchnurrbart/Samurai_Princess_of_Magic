@@ -193,7 +193,7 @@ public class Rhythm : MonoBehaviour
     }
 
 	public void UpdateScore() {
-		scoreText.text = score.ToString();
+		scoreText.text = "Score: " + score.ToString();
 	}
 
     IEnumerator endGame()
