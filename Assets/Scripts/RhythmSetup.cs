@@ -43,6 +43,7 @@ public class RhythmSetup : MonoBehaviour
             source.Stop();
             rhythm_game.SetGameMode(Rhythm.GameMode.normal);
             rhythm_game.enabled = true;
+            play_menu_prompt = false;
             this.enabled = false;
 		}
 		else if (input == MobileInput.InputType.right)
@@ -50,7 +51,9 @@ public class RhythmSetup : MonoBehaviour
             source.Stop();
             rhythm_game.SetGameMode(Rhythm.GameMode.normal);
             rhythm_game.enabled = true;
+            play_menu_prompt = false;
             this.enabled = false;
+
 		}
         else if (input == MobileInput.InputType.down)
         {
