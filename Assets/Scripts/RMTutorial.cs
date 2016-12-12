@@ -246,9 +246,11 @@ public class RMTutorial : MonoBehaviour {
 
 
     //function to wait for user input
-    IEnumerator WaitForKeyDown(KeyCode keyCode)
+    IEnumerator WaitForKeyDown(KeyCode keyCode, MobileInput.InputType m_input)
     {
-        while (!Input.GetKeyDown(keyCode))
+        MobileInput.InputType input = MobileInput.getInput();
+        input = MobileInput.getInput();
+        while (!Input.GetKeyDown(keyCode) && input != m_input)
             yield return null;
     }
 
@@ -257,7 +259,8 @@ public class RMTutorial : MonoBehaviour {
         philipe.PlayOneShot(philipe_instructions[0]);
         yield return new WaitForSeconds(philipe_instructions[0].length);
         prompt_user(Action.tap);
-        yield return StartCoroutine(WaitForKeyDown(KeyCode.Space));
+        yield return StartCoroutine(WaitForKeyDown(KeyCode.Space, MobileInput.InputType.tap));
+        
         disable_prompts();
 
         //the five dance moves
@@ -265,19 +268,19 @@ public class RMTutorial : MonoBehaviour {
         yield return new WaitForSeconds(philipe_instructions[1].length);
         a_up.Play();
         prompt_user(Action.swipe_up);
-        yield return StartCoroutine(WaitForKeyDown(KeyCode.UpArrow));
+        yield return StartCoroutine(WaitForKeyDown(KeyCode.UpArrow, MobileInput.InputType.up));
         disable_prompts();
         a_down.Play();
         prompt_user(Action.swipe_down);
-        yield return StartCoroutine(WaitForKeyDown(KeyCode.DownArrow));
+        yield return StartCoroutine(WaitForKeyDown(KeyCode.DownArrow, MobileInput.InputType.down));
         disable_prompts();
         a_left.Play();
         prompt_user(Action.swipe_left);
-        yield return StartCoroutine(WaitForKeyDown(KeyCode.LeftArrow));
+        yield return StartCoroutine(WaitForKeyDown(KeyCode.LeftArrow, MobileInput.InputType.left));
         disable_prompts();
         a_right.Play();
         prompt_user(Action.swipe_right);
-        yield return StartCoroutine(WaitForKeyDown(KeyCode.RightArrow));
+        yield return StartCoroutine(WaitForKeyDown(KeyCode.RightArrow, MobileInput.InputType.right));
         disable_prompts();
 
         //start dancing
